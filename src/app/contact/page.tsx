@@ -78,7 +78,7 @@ export default function ContactPage() {
                                     <input type="email" placeholder="Votre e-mail *" required />
                                 </div>
                                 <div className={styles.phoneInput}>
-                                    <div className={styles.flagSelector}>🇨🇮</div>
+                                    <div className={styles.flagSelector}>🇧🇯</div>
                                     <input type="tel" placeholder="01 23 45 67 89" />
                                 </div>
                                 <div className={styles.inputGroup}>
@@ -131,7 +131,7 @@ export default function ContactPage() {
 
                             <div className={styles.mapContainer}>
                                 <iframe
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126435.4385966468!2d2.5516999!3d9.3371!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1031d8c7c9c0c001%3A0x6e8e8e8e8e8e8e8e!2sParakou!5e0!3m2!1sfr!2sbj!4v1710000000000!5m2!1sfr!2sbj"
+                                    src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d1462.4!2d2.618667!3d9.376917!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zOcKwMjInMzYuOSJOIDLCsDM3JzA3LjIiRQ!5e0!3m2!1sfr!2sbj!4v1710170000000!5m2!1sfr!2sbj"
                                     width="100%"
                                     height="300"
                                     style={{ border: 0, borderRadius: '12px' }}
