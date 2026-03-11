@@ -1,16 +1,23 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import styles from "./Payment.module.css";
 import Link from "next/link";
 import BackButton from "@/components/BackButton";
+import { supabase } from "@/lib/supabase";
 
 function CheckoutContent() {
     const searchParams = useSearchParams();
     const [step, setStep] = useState(1); // 1: Order Summary, 2: Payment
     const [paymentMethod, setPaymentMethod] = useState("wave");
     const [timeLeft, setTimeLeft] = useState(1799); // 29:59 (approx 30 mins)
+    const [email, setEmail] = useState("arafathimorou@gmail.com");
+    const [phone, setPhone] = useState("");
+    const [isProcessing, setIsProcessing] = useState(false);
+    const router = useRouter();
+
+    const eventId = searchParams.get("id") || "d5d140e6-921a-4c9c-b36d-dcc6c478a846"; // Default or from URL
 
     // Data from URL or default fallback
     const eventName = searchParams.get("event") || "Événement ITA ARENA";
@@ -43,6 +50,53 @@ function CheckoutContent() {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
+    const handlePayment = async () => {
+        if (!email) {
+            alert("Veuillez renseigner votre email.");
+            return;
+        }
+
+        setIsProcessing(true);
+
+        try {
+            // In a real app, we would call the payment provider API here.
+            // After successful payment, we register the tickets in Supabase.
+            
+            const ticketsToCreate = [];
+            for (const t of tickets) {
+                for (let j = 0; j < t.qty; j++) {
+                    ticketsToCreate.push({
+                        event_id: eventId,
+                        user_email: email,
+                        user_phone: phone,
+                        category: t.name,
+                        amount: t.price,
+                        qr_code_key: crypto.randomUUID(), // Unique key for QR code
+                        status: 'valid'
+                    });
+                }
+            }
+
+            if (ticketsToCreate.length > 0) {
+                const { data, error } = await supabase
+                    .from('tickets')
+                    .insert(ticketsToCreate)
+                    .select();
+
+                if (error) throw error;
+
+                // Redirect to confirmation page with the first ticket ID as reference
+                // (or we could pass an order ID if we had one)
+                router.push(`/checkout/confirmation?id=${data[0].id}`);
+            }
+        } catch (err: any) {
+            console.error("Erreur de paiement:", err);
+            alert("Une erreur est survenue lors de la création de vos tickets.");
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
     if (step === 1) {
         return (
             <div className="container" style={{ paddingTop: '100px', paddingBottom: '100px', maxWidth: '600px' }}>
@@ -73,7 +127,14 @@ function CheckoutContent() {
                     <div className={styles.contactForm}>
                         <div className={styles.inputGroup}>
                             <label>Adresse e-mail <span style={{ color: '#FF5A1F' }}>*</span></label>
-                            <input type="email" placeholder="arafathimorou@gmail.com" className={styles.customInput} />
+                            <input 
+                                type="email" 
+                                placeholder="votre@email.com" 
+                                className={styles.customInput} 
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
                         </div>
                         <div className={styles.inputGroup}>
                             <label>Numéro de téléphone</label>
@@ -82,7 +143,13 @@ function CheckoutContent() {
                                     <img src="https://upload.wikimedia.org/wikipedia/commons/f/fe/Flag_of_Cote_d%27Ivoire.svg" alt="CI" />
                                     <span>▾</span>
                                 </div>
-                                <input type="tel" placeholder="01 23 45 6789" className={styles.customInput} />
+                                <input 
+                                    type="tel" 
+                                    placeholder="01 23 45 6789" 
+                                    className={styles.customInput} 
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                />
                             </div>
                         </div>
                     </div>
@@ -178,8 +245,12 @@ function CheckoutContent() {
                             <label htmlFor="terms">J'accepte les conditions générales de vente et la politique de confidentialité</label>
                         </div>
 
-                        <button className={styles.proceedBtn}>
-                            Procéder au paiement <span className={styles.doubleArrow}>»</span>
+                        <button 
+                            className={styles.proceedBtn} 
+                            onClick={handlePayment}
+                            disabled={isProcessing}
+                        >
+                            {isProcessing ? "Traitement..." : "Procéder au paiement"} <span className={styles.doubleArrow}>»</span>
                         </button>
                     </div>
                 </div>
