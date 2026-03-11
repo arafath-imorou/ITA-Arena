@@ -1,10 +1,46 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 import styles from "./Auth.module.css";
 import BackButton from "@/components/BackButton";
 
 export default function LoginPage() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+
+        if (error) {
+            setError(error.message);
+        } else if (data.session) {
+            router.push("/organizer");
+        }
+        setLoading(false);
+    };
+
+    const handleGoogleLogin = async () => {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: `${window.location.origin}/auth/callback`
+            }
+        });
+        if (error) setError(error.message);
+    };
+
     return (
         <div className={styles.authWrapper}>
             <BackButton className={styles.backBtn} />
@@ -31,29 +67,59 @@ export default function LoginPage() {
                         <h1>Connexion</h1>
                     </div>
 
-                    <form className={styles.authForm} onSubmit={(e) => e.preventDefault()}>
+                    {error && (
+                        <div style={{ 
+                            color: '#d32f2f', 
+                            marginBottom: '20px', 
+                            padding: '12px', 
+                            backgroundColor: '#ffebee', 
+                            borderRadius: '8px', 
+                            fontSize: '14px',
+                            border: '1px solid #ffcdd2',
+                            lineHeight: '1.5'
+                        }}>
+                            <strong>Email ou mot de passe incorrect.</strong>
+                            <div style={{ marginTop: '8px' }}>
+                                Vous n'avez pas encore de compte ? <Link href="/register" style={{ color: '#FF5A1F', fontWeight: 'bold', textDecoration: 'underline' }}>Inscrivez-vous ici</Link>
+                            </div>
+                        </div>
+                    )}
+
+                    <form className={styles.authForm} onSubmit={handleSubmit}>
                         <div className={styles.inputGroup}>
                             <label>E-mail *</label>
                             <div className={styles.inputWrapper}>
-                                <input type="email" placeholder="votre@email.com" required />
+                                <input 
+                                    type="email" 
+                                    placeholder="votre@email.com" 
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required 
+                                />
                             </div>
                         </div>
 
                         <div className={styles.inputGroup}>
                             <label>Mot de passe *</label>
                             <div className={styles.inputWrapper}>
-                                <input type="password" placeholder="••••••••" required />
+                                <input 
+                                    type="password" 
+                                    placeholder="••••••••" 
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required 
+                                />
                                 <span className={styles.eyeIcon}>👁️</span>
                             </div>
                         </div>
 
                         <Link href="#" className={styles.forgotPass}>Mot de passe oublié ?</Link>
 
-                        <button type="submit" className={styles.submitBtn}>
-                            Connexion
+                        <button type="submit" className={styles.submitBtn} disabled={loading}>
+                            {loading ? "Connexion..." : "Connexion"}
                         </button>
 
-                        <button type="button" className={styles.googleBtn}>
+                        <button type="button" className={styles.googleBtn} onClick={handleGoogleLogin}>
                             <span className={styles.googleIcon}>G</span> Connexion avec Google
                         </button>
 
