@@ -23,6 +23,9 @@ export default function RegisterPage() {
         const { error } = await supabase.auth.signUp({
             email,
             password,
+            options: {
+                redirectTo: `${window.location.origin}/auth/callback`
+            }
         });
 
         if (error) {
