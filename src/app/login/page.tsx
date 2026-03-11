@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import styles from "./Auth.module.css";
+import BackButton from "@/components/BackButton";
 
 export default function LoginPage() {
     return (
         <div className={styles.authWrapper}>
+            <BackButton className={styles.backBtn} />
             <div className={styles.authCard}>
                 {/* Left Side: Illustration */}
                 <div className={styles.illustrationSide}>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import styles from "./FAQ.module.css";
+import BackButton from "@/components/BackButton";
 
 const FAQ_DATA = [
     {
@@ -61,7 +62,11 @@ export default function FAQPage() {
     };
 
     return (
-        <div className={styles.faqContainer}>
+        <div className={styles.faqWrapper}>
+            <div className="container" style={{ paddingTop: '2rem', marginBottom: '-2rem' }}>
+                <BackButton variant="dark" />
+            </div>
+            <div className={styles.faqContainer}>
             <h1 className={styles.title}>FAQ</h1>
             <p className={styles.subtitle}>Retrouvez ici les réponses aux questions les plus fréquentes.</p>
 
@@ -92,6 +97,7 @@ export default function FAQPage() {
                     </div>
                 </div>
             ))}
+        </div>
         </div>
     );
 }

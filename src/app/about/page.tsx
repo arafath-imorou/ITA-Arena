@@ -1,8 +1,12 @@
 import styles from "./About.module.css";
+import BackButton from "@/components/BackButton";
 
 export default function AboutPage() {
     return (
         <div className={styles.aboutWrapper}>
+            <div className="container" style={{ paddingTop: '2rem', marginBottom: '-4rem' }}>
+                <BackButton variant="dark" />
+            </div>
             {/* Hero Section */}
             <section className={styles.hero}>
                 <div className="container">

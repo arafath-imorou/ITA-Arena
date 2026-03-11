@@ -2,10 +2,14 @@
 
 import styles from "./Pricing.module.css";
 import Link from "next/link";
+import BackButton from "@/components/BackButton";
 
 export default function PricingPage() {
     return (
         <div className={styles.pricingWrapper}>
+            <div className="container" style={{ paddingTop: '2rem', marginBottom: '-4rem' }}>
+                <BackButton variant="dark" />
+            </div>
             {/* Header Section */}
             <header className={styles.header}>
                 <div className="container">

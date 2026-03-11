@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import styles from "./Payment.module.css";
 import Link from "next/link";
+import BackButton from "@/components/BackButton";
 
 function CheckoutContent() {
     const searchParams = useSearchParams();
@@ -45,6 +46,7 @@ function CheckoutContent() {
     if (step === 1) {
         return (
             <div className="container" style={{ paddingTop: '100px', paddingBottom: '100px', maxWidth: '600px' }}>
+                <BackButton variant="dark" />
                 <div className={styles.orderSummaryCard}>
                     <h1 className={styles.mainTitle}>Votre commande</h1>
 

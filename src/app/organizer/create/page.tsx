@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useMode } from "@/context/ModeContext";
+import BackButton from "@/components/BackButton";
 
 // Placeholder for current organizer until real auth is integrated
 const ORGANIZER_ID = 'd5d140e6-921a-4c9c-b36d-dcc6c478a846';
@@ -130,6 +131,7 @@ export default function CreateEventPage() {
 
     return (
         <div>
+            <BackButton variant="dark" />
             <h1 className={styles.pageTitle}>
                 {step === 5 ? "Résumé de l'évènement" : "Créer un évènement"}
             </h1>

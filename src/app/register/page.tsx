@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import styles from "../login/Auth.module.css";
+import BackButton from "@/components/BackButton";
 
 export default function RegisterPage() {
     const [email, setEmail] = useState("");
@@ -53,6 +54,7 @@ export default function RegisterPage() {
 
     return (
         <div className={styles.authWrapper}>
+            <BackButton className={styles.backBtn} />
             <div className={styles.authCard}>
                 {/* Left Side: Illustration */}
                 <div className={styles.illustrationSide}>

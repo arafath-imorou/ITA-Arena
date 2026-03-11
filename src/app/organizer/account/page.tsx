@@ -3,6 +3,7 @@
 import { useState } from "react";
 import styles from "../Organizer.module.css";
 import Link from "next/link";
+import BackButton from "@/components/BackButton";
 
 export default function AccountPage() {
     const [isEditing, setIsEditing] = useState(false);
@@ -23,6 +24,7 @@ export default function AccountPage() {
 
     return (
         <div className={styles.accountPage}>
+            <BackButton variant="dark" />
             <div className={styles.header}>
                 <div>
                     <h1 className={styles.title}>Mon Compte</h1>

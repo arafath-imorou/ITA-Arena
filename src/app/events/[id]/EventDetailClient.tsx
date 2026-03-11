@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import styles from "./EventDetail.module.css";
 import Link from "next/link";
 import { useMode } from "@/context/ModeContext";
+import BackButton from "@/components/BackButton";
 
 export default function EventDetailClient({ id }: { id: string }) {
     const { mode } = useMode();
@@ -95,6 +96,9 @@ export default function EventDetailClient({ id }: { id: string }) {
 
     return (
         <div className={styles.page}>
+            <div className="container" style={{ position: 'relative', zIndex: 10, paddingTop: '2rem', marginBottom: '-4rem' }}>
+                <BackButton variant="dark" />
+            </div>
             {/* ... hero section ... */}
             <div className={styles.heroSection}>
                 <img
