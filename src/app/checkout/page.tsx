@@ -18,10 +18,12 @@ function CheckoutContent() {
     const q2 = parseInt(searchParams.get("q2") || (searchParams.get("event") ? "0" : "1"));
     const q3 = parseInt(searchParams.get("q3") || (searchParams.get("event") ? "0" : "1"));
 
+    const isSpecialEvent = eventName.includes("LA FOUINE") || eventName.includes("DIDI B");
+
     const tickets = [
-        { name: "Pass Standard", price: 10000, qty: q1 },
-        { name: "Pass VIP", price: 25000, qty: q2 },
-        { name: "Pass VVIP", price: 50000, qty: q3 },
+        { name: isSpecialEvent ? "GRAND PUBLIC" : "Pass Standard", price: isSpecialEvent ? 30000 : 10000, qty: q1 },
+        { name: isSpecialEvent ? "VIP" : "Pass VIP", price: isSpecialEvent ? 50000 : 25000, qty: q2 },
+        { name: isSpecialEvent ? "VVIP" : "Pass VVIP", price: isSpecialEvent ? 100000 : 50000, qty: q3 },
     ].filter(t => t.qty > 0);
 
     const total = tickets.reduce((acc, t) => acc + t.price * t.qty, 0);

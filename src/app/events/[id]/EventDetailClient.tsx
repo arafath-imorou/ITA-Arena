@@ -81,9 +81,11 @@ export default function EventDetailClient({ id }: { id: string }) {
         }));
     };
 
-    const total = quantities.regular * (isCotisation ? 0 : 10000) +
-        quantities.vip * (isCotisation ? 0 : 25000) +
-        (quantities.vvip || 0) * 0;
+    const isSpecialEvent = item.title?.includes("LA FOUINE") || item.title?.includes("DIDI B");
+
+    const total = quantities.regular * (isCotisation ? 0 : (isSpecialEvent ? 30000 : 10000)) +
+        quantities.vip * (isCotisation ? 0 : (isSpecialEvent ? 50000 : 25000)) +
+        (quantities.vvip || 0) * (isSpecialEvent ? 100000 : 0);
 
     const handlePurchase = () => {
         const params = new URLSearchParams();
