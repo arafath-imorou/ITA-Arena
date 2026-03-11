@@ -50,26 +50,26 @@ export default function EventDetailClient({ id }: { id: string }) {
 
         if (isCotisation) {
             return {
-                title: "SOLIDARITÉ INONDATIONS ABIDJAN",
+                title: "SOLIDARITÉ INONDATIONS BÉNIN",
                 category: "Solidarité",
                 goal: "50 000 000 F CFA",
                 collected: "32 500 000 F CFA",
                 percent: 65,
                 image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070&auto=format&fit=crop",
-                organizer: "Croix Rouge Côte d'Ivoire",
+                organizer: "Croix Rouge Bénin",
                 date: "30 Avril 2026",
-                location: "Abidjan, Côte d'Ivoire",
-                description: "Face aux inondations records touchant la capitale économique, ITA Arena s'engage aux côtés de la Croix Rouge. Vos dons serviront à fournir des kits de première nécessité, de l'eau potable et un relogement temporaire aux familles sinistrées."
+                location: "Parakou, Bénin",
+                description: "Face aux inondations records touchant le nord du pays, ITA Arena s'engage aux côtés de la Croix Rouge. Vos dons serviront à fournir des kits de première nécessité, de l'eau potable et un relogement temporaire aux familles sinistrées."
             };
         }
         return {
-            title: "CONCERT LIVE : LA FOUINE",
+            title: "CONCERT LIVE : ARTISTE BÉNIN",
             category: "CONCERT",
             image: "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?q=80&w=1974&auto=format&fit=crop",
-            organizer: "BOSS PLAYA",
+            organizer: "ITA ARENA EVENTS",
             date: "03 Avril 2026 • 20:00",
-            location: "Palais de la Culture, Abidjan",
-            description: "La Fouine débarque à Abidjan pour une date historique ! Revivez ses plus grands classiques et découvrez ses nouveaux titres lors d'une performance électrique au Palais de la Culture."
+            location: "Stade Municipal, Parakou",
+            description: "Le grand concert live débarque à Parakou pour une date historique ! Revivez les plus grands classiques dans une performance électrique au Stade Municipal."
         };
     }, [isCotisation]);
 

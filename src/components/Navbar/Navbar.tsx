@@ -10,8 +10,8 @@ export default function Navbar() {
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const { user, signOut } = useAuth();
   const [selectedCountry, setSelectedCountry] = useState({
-    name: "Côte d'Ivoire",
-    flag: "https://upload.wikimedia.org/wikipedia/commons/f/fe/Flag_of_Cote_d%27Ivoire.svg"
+    name: "Bénin",
+    flag: "https://upload.wikimedia.org/wikipedia/commons/0/0a/Flag_of_Benin.svg"
   });
   const [searchQuery, setSearchQuery] = useState("");
 

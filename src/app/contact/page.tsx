@@ -115,24 +115,23 @@ export default function ContactPage() {
                                     <div className={styles.coordItem}>
                                         <span className={styles.coordIcon}>📍</span>
                                         <div>
-                                            <p>Cité SYNATRESOR, Abatta</p>
-                                            <p>Cocody, Abidjan</p>
+                                            <p>Parakou (BENIN)</p>
                                         </div>
                                     </div>
                                     <div className={styles.coordItem}>
                                         <span className={styles.coordIcon}>📞</span>
-                                        <p>+225 07 10 28 99 04</p>
+                                        <p>002290152818100</p>
                                     </div>
                                     <div className={styles.coordItem}>
                                         <span className={styles.coordIcon}>✉️</span>
-                                        <p>contact@ita-arena.com</p>
+                                        <p>groupita25@gmail.com</p>
                                     </div>
                                 </div>
                             </div>
 
                             <div className={styles.mapContainer}>
                                 <iframe
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3972.6346740624025!2d-3.9160566!3d5.3204278!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfc1edb0dcba9cbf%3A0xe54929a0f0d2cce4!2sAbatta%2C%20Abidjan!5e0!3m2!1sfr!2sci!4v1710000000000!5m2!1sfr!2sci"
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126435.4385966468!2d2.5516999!3d9.3371!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1031d8c7c9c0c001%3A0x6e8e8e8e8e8e8e8e!2sParakou!5e0!3m2!1sfr!2sbj!4v1710000000000!5m2!1sfr!2sbj"
                                     width="100%"
                                     height="300"
                                     style={{ border: 0, borderRadius: '12px' }}

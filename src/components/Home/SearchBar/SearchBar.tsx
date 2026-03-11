@@ -16,10 +16,10 @@ export default function SearchBar() {
                         <label>Ville</label>
                         <select>
                             <option>Toutes les villes</option>
+                            <option>Parakou</option>
                             <option>Cotonou</option>
                             <option>Lomé</option>
-                            <option>Abidjan</option>
-                            <option>Dakar</option>
+                            <option>Porto-Novo</option>
                         </select>
                     </div>
 

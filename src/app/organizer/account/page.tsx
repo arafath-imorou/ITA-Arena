@@ -8,9 +8,9 @@ export default function AccountPage() {
     const [isEditing, setIsEditing] = useState(false);
     const [profile, setProfile] = useState({
         name: "Global Events Africa",
-        email: "contact@globalevents.bj",
-        phone: "+229 01 00 00 00 00",
-        address: "Cotonou, Bénin",
+        email: "groupita25@gmail.com",
+        phone: "002290152818100",
+        address: "Parakou (BENIN)",
         bio: "La référence en organisation d'événements culturels et corporatifs en Afrique de l'Ouest.",
         website: "www.globalevents.bj"
     });

@@ -163,7 +163,7 @@ export default function OrganizerDashboard() {
                             <div className={styles.orgAvatar}>G</div>
                             <div>
                                 <p className={styles.orgName}>Global Events Africa</p>
-                                <p className={styles.orgEmail}>contact@globalevents.bj</p>
+                                <p className={styles.orgEmail}>groupita25@gmail.com</p>
                             </div>
                         </div>
                         <Link href="/organizer/account" className={styles.accountBtn}>Gérer mon compte</Link>
