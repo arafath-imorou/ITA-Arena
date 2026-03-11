@@ -1,4 +1,3 @@
-```javascript
 "use client";
 
 import { useState, useEffect } from "react";
@@ -15,6 +14,7 @@ export default function EventDetailClient({ id }: { id: string }) {
     const [quantities, setQuantities] = useState<{ [key: string]: number }>({
         regular: 0,
         vip: 0,
+        vvip: 0
     });
     const [item, setItem] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -96,15 +96,9 @@ export default function EventDetailClient({ id }: { id: string }) {
             }
             setLoading(false);
         }
-            title: "CONCERT LIVE : ARTISTE BÉNIN",
-            category: "CONCERT",
-            image: "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?q=80&w=1974&auto=format&fit=crop",
-            organizer: "ITA ARENA EVENTS",
-            date: "03 Avril 2026 • 20:00",
-            location: "Stade Municipal, Parakou",
-            description: "Le grand concert live débarque à Parakou pour une date historique ! Revivez les plus grands classiques dans une performance électrique au Stade Municipal."
-        };
-    }, [isCotisation]);
+
+        fetchEvent();
+    }, [id, isCotisation]);
 
     const handleQtyChange = (type: string, delta: number) => {
         setQuantities((prev) => ({
@@ -113,10 +107,12 @@ export default function EventDetailClient({ id }: { id: string }) {
         }));
     };
 
+    if (loading || !item) return <div className="container" style={{ padding: '4rem', textAlign: 'center' }}>Chargement de l'événement...</div>;
+
     const isSpecialEvent = item.title?.includes("LA FOUINE") || item.title?.includes("DIDI B");
 
-    const total = quantities.regular * (isCotisation ? 0 : (isSpecialEvent ? 30000 : 10000)) +
-        quantities.vip * (isCotisation ? 0 : (isSpecialEvent ? 50000 : 25000)) +
+    const total = (quantities.regular || 0) * (isCotisation ? 0 : (isSpecialEvent ? 30000 : 10000)) +
+        (quantities.vip || 0) * (isCotisation ? 0 : (isSpecialEvent ? 50000 : 25000)) +
         (quantities.vvip || 0) * (isSpecialEvent ? 100000 : 0);
 
     const handlePurchase = () => {
@@ -124,7 +120,7 @@ export default function EventDetailClient({ id }: { id: string }) {
         params.set("event", item.title);
         if (quantities.regular > 0) params.set("q1", quantities.regular.toString());
         if (quantities.vip > 0) params.set("q2", quantities.vip.toString());
-        if (quantities.vvip > 0) params.set("q3", quantities.vvip.toString());
+        if (quantities.vvip > 0) params.set("q3", (quantities.vvip || 0).toString());
         window.location.href = `/checkout?${params.toString()}`;
     };
 
@@ -133,7 +129,7 @@ export default function EventDetailClient({ id }: { id: string }) {
             <div className="container" style={{ position: 'relative', zIndex: 10, paddingTop: '2rem', marginBottom: '-4rem' }}>
                 <BackButton variant="dark" />
             </div>
-            {/* ... hero section ... */}
+
             <div className={styles.heroSection}>
                 <img
                     src={item.image}
@@ -145,7 +141,7 @@ export default function EventDetailClient({ id }: { id: string }) {
                     <span className={styles.categoryBadge}>{item.category}</span>
                     <h1 className={styles.title}>{item.title}</h1>
                     <div className={styles.meta}>
-                        <div className={styles.metaItem}>📅 {item.date}</div>
+                        <div className={styles.metaItem}>📅 {item.date} {item.time ? `| ${item.time}` : ''}</div>
                         <div className={styles.metaItem}>📍 {item.location}</div>
                     </div>
                 </div>
@@ -153,7 +149,6 @@ export default function EventDetailClient({ id }: { id: string }) {
 
             <div className={`container ${styles.mainGrid}`}>
                 <div className={styles.infoColumn}>
-                    {/* ... info sections ... */}
                     <section className={styles.descriptionSection}>
                         <h2 className={styles.heading}>À propos</h2>
                         <p className={styles.descriptionText}>{item.description}</p>
@@ -164,13 +159,13 @@ export default function EventDetailClient({ id }: { id: string }) {
                             <h2 className={styles.heading}>État de la collecte</h2>
                             <div className={styles.largeProgressWrapper}>
                                 <div className={styles.progressHeader}>
-                                    <span className={styles.collectedValue}>{item.collected}</span>
-                                    <span className={styles.percentText}>{item.percent}% atteint</span>
+                                    <span className={styles.collectedValue}>{new Intl.NumberFormat('fr-FR').format(item.collected_amount || 0)} F CFA</span>
+                                    <span className={styles.percentText}>{Math.round(((item.collected_amount || 0) / (item.goal_amount || 1)) * 100)}% atteint</span>
                                 </div>
                                 <div className={styles.progressTrack}>
-                                    <div className={styles.progressFill} style={{ width: `${item.percent}%` }}></div>
+                                    <div className={styles.progressFill} style={{ width: `${Math.min(100, ((item.collected_amount || 0) / (item.goal_amount || 1)) * 100)}%` }}></div>
                                 </div>
-                                <p className={styles.goalText}>Objectif total : <strong>{item.goal}</strong></p>
+                                <p className={styles.goalText}>Objectif total : <strong>{new Intl.NumberFormat('fr-FR').format(item.goal_amount || 0)} F CFA</strong></p>
                             </div>
                         </section>
                     )}
@@ -178,10 +173,10 @@ export default function EventDetailClient({ id }: { id: string }) {
                     <section className={styles.organizerSection}>
                         <h2 className={styles.heading}>Organisateur</h2>
                         <div className={styles.organizerCard}>
-                            <div className={styles.orgAvatar}></div>
+                            <img src={item.organizer?.avatar_url || "https://i.pravatar.cc/150?u=org"} alt={item.organizer?.name} className={styles.orgAvatar} />
                             <div className={styles.orgMeta}>
-                                <h4>{item.organizer}</h4>
-                                <p>Organisation vérifiée</p>
+                                <h4>{item.organizer?.name || "Organisateur ITA"}</h4>
+                                <p>{item.organizer?.is_verified ? "Organisation vérifiée" : "Organisateur certifié"}</p>
                             </div>
                             <Link href="#" className={styles.followLink}>Voir le profil</Link>
                         </div>
@@ -209,8 +204,8 @@ export default function EventDetailClient({ id }: { id: string }) {
 
                                 <div className={styles.ticketOption}>
                                     <div className={styles.ticketInfo}>
-                                        <span className={styles.ticketName}>{item.title === "CONCERT LIVE : LA FOUINE" ? "GRAND PUBLIC" : "Pass Standard"}</span>
-                                        <span className={styles.ticketPrice}>{item.title === "CONCERT LIVE : LA FOUINE" ? "30 000" : "10 000"} FCFA</span>
+                                        <span className={styles.ticketName}>{isSpecialEvent ? "GRAND PUBLIC" : "Pass Standard"}</span>
+                                        <span className={styles.ticketPrice}>{isSpecialEvent ? "30 000" : "10 000"} FCFA</span>
                                     </div>
                                     <div className={styles.qtyControl}>
                                         <button onClick={() => handleQtyChange("regular", -1)} className={styles.qtyBtn}>-</button>
@@ -221,8 +216,8 @@ export default function EventDetailClient({ id }: { id: string }) {
 
                                 <div className={styles.ticketOption}>
                                     <div className={styles.ticketInfo}>
-                                        <span className={styles.ticketName}>{item.title === "CONCERT LIVE : LA FOUINE" ? "VIP" : "Pass VIP"}</span>
-                                        <span className={styles.ticketPrice}>{item.title === "CONCERT LIVE : LA FOUINE" ? "50 000" : "25 000"} FCFA</span>
+                                        <span className={styles.ticketName}>{isSpecialEvent ? "VIP" : "Pass VIP"}</span>
+                                        <span className={styles.ticketPrice}>{isSpecialEvent ? "50 000" : "25 000"} FCFA</span>
                                     </div>
                                     <div className={styles.qtyControl}>
                                         <button onClick={() => handleQtyChange("vip", -1)} className={styles.qtyBtn}>-</button>
@@ -231,7 +226,7 @@ export default function EventDetailClient({ id }: { id: string }) {
                                     </div>
                                 </div>
 
-                                {item.title === "CONCERT LIVE : LA FOUINE" && (
+                                {isSpecialEvent && (
                                     <div className={styles.ticketOption}>
                                         <div className={styles.ticketInfo}>
                                             <span className={styles.ticketName}>VVIP</span>
