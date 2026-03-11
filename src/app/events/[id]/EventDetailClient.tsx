@@ -81,9 +81,9 @@ export default function EventDetailClient({ id }: { id: string }) {
         }));
     };
 
-    const total = quantities.regular * (isCotisation ? 0 : (item.title === "CONCERT LIVE : LA FOUINE" ? 30000 : 10000)) +
-        quantities.vip * (isCotisation ? 0 : (item.title === "CONCERT LIVE : LA FOUINE" ? 50000 : 25000)) +
-        (quantities.vvip || 0) * (item.title === "CONCERT LIVE : LA FOUINE" ? 100000 : 0);
+    const total = quantities.regular * (isCotisation ? 0 : 10000) +
+        quantities.vip * (isCotisation ? 0 : 25000) +
+        (quantities.vvip || 0) * 0;
 
     const handlePurchase = () => {
         const params = new URLSearchParams();

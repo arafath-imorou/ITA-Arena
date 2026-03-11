@@ -12,18 +12,16 @@ function CheckoutContent() {
     const [paymentMethod, setPaymentMethod] = useState("wave");
     const [timeLeft, setTimeLeft] = useState(1799); // 29:59 (approx 30 mins)
 
-    // Data from URL or fallback to screenshot data
-    const eventName = searchParams.get("event") || "LA FOUINE EN CONCERT";
+    // Data from URL or default fallback
+    const eventName = searchParams.get("event") || "Événement ITA ARENA";
     const q1 = parseInt(searchParams.get("q1") || (searchParams.get("event") ? "0" : "1"));
     const q2 = parseInt(searchParams.get("q2") || (searchParams.get("event") ? "0" : "1"));
     const q3 = parseInt(searchParams.get("q3") || (searchParams.get("event") ? "0" : "1"));
 
-    const isLaFouine = eventName.includes("LA FOUINE");
-
     const tickets = [
-        { name: isLaFouine ? "GRAND PUBLIC" : "Pass Standard", price: isLaFouine ? 30000 : 10000, qty: q1 },
-        { name: isLaFouine ? "VIP" : "Pass VIP", price: isLaFouine ? 50000 : 25000, qty: q2 },
-        { name: isLaFouine ? "VVIP" : "Pass VVIP", price: isLaFouine ? 100000 : 50000, qty: q3 },
+        { name: "Pass Standard", price: 10000, qty: q1 },
+        { name: "Pass VIP", price: 25000, qty: q2 },
+        { name: "Pass VVIP", price: 50000, qty: q3 },
     ].filter(t => t.qty > 0);
 
     const total = tickets.reduce((acc, t) => acc + t.price * t.qty, 0);
