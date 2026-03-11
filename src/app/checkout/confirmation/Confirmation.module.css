@@ -126,42 +126,117 @@
     color: #FF5A1F;
 }
 
-.actionButtons {
-    display: flex;
-    gap: 15px;
-    margin-top: 40px;
-    width: 100%;
-    max-width: 500px;
-}
-
-.downloadBtn {
-    flex: 2;
-    background-color: #FF5A1F;
+.downloadAllBtn {
+    background: #1a1a1a;
     color: white;
-    border: none;
-    padding: 16px;
-    border-radius: 12px;
-    font-size: 1rem;
-    font-weight: 700;
+    border: 1px solid #333;
+    padding: 0.8rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
     cursor: pointer;
-    transition: transform 0.2s, background-color 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+    margin-top: 1.5rem;
+    transition: all 0.2s;
 }
 
-.downloadBtn:hover {
-    background-color: #e54e1a;
+.downloadAllBtn:hover {
+    background: #333;
     transform: translateY(-2px);
 }
 
+.ticketsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 1000px;
+    margin: 2rem 0;
+}
+
+.ticketCardSmall {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #f0f0f0;
+}
+
+.ticketCardHeader {
+    background: #fdfdfd;
+    padding: 0.8rem 1.2rem;
+    border-bottom: 1px dashed #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ticketCount {
+    font-size: 0.8rem;
+    color: #888;
+    font-weight: 600;
+}
+
+.ticketRef {
+    color: #FF5A1F;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+}
+
+.ticketCardBody {
+    padding: 1.2rem;
+    flex-grow: 1;
+}
+
+.eventTitleSmall {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #1a1a1a;
+    margin-bottom: 0.8rem;
+}
+
+.categoryBadge {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    background: #fff5f2;
+    color: #FF5A1F;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.priceSmall {
+    font-weight: 600;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.downloadSingleBtn {
+    width: 100%;
+    padding: 1rem;
+    background: #fcfcfc;
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    color: #FF5A1F;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.downloadSingleBtn:hover {
+    background: #fff5f2;
+}
+
+.footerActions {
+    margin-top: 2rem;
+}
+
 .homeBtn {
-    flex: 1;
     background-color: white;
     color: #333;
     border: 1px solid #ddd;
-    padding: 16px;
+    padding: 16px 32px;
     border-radius: 12px;
     font-size: 1rem;
     font-weight: 600;

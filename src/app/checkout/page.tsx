@@ -62,17 +62,26 @@ function CheckoutContent() {
             // In a real app, we would call the payment provider API here.
             // After successful payment, we register the tickets in Supabase.
             
+            const checkoutSessionId = typeof crypto !== 'undefined' && crypto.randomUUID 
+                ? crypto.randomUUID() 
+                : Math.random().toString(36).substring(2, 15);
+
             const ticketsToCreate = [];
             for (const t of tickets) {
                 for (let j = 0; j < t.qty; j++) {
+                    const qrKey = typeof crypto !== 'undefined' && crypto.randomUUID 
+                        ? crypto.randomUUID() 
+                        : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
                     ticketsToCreate.push({
                         event_id: eventId,
                         user_email: email,
                         user_phone: phone,
                         category: t.name,
                         amount: t.price,
-                        qr_code_key: crypto.randomUUID(), // Unique key for QR code
-                        status: 'valid'
+                        qr_code_key: qrKey,
+                        status: 'valid',
+                        checkout_session_id: checkoutSessionId // Added for grouping
                     });
                 }
             }
@@ -85,9 +94,10 @@ function CheckoutContent() {
 
                 if (error) throw error;
 
-                // Redirect to confirmation page with the first ticket ID as reference
-                // (or we could pass an order ID if we had one)
-                router.push(`/checkout/confirmation?id=${data[0].id}`);
+                // Redirect to confirmation with session ID instead of just one ticket ID
+                router.push(`/checkout/confirmation?session=${checkoutSessionId}&event=${eventId}`);
+            } else {
+                throw new Error("Erreur lors de l'enregistrement des tickets");
             }
         } catch (err: any) {
             console.error("Erreur de paiement:", err);

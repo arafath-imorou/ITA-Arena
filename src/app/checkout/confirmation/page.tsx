@@ -10,88 +10,80 @@ import QRCode from "qrcode";
 
 function ConfirmationContent() {
     const searchParams = useSearchParams();
-    const ticketId = searchParams.get("id");
-    const [ticket, setTicket] = useState<any>(null);
+    const sessionId = searchParams.get("session");
+    const eventId = searchParams.get("event");
+    const [tickets, setTickets] = useState<any[]>([]);
     const [event, setEvent] = useState<any>(null);
-    const [qrDataUrl, setQrDataUrl] = useState<string>("");
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
     useEffect(() => {
-        if (!ticketId) {
+        if (!sessionId) {
             router.push("/");
             return;
         }
 
-        async function fetchTicketData() {
+        async function fetchData() {
             setLoading(true);
             try {
-                // Fetch ticket
-                const { data: ticketData, error: ticketError } = await supabase
+                // 1. Fetch all tickets for this session
+                const { data: ticketsData, error: ticketsError } = await supabase
                     .from('tickets')
                     .select('*')
-                    .eq('id', ticketId)
-                    .single();
+                    .eq('checkout_session_id', sessionId);
 
-                if (ticketError) throw ticketError;
-                setTicket(ticketData);
+                if (ticketsError) throw ticketsError;
+                setTickets(ticketsData || []);
 
-                // Fetch event
-                const { data: eventData, error: eventError } = await supabase
-                    .from('events')
-                    .select('*')
-                    .eq('id', ticketData.event_id)
-                    .single();
+                // 2. Fetch event
+                const idToUse = eventId || (ticketsData && ticketsData[0]?.event_id);
+                if (idToUse) {
+                    const { data: eventData, error: eventError } = await supabase
+                        .from('events')
+                        .select('*')
+                        .eq('id', idToUse)
+                        .single();
 
-                if (eventError) throw eventError;
-                setEvent(eventData);
-
-                // Generate QR Code
-                const qrUrl = await QRCode.toDataURL(ticketData.qr_code_key, {
-                    width: 400,
-                    margin: 2,
-                    color: {
-                        dark: "#1a1a1a",
-                        light: "#ffffff"
-                    }
-                });
-                setQrDataUrl(qrUrl);
+                    if (eventError) throw eventError;
+                    setEvent(eventData);
+                }
 
             } catch (err) {
-                console.error("Error fetching confirmation data:", err);
+                console.error("Error fetching multi-ticket data:", err);
             } finally {
                 setLoading(false);
             }
         }
 
-        fetchTicketData();
-    }, [ticketId, router]);
+        fetchData();
+    }, [sessionId, eventId, router]);
 
-    const downloadPDF = () => {
-        if (!ticket || !event || !qrDataUrl) return;
+    const downloadSingleTicket = async (ticket: any) => {
+        if (!event) return;
+
+        const qrDataUrl = await QRCode.toDataURL(ticket.qr_code_key, {
+            width: 400,
+            margin: 2,
+            color: { dark: "#1a1a1a", light: "#ffffff" }
+        });
 
         const doc = new jsPDF({
             orientation: "landscape",
             unit: "mm",
-            format: [160, 80] // Horizontal format
+            format: [160, 80]
         });
 
-        // 1. Background Header (Left Strip)
+        // Background Header (Left Strip)
         doc.setFillColor(26, 26, 26);
         doc.rect(0, 0, 40, 80, "F");
 
-        // Vertical Event Title (on the left strip)
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(12);
         doc.setFont("helvetica", "bold");
         const titleLines = doc.splitTextToSize(event.title.toUpperCase(), 60);
-        // Rotate text for the vertical strip
         doc.text(titleLines, 15, 40, { angle: 90, align: "center" });
 
-        // 2. Main Ticket Body (White)
         doc.setTextColor(51, 51, 51);
-        
-        // Event Info Main
         doc.setFontSize(18);
         doc.setFont("helvetica", "bold");
         doc.text(event.title.toUpperCase(), 45, 15);
@@ -101,15 +93,11 @@ function ConfirmationContent() {
         const dateStr = new Date(event.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
         doc.text(dateStr, 45, 22);
 
-        // 3. Middle Section: Details & QR
-        
-        // QR Code
         doc.addImage(qrDataUrl, "PNG", 110, 25, 40, 40);
         doc.setTextColor(150, 150, 150);
         doc.setFontSize(7);
         doc.text("SCANNEZ À L'ENTRÉE", 130, 68, { align: "center" });
 
-        // Details
         doc.setTextColor(51, 51, 51);
         doc.setFontSize(8);
         doc.text("CATÉGORIE", 45, 40);
@@ -131,12 +119,11 @@ function ConfirmationContent() {
         doc.setFont("helvetica", "bold");
         doc.text(ticket.user_email, 45, 63);
 
-        // 4. Stub (Right Side)
         doc.setDrawColor(200, 200, 200);
         doc.setLineDashPattern([1, 1], 0);
         doc.line(105, 0, 105, 80);
         
-        doc.setTextColor(255, 90, 31); // Brand Orange
+        doc.setTextColor(255, 90, 31);
         doc.setFontSize(8);
         doc.setFont("helvetica", "normal");
         doc.text("TICKET N°", 130, 15, { align: "center" });
@@ -144,24 +131,31 @@ function ConfirmationContent() {
         doc.setFont("helvetica", "bold");
         doc.text(`#${ticket.ticket_number.toString().padStart(5, '0')}`, 130, 22, { align: "center" });
 
-        // Logo/Brand
         doc.setTextColor(200, 200, 200);
         doc.setFontSize(8);
         doc.text("ITA ARENA", 75, 75, { align: "center" });
 
-        doc.save(`Ticket_ITA_Landscape_${ticket.ticket_number}.pdf`);
+        doc.save(`Ticket_ITA_${ticket.ticket_number}.pdf`);
+    };
+
+    const downloadAllTickets = async () => {
+        for (const ticket of tickets) {
+            await downloadSingleTicket(ticket);
+            // Small delay to avoid browser blocking multiple downloads
+            await new Promise(r => setTimeout(r, 500));
+        }
     };
 
     if (loading) return (
         <div className={styles.loadingContainer}>
             <div className={styles.spinner}></div>
-            <p>Chargement de votre ticket...</p>
+            <p>Chargement de vos tickets...</p>
         </div>
     );
 
-    if (!ticket || !event) return (
+    if (tickets.length === 0 || !event) return (
         <div className={styles.loadingContainer}>
-            <p>Ticket introuvable.</p>
+            <p>Aucun ticket trouvé pour cette session.</p>
             <Link href="/" className={styles.homeBtn}>Retour à l'accueil</Link>
         </div>
     );
@@ -171,56 +165,35 @@ function ConfirmationContent() {
             <div className={styles.successHeader}>
                 <div className={styles.checkIcon}>✓</div>
                 <h1>Paiement Réussi !</h1>
-                <p>Merci pour votre achat. Votre ticket est prêt.</p>
+                <p>Merci pour votre achat. Vous avez {tickets.length} ticket(s) disponible(s).</p>
+                {tickets.length > 1 && (
+                    <button className={styles.downloadAllBtn} onClick={downloadAllTickets}>
+                        📥 Tout télécharger ({tickets.length} tickets)
+                    </button>
+                )}
             </div>
 
-            <div className={styles.ticketCard}>
-                <div className={styles.ticketHeader}>
-                    <div className={styles.eventTitle}>{event.title}</div>
-                    <div className={styles.eventDate}>
-                        {new Date(event.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+            <div className={styles.ticketsGrid}>
+                {tickets.map((t, index) => (
+                    <div key={t.id} className={styles.ticketCardSmall}>
+                        <div className={styles.ticketCardHeader}>
+                            <span className={styles.ticketCount}>Ticket {index + 1}/{tickets.length}</span>
+                            <span className={styles.ticketRef}>#{t.ticket_number.toString().padStart(5, '0')}</span>
+                        </div>
+                        <div className={styles.ticketCardBody}>
+                            <div className={styles.eventTitleSmall}>{event.title}</div>
+                            <div className={styles.categoryBadge}>{t.category}</div>
+                            <div className={styles.priceSmall}>{t.amount.toLocaleString()} F CFA</div>
+                        </div>
+                        <button className={styles.downloadSingleBtn} onClick={() => downloadSingleTicket(t)}>
+                            Télécharger PDF
+                        </button>
                     </div>
-                </div>
-
-                <div className={styles.ticketBody}>
-                    <div className={styles.qrContainer}>
-                        {qrDataUrl && <img src={qrDataUrl} alt="QR Code Ticket" className={styles.qrImage} />}
-                    </div>
-
-                    <div className={styles.ticketInfo}>
-                        <div>
-                            <div className={styles.infoLabel}>Catégorie</div>
-                            <div className={styles.infoValue}>{ticket.category}</div>
-                        </div>
-                        <div>
-                            <div className={styles.infoLabel}>Montant</div>
-                            <div className={styles.infoValue}>{ticket.amount.toLocaleString()} F CFA</div>
-                        </div>
-                        <div>
-                            <div className={styles.infoLabel}>E-mail</div>
-                            <div className={styles.infoValue}>{ticket.user_email}</div>
-                        </div>
-                        <div>
-                            <div className={styles.infoLabel}>Numéro Ticket</div>
-                            <div className={styles.ticketNumber}>#{ticket.ticket_number.toString().padStart(5, '0')}</div>
-                        </div>
-                    </div>
-
-                    <p style={{ fontSize: '0.85rem', color: '#888' }}>
-                        Un exemplaire de ce ticket a été envoyé à votre adresse email.
-                    </p>
-                </div>
-
-                <div className={styles.ticketFooter}>
-                    <img src="/logo.png" alt="ITA ARENA" style={{ height: '30px', opacity: 0.5 }} />
-                </div>
+                ))}
             </div>
 
-            <div className={styles.actionButtons}>
-                <button className={styles.downloadBtn} onClick={downloadPDF}>
-                    📥 Télécharger le Ticket (PDF)
-                </button>
-                <Link href="/" className={styles.homeBtn}>Accueil</Link>
+            <div className={styles.footerActions}>
+                <Link href="/" className={styles.homeBtn}>Retour à l'accueil</Link>
             </div>
         </div>
     );
