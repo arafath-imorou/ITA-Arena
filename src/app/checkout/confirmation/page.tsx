@@ -71,54 +71,78 @@ function ConfirmationContent() {
         if (!ticket || !event || !qrDataUrl) return;
 
         const doc = jsPDF({
-            orientation: "portrait",
+            orientation: "landscape",
             unit: "mm",
-            format: [80, 150] // Custom format for a ticket
+            format: [150, 90] // Horizontal format
         });
 
-        // Background
+        // Background Header
         doc.setFillColor(26, 26, 26);
-        doc.rect(0, 0, 80, 30, "F");
+        doc.rect(0, 0, 150, 25, "F");
 
-        // Event Title
+        // Event Title (Centered in Header)
         doc.setTextColor(255, 255, 255);
+        doc.setFontSize(18);
+        doc.setFont("helvetica", "bold");
+        doc.text(event.title.toUpperCase(), 75, 12, { align: "center" });
+
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        const eventDateStr = new Date(event.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        doc.text(eventDateStr, 75, 18, { align: "center" });
+
+        // Left Side: QR Code
+        doc.addImage(qrDataUrl, "PNG", 10, 35, 45, 45);
+        doc.setTextColor(150, 150, 150);
+        doc.setFontSize(7);
+        doc.text("SCANNEZ À L'ENTRÉE", 32.5, 83, { align: "center" });
+
+        // Right Side: Ticket Details
+        doc.setTextColor(51, 51, 51);
+        
+        // Category
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "normal");
+        doc.text("CATÉGORIE", 65, 40);
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.text(ticket.category, 65, 46);
+
+        // Price
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "normal");
+        doc.text("PRIX", 65, 58);
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.text(`${ticket.amount.toLocaleString()} F CFA`, 65, 64);
+
+        // Buyer
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "normal");
+        doc.text("ACHETEUR", 65, 76);
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text(ticket.user_email, 65, 82);
+
+        // Vertical Divider (Stub)
+        doc.setDrawColor(220, 220, 220);
+        doc.setLineDashPattern([2, 1], 0);
+        doc.line(115, 25, 115, 90);
+
+        // Ticket Number (On the stub)
+        doc.setTextColor(255, 90, 31); // Brand Orange
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "normal");
+        doc.text("N° TICKET", 132.5, 45, { align: "center" });
+        
         doc.setFontSize(14);
         doc.setFont("helvetica", "bold");
-        doc.text(event.title.toUpperCase(), 40, 15, { align: "center" });
+        doc.text(`#${ticket.ticket_number.toString().padStart(5, '0')}`, 132.5, 55, { align: "center" });
 
+        // Branding
+        doc.setTextColor(200, 200, 200);
         doc.setFontSize(8);
-        doc.setFont("helvetica", "normal");
-        doc.text(new Date(event.date).toLocaleDateString('fr-FR'), 40, 22, { align: "center" });
-
-        // QR Code
-        doc.addImage(qrDataUrl, "PNG", 15, 40, 50, 50);
-
-        // Ticket Info
-        doc.setTextColor(51, 51, 51);
-        doc.setFontSize(7);
-        doc.text("CATÉGORIE", 15, 105);
-        doc.setFontSize(9);
-        doc.setFont("helvetica", "bold");
-        doc.text(ticket.category, 15, 110);
-
-        doc.setFontSize(7);
-        doc.setFont("helvetica", "normal");
-        doc.text("PRIX", 45, 105);
-        doc.setFontSize(9);
-        doc.setFont("helvetica", "bold");
-        doc.text(`${ticket.amount.toLocaleString()} F CFA`, 45, 110);
-
-        doc.setFontSize(7);
-        doc.setFont("helvetica", "normal");
-        doc.text("N° DU TICKET", 15, 120);
-        doc.setFontSize(10);
-        doc.setTextColor(255, 90, 31); // Brand Orange
-        doc.text(`#${ticket.ticket_number.toString().padStart(5, '0')}`, 15, 125);
-
-        // Footer
-        doc.setTextColor(150, 150, 150);
-        doc.setFontSize(6);
-        doc.text("Scannez ce QR code à l'entrée", 40, 140, { align: "center" });
+        doc.text("ITA ARENA", 132.5, 80, { align: "center" });
 
         doc.save(`Ticket_ITA_${ticket.ticket_number}.pdf`);
     };
