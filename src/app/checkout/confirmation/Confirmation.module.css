@@ -1,0 +1,140 @@
+.successIcon {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+}
+
+.title {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: var(--color-gray-600);
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+}
+
+.ticketDisplay {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.ticket {
+    background-color: white;
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--border-radius-md);
+    display: flex;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.ticketInfo {
+    flex: 1;
+    padding: 2rem;
+    border-right: 2px dashed var(--color-gray-200);
+    position: relative;
+}
+
+/* Simulate ticket notches */
+.ticketInfo::before,
+.ticketInfo::after {
+    content: '';
+    position: absolute;
+    right: -11px;
+    width: 20px;
+    height: 20px;
+    background-color: var(--color-gray-100);
+    border-radius: 50%;
+}
+
+.ticketInfo::before {
+    top: -11px;
+}
+
+.ticketInfo::after {
+    bottom: -11px;
+}
+
+.eventCat {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--color-secondary);
+}
+
+.ticketInfo h2 {
+    font-size: 1.5rem;
+    margin: 0.5rem 0;
+}
+
+.ticketInfo p {
+    color: var(--color-gray-600);
+    margin-bottom: 0.3rem;
+}
+
+.ticketType {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.4rem 1rem;
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.qrSection {
+    width: 200px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #fafafa;
+}
+
+.qrCode {
+    background-color: white;
+    padding: 0.5rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1rem;
+}
+
+.ticketId {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-gray-600);
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+@media (max-width: 650px) {
+    .ticket {
+        flex-direction: column;
+    }
+
+    .ticketInfo {
+        border-right: none;
+        border-bottom: 2px dashed var(--color-gray-200);
+    }
+
+    .ticketInfo::before,
+    .ticketInfo::after {
+        display: none;
+    }
+
+    .qrSection {
+        width: 100%;
+        padding: 1.5rem;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+}

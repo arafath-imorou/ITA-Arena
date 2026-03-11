@@ -1,0 +1,364 @@
+.page {
+    background-color: #fcfcfc;
+    min-height: 100vh;
+    padding-bottom: 5rem;
+}
+
+.heroSection {
+    position: relative;
+    height: 60vh;
+    min-height: 400px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+}
+
+.heroImage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+.heroOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.1) 100%);
+    z-index: 2;
+}
+
+.heroContent {
+    position: relative;
+    z-index: 3;
+    padding-bottom: 4rem;
+    color: white;
+}
+
+.categoryBadge {
+    display: inline-block;
+    background: var(--color-primary);
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+}
+
+.title {
+    font-size: 4rem;
+    font-weight: 950;
+    letter-spacing: -2px;
+    margin-bottom: 1.5rem;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.meta {
+    display: flex;
+    gap: 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.metaItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mainGrid {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 4rem;
+    margin-top: -3rem;
+    /* Overlap the hero slightly */
+    position: relative;
+    z-index: 4;
+}
+
+.infoColumn {
+    padding-top: 3rem;
+}
+
+.heading {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #1A1A1A;
+    margin-bottom: 2rem;
+}
+
+.section {
+    margin-bottom: 4rem;
+}
+
+.descriptionText {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: #444;
+}
+
+.organizerCard {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    border: 1px solid #f0f0f0;
+}
+
+.orgAvatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #f1f1f1;
+}
+
+.orgMeta h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.orgMeta p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #999;
+}
+
+.followLink {
+    margin-left: auto;
+    color: var(--color-primary);
+    font-weight: 800;
+    font-size: 0.9rem;
+}
+
+.stickyColumn {
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+}
+
+.actionCard {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 32px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f0f0f0;
+}
+
+.actionCard h3 {
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+}
+
+.actionSub {
+    color: #888;
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+.ticketOption {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.ticketInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.ticketName {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #1A1A1A;
+}
+
+.ticketPrice {
+    font-size: 1rem;
+    color: var(--color-primary);
+    font-weight: 810;
+}
+
+.qtyControl {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background: #f8f9fa;
+    padding: 8px 16px;
+    border-radius: 12px;
+}
+
+.qtyBtn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #555;
+    width: 30px;
+}
+
+.qtyVal {
+    font-weight: 900;
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.totalRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    padding: 1.5rem 0;
+}
+
+.totalVal {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--color-primary);
+}
+
+.ctaBtn {
+    width: 100%;
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 1.25rem;
+    border-radius: 20px;
+    font-weight: 810;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(255, 90, 31, 0.25);
+    transition: transform 0.2s;
+}
+
+.ctaBtn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    background-color: #e5531d;
+}
+
+.ctaBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.footerActions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.secondaryBtn {
+    background: #f8f9fa;
+    border: 1px solid #eee;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Cotisation Styles */
+.amountInputWrap {
+    display: flex;
+    align-items: center;
+    border: 2px solid #eee;
+    border-radius: 15px;
+    padding: 0 1rem;
+    margin-bottom: 2rem;
+}
+
+.currencyLabel {
+    font-weight: 900;
+    color: #999;
+    border-right: 1px solid #eee;
+    padding-right: 1rem;
+    margin-right: 1rem;
+}
+
+.amountInput {
+    border: none;
+    padding: 1.2rem 0;
+    font-size: 1.2rem;
+    font-weight: 800;
+    width: 100%;
+    outline: none;
+}
+
+.largeProgressWrapper {
+    background: white;
+    padding: 2rem;
+    border-radius: 24px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    border: 1px solid #f0f0f0;
+}
+
+.progressHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    align-items: flex-end;
+}
+
+.collectedValue {
+    font-size: 2rem;
+    font-weight: 950;
+    color: var(--color-primary);
+}
+
+.percentText {
+    font-weight: 800;
+    color: #333;
+    opacity: 0.8;
+}
+
+.progressTrack {
+    height: 12px;
+    background: #eee;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary) 0%, #ff8c00 100%);
+    border-radius: 10px;
+}
+
+.goalText {
+    color: #777;
+    margin: 0;
+}
+
+@media (max-width: 1024px) {
+    .mainGrid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .stickyColumn {
+        position: static;
+        order: -1;
+    }
+
+    .title {
+        font-size: 2.5rem;
+    }
+}

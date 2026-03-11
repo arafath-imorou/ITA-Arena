@@ -1,0 +1,364 @@
+/* Main Container Styles */
+.mainTitle {
+    font-size: 1.8rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--color-black);
+    font-weight: 400;
+}
+
+.orderSummaryCard {
+    background-color: white;
+    padding: 2.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--color-gray-100);
+}
+
+.orderTable {
+    border-top: 1px solid var(--color-gray-200);
+    padding-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.orderItem {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.2rem;
+    font-size: 1.1rem;
+    color: var(--color-gray-800);
+}
+
+.totalRowLarge {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid var(--color-gray-200);
+    padding-top: 1.5rem;
+    margin-bottom: 2.5rem;
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: var(--color-gray-900);
+}
+
+.contactForm {
+    background-color: #F8FAFC;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #E2E8F0;
+    margin-bottom: 1.5rem;
+}
+
+.inputGroup {
+    margin-bottom: 1.5rem;
+}
+
+.inputGroup label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+    color: var(--color-gray-800);
+}
+
+.customInput {
+    width: 100%;
+    padding: 0.9rem 1rem;
+    border: 1px solid #DEE5ED;
+    border-radius: 6px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.customInput:focus {
+    border-color: #FF5A1F;
+}
+
+.phoneInputWrap {
+    display: flex;
+    border: 1px solid #DEE5ED;
+    border-radius: 6px;
+    background: white;
+    overflow: hidden;
+}
+
+.countryFlag {
+    padding: 0 1rem;
+    background: white;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-right: 1px solid #DEE5ED;
+    cursor: pointer;
+}
+
+.countryFlag img {
+    width: 20px;
+}
+
+.phoneInputWrap input {
+    border: none;
+}
+
+.couponDropdown {
+    margin-bottom: 2rem;
+}
+
+.couponBtn {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: var(--color-gray-800);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.primaryNextBtn {
+    width: 100%;
+    background-color: #EE2B2B;
+    color: white;
+    padding: 1.1rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.primaryNextBtn:hover {
+    background-color: #d12424;
+}
+
+/* Step 2 Header */
+.pageTitleHeader {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+}
+
+/* Step 2 Layout */
+.checkoutLayout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 2rem;
+}
+
+.timerBox {
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.paymentBox {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.boxTitle {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+}
+
+.countrySelect {
+    margin-bottom: 1.5rem;
+}
+
+.customSelect {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #DEE5ED;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.methodGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.paymentMethodCard {
+    border: 1px solid #DEE5ED;
+    border-radius: 8px;
+    padding: 1rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.paymentMethodCard span {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.paymentMethodCard.active {
+    border-color: #EE2B2B;
+    box-shadow: 0 0 0 1px #EE2B2B;
+}
+
+.methodLogo {
+    width: 50px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.methodLogo img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.checkIcon {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    background: #EE2B2B;
+    color: white;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+}
+
+.totalDisplay {
+    text-align: center;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.termsBox {
+    display: flex;
+    gap: 0.8rem;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: var(--color-gray-600);
+}
+
+.proceedBtn {
+    width: 100%;
+    background-color: #EE2B2B;
+    color: white;
+    padding: 1.1rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.doubleArrow {
+    font-size: 1.4rem;
+}
+
+/* Sidebar Styling */
+.summarySidebarFixed {
+    position: sticky;
+    top: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.sidebarSection {
+    background: white;
+    padding: 1.5rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+}
+
+.sidebarTitle {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.miniItems {
+    margin-bottom: 1.5rem;
+}
+
+.miniItem {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.8rem;
+    font-size: 0.9rem;
+    color: var(--color-gray-600);
+}
+
+.miniTotal {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid var(--color-gray-100);
+    padding-top: 1rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.sidebarAccordion {
+    background: white;
+    border: 1px solid #E2E8F0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.accordionHeader {
+    padding: 0.8rem 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #F8FAFC;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.accordionContent {
+    padding: 1rem 1.2rem;
+    font-size: 0.9rem;
+}
+
+.accordionContentActive {
+    padding: 1rem 1.2rem;
+    background: #F1F5F9;
+}
+
+.buyerEmail {
+    font-size: 0.9rem;
+    color: var(--color-gray-700);
+}
+
+@media (max-width: 900px) {
+    .checkoutLayout {
+        grid-template-columns: 1fr;
+    }
+
+    .summarySidebarFixed {
+        position: static;
+        order: -1;
+    }
+}

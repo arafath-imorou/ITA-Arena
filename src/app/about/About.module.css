@@ -1,0 +1,286 @@
+.aboutWrapper {
+    background-color: #fcfcfc;
+    min-height: 100vh;
+    padding-bottom: 5rem;
+}
+
+.hero {
+    background: linear-gradient(135deg, #1e3a8a 0%, #000 100%);
+    padding: 6rem 0;
+    color: white;
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    letter-spacing: -1px;
+}
+
+.subtitle {
+    font-size: 1.3rem;
+    opacity: 0.8;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.content {
+    max-width: 1000px;
+    /* Slightly wider for 4 cards */
+    margin: 0 auto;
+}
+
+.section {
+    margin-bottom: 6rem;
+    animation: fadeIn 0.8s ease-out;
+    text-align: center;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.headerRow {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 2rem;
+    align-items: center;
+}
+
+.label {
+    color: var(--color-primary);
+    font-weight: 810;
+    font-size: 0.85rem;
+    letter-spacing: 1.5px;
+}
+
+.sectionTitle {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1A1A1A;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+}
+
+.textBlock {
+    line-height: 1.8;
+    color: #444;
+    font-size: 1.15rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.textBlock p {
+    margin-bottom: 1.5rem;
+}
+
+.missionBox {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 20px;
+    border-top: 6px solid var(--color-primary);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    margin: 3rem auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    max-width: 650px;
+}
+
+.missionBox p {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: #1A1A1A;
+}
+
+.targetIcon {
+    font-size: 3rem;
+}
+
+.visionList {
+    list-style: none;
+    padding: 0;
+    margin: 2rem auto;
+    display: inline-block;
+    text-align: left;
+}
+
+.visionList li {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.featureGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.featureCard {
+    background: white;
+    padding: 2.5rem 2rem;
+    border-radius: 24px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    border: 1px solid #f0f0f0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
+}
+
+.featureCard:hover {
+    transform: translateY(-8px);
+    border-color: var(--color-primary);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+}
+
+.featureEmoji {
+    font-size: 2.8rem;
+    display: block;
+    margin-bottom: 1.5rem;
+}
+
+/* Values Mockup Specific Styles */
+
+.valuesTitle {
+    font-size: 2.8rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    color: #1A1A1A;
+}
+
+.titleDivider {
+    width: 60px;
+    height: 4px;
+    background-color: var(--color-primary);
+    margin: 0 auto 4rem;
+    border-radius: 2px;
+}
+
+.valuesCardGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 2rem;
+}
+
+.valueCardItem {
+    background: white;
+    padding: 3rem 2rem;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    transition: all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.valueCardItem:hover {
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+    transform: translateY(-5px);
+}
+
+.valueIconCircle {
+    margin-bottom: 2rem;
+    color: var(--color-primary);
+}
+
+.valueIconSvg {
+    stroke: var(--color-primary);
+}
+
+.valueCardItem h3 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    color: #1A1A1A;
+}
+
+.valueCardItem p {
+    font-size: 1.05rem;
+    color: #555;
+    line-height: 1.6;
+    font-weight: 400;
+}
+
+.innovateSection {
+    background: #1A1A1A;
+    color: white;
+    padding: 5rem 4rem;
+    border-radius: 32px;
+    text-align: center;
+    margin: 6rem 0;
+}
+
+.innovateBadge {
+    display: inline-block;
+    background: #333;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 810;
+    color: #fff;
+    margin-bottom: 2rem;
+}
+
+.innovateTitle {
+    font-size: 2.4rem;
+    margin-bottom: 1.5rem;
+    font-weight: 800;
+}
+
+.innovateGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.innovateItem {
+    background: #262626;
+    padding: 1.25rem;
+    border-radius: 16px;
+    font-weight: 600;
+    color: #fff;
+    border: 1px solid #333;
+}
+
+.finalCta {
+    text-align: center;
+    background: linear-gradient(135deg, var(--color-primary) 0%, #ff8c00 100%);
+    color: white;
+    padding: 5rem 2rem;
+    border-radius: 32px;
+}
+
+@media (max-width: 768px) {
+    .title {
+        font-size: 2.6rem;
+    }
+
+    .valuesCardGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .innovateGrid {
+        grid-template-columns: 1fr;
+    }
+}

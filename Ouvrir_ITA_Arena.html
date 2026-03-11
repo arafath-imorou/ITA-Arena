@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ouverture ITA Arena - Options de Visualisation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #1A1A1A;
+        }
+
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        h1 {
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: #FF5A1F;
+        }
+
+        p {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            display: block;
+            padding: 1.2rem;
+            background: #FF5A1F;
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+            box-shadow: 0 8px 15px rgba(255, 90, 31, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px rgba(255, 90, 31, 0.3);
+            opacity: 0.95;
+        }
+
+        .btn-secondary {
+            background: #1e3a8a;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 2rem;
+        }
+
+        code {
+            background: #f1f1f1;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>ITA ARENA 🔥</h1>
+        <p>Pour visualiser le design <strong>Exact Mockup</strong> sans erreurs d'affichage, choisissez une option :</p>
+
+        <a href="Visualiser_ITA_Arena.bat" class="btn">🚀 Option 1 (Recommandée)</a>
+        <p style="font-size: 0.8rem; margin-top: -0.8rem; margin-bottom: 1.5rem;">Double-cliquez sur ce fichier dans
+            votre dossier pour lancer le serveur local (garantit 100% des styles).</p>
+
+        <a href="out/index.html" class="btn btn-secondary">📁 Option 2 (Vue Directe)</a>
+        <p style="font-size: 0.8rem; margin-top: -0.8rem;">Ouvrez le fichier directement (certaines polices ou icônes
+            peuvent être bloquées par votre navigateur).</p>
+
+        <div class="footer-note">
+            Note : Les navigateurs modernes bloquent parfois le chargement des styles depuis un fichier local. L'Option
+            1 est plus fiable.
+        </div>
+    </div>
+</body>
+
+</html>

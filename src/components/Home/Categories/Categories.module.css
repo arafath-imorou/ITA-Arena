@@ -1,0 +1,83 @@
+.section {
+    padding: 3rem 0 1rem;
+    background-color: white;
+}
+
+.categoryGrid {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 2rem;
+    scrollbar-width: none;
+}
+
+.categoryGrid::-webkit-scrollbar {
+    display: none;
+}
+
+.categoryCard {
+    min-width: 105px;
+    height: 95px;
+    background: white;
+    border: 1px solid #eeeeee;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.categoryCard:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.iconBox {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.iconText {
+    font-size: 1.5rem;
+    color: #555;
+}
+
+.label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Active State - Soft Orange background for 'Toutes' in mockup */
+.active {
+    background-color: #fff7ed;
+    border-color: #ffedd5;
+}
+
+.active .iconText {
+    color: var(--color-primary);
+}
+
+.counter {
+    text-align: center;
+    color: #888;
+    font-size: 0.95rem;
+    margin-top: 2rem;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .categoryCard {
+        min-width: 90px;
+        height: 85px;
+    }
+}
