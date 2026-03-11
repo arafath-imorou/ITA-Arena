@@ -1,10 +1,12 @@
+```javascript
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import styles from "./EventDetail.module.css";
 import Link from "next/link";
 import { useMode } from "@/context/ModeContext";
 import BackButton from "@/components/BackButton";
+import { supabase } from "@/lib/supabase";
 
 export default function EventDetailClient({ id }: { id: string }) {
     const { mode } = useMode();
@@ -14,56 +16,86 @@ export default function EventDetailClient({ id }: { id: string }) {
         regular: 0,
         vip: 0,
     });
+    const [item, setItem] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
 
-    // Mockup data selection
-    const item = useMemo(() => {
-        const seedEvents: { [key: string]: any } = {
-            'seed-1': {
-                title: "ITA ARENA Music Night",
-                category: "CONCERT",
-                image: "/events/festival.png",
-                organizer: "Global Events Africa",
-                date: "25 Mars 2026 • 20:00",
-                location: "Palais des Congrès, Cotonou",
-                description: "Une nuit inoubliable avec des artistes locaux et internationaux. Plongez dans l'ambiance électrique d'ITA ARENA !"
-            },
-            'seed-2': {
-                title: "Coding with Antigravity",
-                category: "FORMATION",
-                image: "/events/workshop.png",
-                organizer: "Tech Academy Benin",
-                date: "12 Avril 2026 • 09:00",
-                location: "Epitech Bénin, Cotonou",
-                description: "Apprenez à construire des agents IA puissants avec Antigravity. Un atelier intensif pour les développeurs passionnés."
-            },
-            'seed-3': {
-                title: "ITA ARENA Basketball Cup",
-                category: "SPORTS",
-                image: "/events/sports.png",
-                organizer: "Sport Benin Federation",
-                date: "30 Mai 2026 • 15:30",
-                location: "Hall des Arts, Cotonou",
-                description: "Le tournoi de basketball le plus attendu de l'année. Venez supporter vos équipes préférées dans une ambiance survoltée."
-            }
-        };
-
-        if (seedEvents[id]) return seedEvents[id];
-
-        if (isCotisation) {
-            return {
-                title: "SOLIDARITÉ INONDATIONS BÉNIN",
-                category: "Solidarité",
-                goal: "50 000 000 F CFA",
-                collected: "32 500 000 F CFA",
-                percent: 65,
-                image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070&auto=format&fit=crop",
-                organizer: "Croix Rouge Bénin",
-                date: "30 Avril 2026",
-                location: "Parakou, Bénin",
-                description: "Face aux inondations records touchant le nord du pays, ITA Arena s'engage aux côtés de la Croix Rouge. Vos dons serviront à fournir des kits de première nécessité, de l'eau potable et un relogement temporaire aux familles sinistrées."
+    useEffect(() => {
+        async function fetchEvent() {
+            setLoading(true);
+            
+            // Check if it's a seed event first
+            const seedEvents: { [key: string]: any } = {
+                'seed-1': {
+                    title: "ITA ARENA Music Night",
+                    category: "CONCERT",
+                    image: "/events/festival.png",
+                    organizer: { name: "Global Events Africa", avatar_url: "https://i.pravatar.cc/150?u=global" },
+                    date: "25 Mars 2026 • 20:00",
+                    location: "Palais des Congrès, Cotonou",
+                    description: "Une nuit inoubliable avec des artistes locaux et internationaux. Plongez dans l'ambiance électrique d'ITA ARENA !"
+                },
+                'seed-2': {
+                    title: "Coding with Antigravity",
+                    category: "FORMATION",
+                    image: "/events/workshop.png",
+                    organizer: { name: "Tech Academy Benin", avatar_url: "https://i.pravatar.cc/150?u=tech" },
+                    date: "12 Avril 2026 • 09:00",
+                    location: "Epitech Bénin, Cotonou",
+                    description: "Apprenez à construire des agents IA puissants avec Antigravity. Un atelier intensif pour les développeurs passionnés."
+                },
+                'seed-3': {
+                    title: "ITA ARENA Basketball Cup",
+                    category: "SPORTS",
+                    image: "/events/sports.png",
+                    organizer: { name: "Sport Benin Federation", avatar_url: "https://i.pravatar.cc/150?u=sport" },
+                    date: "30 Mai 2026 • 15:30",
+                    location: "Hall des Arts, Cotonou",
+                    description: "Le tournoi de basketball le plus attendu de l'année. Venez supporter vos équipes préférées dans une ambiance survoltée."
+                }
             };
+
+            if (seedEvents[id]) {
+                setItem(seedEvents[id]);
+                setLoading(false);
+                return;
+            }
+
+            // Fetch from database
+            const { data, error } = await supabase
+                .from('events')
+                .select('*, organizer:organizers(*)')
+                .eq('id', id)
+                .single();
+
+            if (!error && data) {
+                setItem({
+                    ...data,
+                    image: data.image_url,
+                    category: data.category_id?.toUpperCase() || (isCotisation ? "Solidarité" : "ÉVÉNEMENT")
+                });
+            } else {
+                // Fallback
+                setItem(isCotisation ? {
+                    title: "SOLIDARITÉ INONDATIONS BÉNIN",
+                    category: "Solidarité",
+                    goal: "50 000 000 F CFA",
+                    collected: "32 500 000 F CFA",
+                    percent: 65,
+                    image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070&auto=format&fit=crop",
+                    organizer: { name: "Croix Rouge Bénin", avatar_url: "https://i.pravatar.cc/150?u=croixrouge" },
+                    description: "Soutenez les familles touchées par les récentes inondations au Nord du Bénin."
+                } : {
+                    title: "CONCERT LIVE : ARTISTE BÉNIN",
+                    category: "CONCERT",
+                    image: "https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=2070&auto=format&fit=crop",
+                    organizer: { name: "ITA Events Production", avatar_url: "https://i.pravatar.cc/150?u=ita" },
+                    date: "Samedi Prochain • 21:00",
+                    location: "Stade de l'Amitié, Cotonou",
+                    description: "Venez vivre une expérience musicale exceptionnelle avec le meilleur de la scène béninoise."
+                });
+            }
+            setLoading(false);
         }
-        return {
             title: "CONCERT LIVE : ARTISTE BÉNIN",
             category: "CONCERT",
             image: "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?q=80&w=1974&auto=format&fit=crop",
