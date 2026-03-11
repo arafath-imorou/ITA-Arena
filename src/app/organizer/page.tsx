@@ -66,41 +66,55 @@ export default function OrganizerDashboard() {
             </div>
 
             <div className={styles.overviewGrid}>
-                <div className={styles.statCard}>
+                <div className={`${styles.statCard} ${styles.statCardBlue}`}>
                     <div className={styles.statInfo}>
-                        <span>Billets vendus</span>
-                        <h2>{new Intl.NumberFormat('fr-FR').format(stats.tickets)}</h2>
-                        <p className={styles.trendUp}>+5.2% cette semaine</p>
-                    </div>
-                    <div className={styles.statIcon}>🎫</div>
-                </div>
-
-                <div className={styles.statCard}>
-                    <div className={styles.statInfo}>
-                        <span>Chiffre d'affaires (F CFA)</span>
-                        <h2>{new Intl.NumberFormat('fr-FR').format(stats.revenue)}</h2>
-                        <p className={styles.trendUp}>+12.1% cette semaine</p>
-                    </div>
-                    <div className={styles.statIcon}>💰</div>
-                </div>
-
-                <div className={styles.statCard}>
-                    <div className={styles.statInfo}>
-                        <span>Événements créés</span>
+                        <span>Événements en cours</span>
                         <h2>{stats.eventsCount}</h2>
-                        <p className={styles.trendNeutral}>En ligne actuellement</p>
                     </div>
                     <div className={styles.statIcon}>📅</div>
                 </div>
 
-                <div className={styles.statCard}>
+                <div className={`${styles.statCard} ${styles.statCardGreen}`}>
                     <div className={styles.statInfo}>
-                        <span>Portée globale</span>
-                        <h2>{new Intl.NumberFormat('fr-FR').format(stats.views)}</h2>
-                        <p className={styles.trendUp}>+240 vues</p>
+                        <span>Tickets vendus</span>
+                        <h2>{new Intl.NumberFormat('fr-FR').format(stats.tickets)}</h2>
                     </div>
-                    <div className={styles.statIcon}>🚀</div>
+                    <div className={styles.statIcon}>🎫</div>
                 </div>
+
+                <div className={`${styles.statCard} ${styles.statCardSky}`}>
+                    <div className={styles.statInfo}>
+                        <span>Abonnés</span>
+                        <h2>{new Intl.NumberFormat('fr-FR').format(stats.views)}</h2>
+                    </div>
+                    <div className={styles.statIcon}>👥</div>
+                </div>
+
+                <div className={`${styles.statCard} ${styles.statCardGold}`}>
+                    <div className={styles.statInfo}>
+                        <span>Tickets achetés</span>
+                        <h2>0</h2>
+                    </div>
+                    <div className={styles.statIcon}>🛒</div>
+                </div>
+            </div>
+
+            <div className={styles.quickActions}>
+                <Link href="/organizer/create" className={styles.actionBtnActive}>
+                    <span>+</span> Créer un événement
+                </Link>
+                <Link href="/organizer/tickets" className={styles.actionBtn}>
+                    🎫 Gérer les tickets
+                </Link>
+                <Link href="/organizer/favorites" className={styles.actionBtn}>
+                    ❤️ Voir les favoris
+                </Link>
+                <Link href="/organizer/events-upcoming" className={styles.actionBtn}>
+                    📅 Événements à venir
+                </Link>
+                <Link href="/organizer/account" className={styles.actionBtn}>
+                    👤 Mon profil
+                </Link>
             </div>
 
             <div className={styles.dashboardGrid}>

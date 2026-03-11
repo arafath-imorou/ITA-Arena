@@ -49,13 +49,18 @@
 .statCard {
     background: white;
     padding: 1.8rem;
-    border-radius: 20px;
+    border-radius: 12px;
     border: 1px solid #efefef;
     display: flex;
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.01);
 }
+
+.statCardBlue { border: 1px solid #2196F3 !important; }
+.statCardGreen { border: 1px solid #4CAF50 !important; }
+.statCardSky { border: 1px solid #00BCD4 !important; }
+.statCardGold { border: 1px solid #FFC107 !important; }
 
 .statInfo span {
     font-size: 0.9rem;
@@ -142,6 +147,42 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
+}
+
+.quickActions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #fafafa;
+    border-radius: 12px;
+}
+
+.actionBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0.8rem;
+    border: 1px solid #FF5A1F;
+    color: #FF5A1F;
+    background: white;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.actionBtn:hover {
+    background: #FF5A1F;
+    color: white;
+}
+
+.actionBtnActive {
+    background: #FF5A1F;
+    color: white;
 }
 
 .sectionHeader h3 {

@@ -61,6 +61,24 @@
 .activeNavItem {
     background: #FF5A1F !important;
     color: white !important;
+    box-shadow: 0 4px 12px rgba(255, 90, 31, 0.3);
+}
+
+.navItemWithBadge {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.navBadge {
+    position: absolute;
+    right: 12px;
+    background: #4A5568;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 50px;
+    font-weight: 800;
 }
 
 .groupLabel {

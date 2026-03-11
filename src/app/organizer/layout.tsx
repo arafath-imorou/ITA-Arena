@@ -44,26 +44,44 @@ export default function OrganizerLayout({
                     </Link>
 
                     <div className={styles.navGroup}>
-                        <span className={styles.groupLabel}>Gestion</span>
+                        <span className={styles.groupLabel}>Événements</span>
                         <Link
                             href="/organizer/create"
                             className={`${styles.navItem} ${pathname === '/organizer/create' ? styles.activeNavItem : ''}`}
                         >
-                            <span className={styles.plusIcon}>+</span> Créer un événement
+                            <span className={styles.navIcon}>➕</span> Créer un événement
                         </Link>
                         <Link
-                            href="/organizer/events"
-                            className={`${styles.navItem} ${pathname === '/organizer/events' ? styles.activeNavItem : ''}`}
+                            href="/organizer/events-upcoming"
+                            className={`${styles.navItem} ${pathname === '/organizer/events-upcoming' ? styles.activeNavItem : ''}`}
                         >
-                            <span className={styles.navIcon}>📅</span> Mes événements
+                            <span className={styles.navIcon}>📅</span> Événements à venir
                         </Link>
+                        <Link
+                            href="/organizer/events-past"
+                            className={`${styles.navItem} ${pathname === '/organizer/events-past' ? styles.activeNavItem : ''}`}
+                        >
+                            <span className={styles.navIcon}>⌛</span> Événements passés
+                        </Link>
+                        <div className={styles.navItemWithBadge}>
+                            <Link
+                                href="/organizer/events-draft"
+                                className={`${styles.navItem} ${pathname === '/organizer/events-draft' ? styles.activeNavItem : ''}`}
+                            >
+                                <span className={styles.navIcon}>📝</span> Événements en préparation
+                            </Link>
+                            <span className={styles.navBadge}>1</span>
+                        </div>
+                    </div>
+
+                    <div className={styles.navGroup}>
+                        <span className={styles.groupLabel}>Tickets et Profil</span>
                         <Link
                             href="/organizer/tickets"
                             className={`${styles.navItem} ${pathname === '/organizer/tickets' ? styles.activeNavItem : ''}`}
                         >
                             <span className={styles.navIcon}>🎫</span> Mes tickets
                         </Link>
-                    </div>
 
                     <div className={styles.navGroup}>
                         <span className={styles.groupLabel}>Paramètres</span>
