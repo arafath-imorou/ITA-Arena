@@ -11,7 +11,7 @@ export default function Navbar() {
   const { user, signOut } = useAuth();
   const [selectedCountry, setSelectedCountry] = useState({
     name: "Bénin",
-    flag: "https://upload.wikimedia.org/wikipedia/commons/0/0a/Flag_of_Benin.svg"
+    flag: "https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Benin.svg"
   });
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -71,15 +71,6 @@ export default function Navbar() {
             </div>
           </div>
           <div className={styles.rightTop}>
-            <div className={styles.topSocials}>
-              <span className={styles.socialIcon}>f</span>
-              <span className={styles.socialIcon}>📷</span>
-              <span className={styles.socialIcon}>♪</span>
-              <span className={styles.socialIcon}>in</span>
-            </div>
-            <Link href="#" className={styles.posLink}>
-              <span style={{ fontSize: '14px' }}>🏪</span> Points de vente physique
-            </Link>
           </div>
         </div>
       </div>
