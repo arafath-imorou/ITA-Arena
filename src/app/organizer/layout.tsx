@@ -82,6 +82,7 @@ export default function OrganizerLayout({
                         >
                             <span className={styles.navIcon}>🎫</span> Mes tickets
                         </Link>
+                    </div>
 
                     <div className={styles.navGroup}>
                         <span className={styles.groupLabel}>Paramètres</span>
