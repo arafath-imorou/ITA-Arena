@@ -11,8 +11,8 @@ export default function AccountPage() {
         email: "groupita25@gmail.com",
         phone: "002290152818100",
         address: "Parakou (BENIN)",
-        bio: "La référence en organisation d'événements culturels et corporatifs en Afrique de l'Ouest.",
-        website: "www.globalevents.bj"
+        bio: "La référence en organisation d'événements culturels et corporatifs au Bénin.",
+        website: "www.ita-arena.com"
     });
 
     const handleSave = () => {
