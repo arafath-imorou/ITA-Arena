@@ -10,8 +10,11 @@ export default function Footer() {
                 <div className={styles.footerTop}>
                     <div className={styles.footerBrand}>
                         <Link href="/" className={styles.logo}>
-                            <span className={styles.logoIta}>ITA</span>
-                            <span className={styles.logoArena}>Arena</span>
+                            <img src="/images/logo/ita_arena_logo.png" alt="ITA Arena Logo" className={styles.footerLogo} />
+                            <div className={styles.logoText}>
+                                <span className={styles.logoIta}>ITA</span>
+                                <span className={styles.logoArena}>Arena</span>
+                            </div>
                         </Link>
                         <p className={styles.footerDesc}>
                             La scène digitale des grands événements. La billetterie premium pour l'Afrique.
