@@ -28,7 +28,7 @@ export default function OrganizerLayout({
                 <div className={styles.sidebarHeader}>
                     <Link href="/" className={styles.logo}>
                         <img
-                            src="/images/logo/ita_arena_logo.png"
+                            src="/images/logo/ita_arena_logo_new.png"
                             alt="ITA Arena Logo"
                             className={styles.logoImage}
                         />
