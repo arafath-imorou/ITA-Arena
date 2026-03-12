@@ -111,16 +111,29 @@ export default function EventDetailClient({ id }: { id: string }) {
 
     const isSpecialEvent = item.title?.includes("LA FOUINE") || item.title?.includes("DIDI B");
 
-    const total = (quantities.regular || 0) * (isCotisation ? 0 : (isSpecialEvent ? 30000 : 10000)) +
-        (quantities.vip || 0) * (isCotisation ? 0 : (isSpecialEvent ? 50000 : 25000)) +
-        (quantities.vvip || 0) * (isSpecialEvent ? 100000 : 0);
+    const priceRegular = item.regular_price ?? (isCotisation ? 0 : (isSpecialEvent ? 30000 : 10000));
+    const priceVip = item.vip_price ?? (isCotisation ? 0 : (isSpecialEvent ? 50000 : 25000));
+    const priceVvip = item.vvip_price ?? (isSpecialEvent ? 100000 : 0);
+
+    const total = (quantities.regular || 0) * priceRegular +
+        (quantities.vip || 0) * priceVip +
+        (quantities.vvip || 0) * priceVvip;
 
     const handlePurchase = () => {
         const params = new URLSearchParams();
         params.set("event", item.title);
-        if (quantities.regular > 0) params.set("q1", quantities.regular.toString());
-        if (quantities.vip > 0) params.set("q2", quantities.vip.toString());
-        if (quantities.vvip > 0) params.set("q3", (quantities.vvip || 0).toString());
+        if (quantities.regular > 0) {
+            params.set("q1", quantities.regular.toString());
+            params.set("p1", priceRegular.toString());
+        }
+        if (quantities.vip > 0) {
+            params.set("q2", quantities.vip.toString());
+            params.set("p2", priceVip.toString());
+        }
+        if (quantities.vvip > 0) {
+            params.set("q3", (quantities.vvip || 0).toString());
+            params.set("p3", priceVvip.toString());
+        }
         window.location.href = `/checkout?${params.toString()}`;
     };
 
@@ -205,7 +218,7 @@ export default function EventDetailClient({ id }: { id: string }) {
                                 <div className={styles.ticketOption}>
                                     <div className={styles.ticketInfo}>
                                         <span className={styles.ticketName}>{isSpecialEvent ? "GRAND PUBLIC" : "Pass Standard"}</span>
-                                        <span className={styles.ticketPrice}>{isSpecialEvent ? "30 000" : "10 000"} FCFA</span>
+                                        <span className={styles.ticketPrice}>{priceRegular === 0 ? "GRATUIT" : `${priceRegular.toLocaleString()} FCFA`}</span>
                                     </div>
                                     <div className={styles.qtyControl}>
                                         <button onClick={() => handleQtyChange("regular", -1)} className={styles.qtyBtn}>-</button>
@@ -217,7 +230,7 @@ export default function EventDetailClient({ id }: { id: string }) {
                                 <div className={styles.ticketOption}>
                                     <div className={styles.ticketInfo}>
                                         <span className={styles.ticketName}>{isSpecialEvent ? "VIP" : "Pass VIP"}</span>
-                                        <span className={styles.ticketPrice}>{isSpecialEvent ? "50 000" : "25 000"} FCFA</span>
+                                        <span className={styles.ticketPrice}>{priceVip === 0 ? "GRATUIT" : `${priceVip.toLocaleString()} FCFA`}</span>
                                     </div>
                                     <div className={styles.qtyControl}>
                                         <button onClick={() => handleQtyChange("vip", -1)} className={styles.qtyBtn}>-</button>
