@@ -16,7 +16,7 @@ export default function PricingPage() {
                     <h1 className={styles.title}>TARIFS</h1>
                     <div className={styles.titleUnderline}></div>
                     <p className={styles.subtitle}>
-                        On est comme vous : on croit en votre succès ! C'est pourquoi publier un événement sur <strong>ITA ARENA</strong> est <strong>100% gratuit</strong>.
+                        On est comme vous : on croit en votre succès ! C'est pourquoi publier un événement sur <strong>ITA Arena</strong> est <strong>100% gratuit</strong>.
                     </p>
                 </div>
             </header>
@@ -106,7 +106,7 @@ export default function PricingPage() {
                 <div className="container">
                     <h2 className={styles.centerTitle}>Créez et vendez vos tickets en 4 étapes</h2>
                     <div className={styles.titleUnderlineCenter}></div>
-                    <p className={styles.centerSub}>Publiez <strong>gratuitement</strong> votre événement sur <strong>ITA ARENA</strong> et générez vos premières ventes en quelques clics.</p>
+                    <p className={styles.centerSub}>Publiez <strong>gratuitement</strong> votre événement sur <strong>ITA Arena</strong> et générez vos premières ventes en quelques clics.</p>
 
                     <div className={styles.stepsGrid}>
                         <div className={styles.step}>
@@ -138,7 +138,7 @@ export default function PricingPage() {
             {/* Why Us Section */}
             <section className={styles.whyUs}>
                 <div className="container">
-                    <h2 className={styles.centerTitle}>Pourquoi choisir <span className={styles.highlight}>ITA ARENA</span> ?</h2>
+                    <h2 className={styles.centerTitle}>Pourquoi choisir <span className={styles.highlight}>ITA Arena</span> ?</h2>
                     <div className={styles.titleUnderlineCenter}></div>
                     <p className={styles.centerSub}>Plus qu'une billetterie : une solution de vente puissante, simple et taillée pour les organisateurs exigeants.</p>
 

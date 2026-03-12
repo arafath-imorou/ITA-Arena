@@ -30,7 +30,7 @@ serve(async (req) => {
     .eq('id', record.event_id)
     .single()
 
-  const eventName = event?.title || "l'Évènement ITA ARENA"
+  const eventName = event?.title || "l'Évènement ITA Arena"
   const eventDate = event ? new Date(event.date).toLocaleDateString('fr-FR') : ""
 
   // 3. Prepare Email Content
@@ -51,7 +51,7 @@ serve(async (req) => {
       'Authorization': `Bearer ${RESEND_API_KEY}`,
     },
     body: JSON.stringify({
-      from: 'ITA ARENA <tickets@votre-domaine.com>', // Replace with your verified domain
+      from: 'ITA Arena <tickets@votre-domaine.com>', // Replace with your verified domain
       to: [record.user_email],
       subject: `Vos Tickets pour ${eventName} sont prêts (${allTickets.length} ticket${allTickets.length > 1 ? 's' : ''})`,
       html: `
@@ -74,7 +74,7 @@ serve(async (req) => {
           </p>
           
           <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
-          <p style="text-align: center; color: #aaa; font-size: 0.8rem;">ITA ARENA - Votre plateforme d'évènements préférée</p>
+          <p style="text-align: center; color: #aaa; font-size: 0.8rem;">ITA Arena - Votre plateforme d'évènements préférée</p>
         </div>
       `,
     }),

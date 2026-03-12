@@ -81,8 +81,8 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className={styles.logo}>
             <img
-              src="/images/logo/ita_arena_logo.png"
-              alt="ITA ARENA Logo"
+              src="/images/logo/ita_arena_logo_new.png"
+              alt="ITA Arena Logo"
               className={styles.logoImage}
             />
           </Link>

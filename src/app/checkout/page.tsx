@@ -20,7 +20,7 @@ function CheckoutContent() {
     const eventId = searchParams.get("id") || "d5d140e6-921a-4c9c-b36d-dcc6c478a846"; // Default or from URL
 
     // Data from URL or default fallback
-    const eventName = searchParams.get("event") || "Événement ITA ARENA";
+    const eventName = searchParams.get("event") || "Événement ITA Arena";
     const q1 = parseInt(searchParams.get("q1") || (searchParams.get("event") ? "0" : "1"));
     const q2 = parseInt(searchParams.get("q2") || (searchParams.get("event") ? "0" : "1"));
     const q3 = parseInt(searchParams.get("q3") || (searchParams.get("event") ? "0" : "1"));

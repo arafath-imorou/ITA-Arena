@@ -57,7 +57,7 @@ export default function SignUpPage() {
             <div className={styles.authCard}>
                 <div className={styles.header}>
                     <h1 className={styles.title}>Créer un compte</h1>
-                    <p className={styles.subtitle}>Rejoignez ITA ARENA dès aujourd'hui</p>
+                    <p className={styles.subtitle}>Rejoignez ITA Arena dès aujourd'hui</p>
                 </div>
 
                 {error && <div className={styles.error}>{error}</div>}

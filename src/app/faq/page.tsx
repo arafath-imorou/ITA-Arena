@@ -9,11 +9,11 @@ const FAQ_DATA = [
         category: "Général",
         items: [
             {
-                question: "Qu'est-ce qu'ITA ARENA ?",
-                answer: "ITA ARENA est une plateforme de billetterie et d'organisation d'événements en ligne qui permet aux organisateurs de créer des événements et de vendre des tickets, et aux participants de découvrir et d'acheter des places pour des événements variés."
+                question: "Qu'est-ce qu'ITA Arena ?",
+                answer: "ITA Arena est une plateforme de billetterie et d'organisation d'événements en ligne qui permet aux organisateurs de créer des événements et de vendre des tickets, et aux participants de découvrir et d'acheter des places pour des événements variés."
             },
             {
-                question: "Pourquoi utiliser ITA ARENA ?",
+                question: "Pourquoi utiliser ITA Arena ?",
                 answer: "Nous offrons une interface intuitive, des paiements sécurisés et des outils de gestion en temps réel pour les organisateurs, tout en simplifiant l'accès aux événements pour les utilisateurs."
             }
         ]
@@ -23,7 +23,7 @@ const FAQ_DATA = [
         items: [
             {
                 question: "Combien de temps faut-il pour créer une billetterie ?",
-                answer: "La création d'un événement sur ITA ARENA est rapide. En moins de 15 minutes, vous pouvez configurer vos tarifs, ajouter vos visuels et publier votre billetterie."
+                answer: "La création d'un événement sur ITA Arena est rapide. En moins de 15 minutes, vous pouvez configurer vos tarifs, ajouter vos visuels et publier votre billetterie."
             },
             {
                 question: "Quels types d'événements puis-je organiser ?",
@@ -40,7 +40,7 @@ const FAQ_DATA = [
         items: [
             {
                 question: "Quels sont les frais pour les organisateurs ?",
-                answer: "ITA ARENA propose des options flexibles. Pour de nombreux événements, l'utilisation de la plateforme est gratuite et les seuls frais applicables sont les frais de transaction bancaire standards."
+                answer: "ITA Arena propose des options flexibles. Pour de nombreux événements, l'utilisation de la plateforme est gratuite et les seuls frais applicables sont les frais de transaction bancaire standards."
             },
             {
                 question: "Comment s'effectuent les paiements ?",

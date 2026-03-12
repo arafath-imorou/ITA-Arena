@@ -36,7 +36,7 @@ export default function SignInPage() {
             <div className={styles.authCard}>
                 <div className={styles.header}>
                     <h1 className={styles.title}>Connexion</h1>
-                    <p className={styles.subtitle}>Heureux de vous revoir sur ITA ARENA</p>
+                    <p className={styles.subtitle}>Heureux de vous revoir sur ITA Arena</p>
                 </div>
 
                 {error && <div className={styles.error}>{error}</div>}

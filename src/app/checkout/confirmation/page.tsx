@@ -133,7 +133,7 @@ function ConfirmationContent() {
 
         doc.setTextColor(200, 200, 200);
         doc.setFontSize(8);
-        doc.text("ITA ARENA", 75, 75, { align: "center" });
+        doc.text("ITA Arena", 75, 75, { align: "center" });
 
         doc.save(`Ticket_ITA_${ticket.ticket_number}.pdf`);
     };

@@ -62,8 +62,8 @@ export default function RegisterPage() {
                 {/* Left Side: Illustration */}
                 <div className={styles.illustrationSide}>
                     <div className={styles.bgPattern}>
-                        ITA ARENA ITA ARENA ITA ARENA ITA ARENA ITA ARENA ITA ARENA ITA ARENA
-                        ITA ARENA ITA ARENA ITA ARENA ITA ARENA ITA ARENA ITA ARENA ITA ARENA
+                        ITA Arena ITA Arena ITA Arena ITA Arena ITA Arena ITA Arena ITA Arena
+                        ITA Arena ITA Arena ITA Arena ITA Arena ITA Arena ITA Arena ITA Arena
                     </div>
                     <img
                         src="https://ouch-cdn2.icons8.com/m-Wc-3X1uY3_x4N4x3vO1_1X4z1X4z1X4z1X4z1X4z1X4z1X4z1X4z1X4z1X4z1X4z1X4z1X.png"
