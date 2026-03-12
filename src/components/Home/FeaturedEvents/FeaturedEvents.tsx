@@ -28,57 +28,11 @@ export default function FeaturedEvents() {
 
             const { data: dbData, error } = await query;
 
-            const testEvents = [
-                {
-                    id: 'seed-1',
-                    title: "ITA ARENA Music Night",
-                    image_url: "/events/festival.png",
-                    category_id: "festival",
-                    date: "25 Mars 2026",
-                    time: "20:00",
-                    price: "5.000 F CFA",
-                    location: "Palais des Congrès",
-                    type: "event",
-                    likes_count: 124,
-                    organizer: { name: "Global Events", avatar_url: "https://i.pravatar.cc/150?u=global", is_verified: true }
-                },
-                {
-                    id: 'seed-2',
-                    title: "Coding with Antigravity",
-                    image_url: "/events/workshop.png",
-                    category_id: "education",
-                    date: "12 Avril 2026",
-                    time: "09:00",
-                    price: "Gratuit",
-                    location: "Epitech Bénin",
-                    type: "event",
-                    likes_count: 85,
-                    organizer: { name: "Tech Academy", avatar_url: "https://i.pravatar.cc/150?u=tech", is_verified: true }
-                },
-                {
-                    id: 'seed-3',
-                    title: "ITA ARENA Basketball Cup",
-                    image_url: "/events/sports.png",
-                    category_id: "culture",
-                    date: "30 Mai 2026",
-                    time: "15:30",
-                    price: "2.000 F CFA",
-                    location: "Hall des Arts",
-                    type: "event",
-                    likes_count: 210,
-                    organizer: { name: "Sport Benin", avatar_url: "https://i.pravatar.cc/150?u=sport", is_verified: false }
-                }
-            ];
-
-            if (!error && dbData) {
-                // Filter test events based on category if needed
-                const filteredTest = activeCategory === 'all'
-                    ? testEvents
-                    : testEvents.filter(e => e.category_id === activeCategory);
-
-                setData([...filteredTest, ...dbData]);
-            } else if (dbData === null && !error) {
-                setData(testEvents);
+            if (error) {
+                console.error("Error fetching events:", error);
+                setData([]);
+            } else if (dbData) {
+                setData(dbData);
             }
             setLoading(false);
         }

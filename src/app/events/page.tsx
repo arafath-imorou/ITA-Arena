@@ -20,7 +20,7 @@ export default function EventsPage() {
         fetchCategories();
     }, []);
     const [loading, setLoading] = useState(true);
-    const [selectedCategory, setSelectedCategory] = useState("Toutes les catégories");
+    const [selectedCategory, setSelectedCategory] = useState("all");
 
     useEffect(() => {
         async function fetchEvents() {
@@ -33,7 +33,7 @@ export default function EventsPage() {
                 `)
                 .eq('type', 'event');
 
-            if (selectedCategory !== "Toutes les catégories") {
+            if (selectedCategory !== "all") {
                 query = query.eq('category_id', selectedCategory.toLowerCase());
             }
 

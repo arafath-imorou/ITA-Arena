@@ -23,43 +23,6 @@ export default function EventDetailClient({ id }: { id: string }) {
         async function fetchEvent() {
             setLoading(true);
             
-            // Check if it's a seed event first
-            const seedEvents: { [key: string]: any } = {
-                'seed-1': {
-                    title: "ITA ARENA Music Night",
-                    category: "CONCERT",
-                    image: "/events/festival.png",
-                    organizer: { name: "Global Events Africa", avatar_url: "https://i.pravatar.cc/150?u=global" },
-                    date: "25 Mars 2026 • 20:00",
-                    location: "Palais des Congrès, Cotonou",
-                    description: "Une nuit inoubliable avec des artistes locaux et internationaux. Plongez dans l'ambiance électrique d'ITA ARENA !"
-                },
-                'seed-2': {
-                    title: "Coding with Antigravity",
-                    category: "FORMATION",
-                    image: "/events/workshop.png",
-                    organizer: { name: "Tech Academy Benin", avatar_url: "https://i.pravatar.cc/150?u=tech" },
-                    date: "12 Avril 2026 • 09:00",
-                    location: "Epitech Bénin, Cotonou",
-                    description: "Apprenez à construire des agents IA puissants avec Antigravity. Un atelier intensif pour les développeurs passionnés."
-                },
-                'seed-3': {
-                    title: "ITA ARENA Basketball Cup",
-                    category: "SPORTS",
-                    image: "/events/sports.png",
-                    organizer: { name: "Sport Benin Federation", avatar_url: "https://i.pravatar.cc/150?u=sport" },
-                    date: "30 Mai 2026 • 15:30",
-                    location: "Hall des Arts, Cotonou",
-                    description: "Le tournoi de basketball le plus attendu de l'année. Venez supporter vos équipes préférées dans une ambiance survoltée."
-                }
-            };
-
-            if (seedEvents[id]) {
-                setItem(seedEvents[id]);
-                setLoading(false);
-                return;
-            }
-
             // Fetch from database
             const { data, error } = await supabase
                 .from('events')
@@ -74,25 +37,8 @@ export default function EventDetailClient({ id }: { id: string }) {
                     category: data.category_id?.toUpperCase() || (isCotisation ? "Solidarité" : "ÉVÉNEMENT")
                 });
             } else {
-                // Fallback
-                setItem(isCotisation ? {
-                    title: "SOLIDARITÉ INONDATIONS BÉNIN",
-                    category: "Solidarité",
-                    goal: "50 000 000 F CFA",
-                    collected: "32 500 000 F CFA",
-                    percent: 65,
-                    image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070&auto=format&fit=crop",
-                    organizer: { name: "Croix Rouge Bénin", avatar_url: "https://i.pravatar.cc/150?u=croixrouge" },
-                    description: "Soutenez les familles touchées par les récentes inondations au Nord du Bénin."
-                } : {
-                    title: "CONCERT LIVE : ARTISTE BÉNIN",
-                    category: "CONCERT",
-                    image: "https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=2070&auto=format&fit=crop",
-                    organizer: { name: "ITA Events Production", avatar_url: "https://i.pravatar.cc/150?u=ita" },
-                    date: "Samedi Prochain • 21:00",
-                    location: "Stade de l'Amitié, Cotonou",
-                    description: "Venez vivre une expérience musicale exceptionnelle avec le meilleur de la scène béninoise."
-                });
+                console.error("Error fetching event:", error);
+                setItem(null);
             }
             setLoading(false);
         }
@@ -109,11 +55,9 @@ export default function EventDetailClient({ id }: { id: string }) {
 
     if (loading || !item) return <div className="container" style={{ padding: '4rem', textAlign: 'center' }}>Chargement de l'événement...</div>;
 
-    const isSpecialEvent = item.title?.includes("LA FOUINE") || item.title?.includes("DIDI B");
-
-    const priceRegular = item.regular_price ?? (isCotisation ? 0 : (isSpecialEvent ? 30000 : 10000));
-    const priceVip = item.vip_price ?? (isCotisation ? 0 : (isSpecialEvent ? 50000 : 25000));
-    const priceVvip = item.vvip_price ?? (isSpecialEvent ? 100000 : 0);
+    const priceRegular = item.regular_price ?? (isCotisation ? 0 : 10000);
+    const priceVip = item.vip_price ?? (isCotisation ? 0 : 25000);
+    const priceVvip = item.vvip_price ?? 0;
 
     const total = (quantities.regular || 0) * priceRegular +
         (quantities.vip || 0) * priceVip +
@@ -217,7 +161,7 @@ export default function EventDetailClient({ id }: { id: string }) {
 
                                 <div className={styles.ticketOption}>
                                     <div className={styles.ticketInfo}>
-                                        <span className={styles.ticketName}>{isSpecialEvent ? "GRAND PUBLIC" : "Pass Standard"}</span>
+                                        <span className={styles.ticketName}>Pass Standard</span>
                                         <span className={styles.ticketPrice}>{priceRegular === 0 ? "GRATUIT" : `${priceRegular.toLocaleString()} FCFA`}</span>
                                     </div>
                                     <div className={styles.qtyControl}>
@@ -229,7 +173,7 @@ export default function EventDetailClient({ id }: { id: string }) {
 
                                 <div className={styles.ticketOption}>
                                     <div className={styles.ticketInfo}>
-                                        <span className={styles.ticketName}>{isSpecialEvent ? "VIP" : "Pass VIP"}</span>
+                                        <span className={styles.ticketName}>Pass VIP</span>
                                         <span className={styles.ticketPrice}>{priceVip === 0 ? "GRATUIT" : `${priceVip.toLocaleString()} FCFA`}</span>
                                     </div>
                                     <div className={styles.qtyControl}>
@@ -238,20 +182,6 @@ export default function EventDetailClient({ id }: { id: string }) {
                                         <button onClick={() => handleQtyChange("vip", 1)} className={styles.qtyBtn}>+</button>
                                     </div>
                                 </div>
-
-                                {isSpecialEvent && (
-                                    <div className={styles.ticketOption}>
-                                        <div className={styles.ticketInfo}>
-                                            <span className={styles.ticketName}>VVIP</span>
-                                            <span className={styles.ticketPrice}>100 000 FCFA</span>
-                                        </div>
-                                        <div className={styles.qtyControl}>
-                                            <button onClick={() => handleQtyChange("vvip", -1)} className={styles.qtyBtn}>-</button>
-                                            <span className={styles.qtyVal}>{quantities.vvip || 0}</span>
-                                            <button onClick={() => handleQtyChange("vvip", 1)} className={styles.qtyBtn}>+</button>
-                                        </div>
-                                    </div>
-                                )}
 
                                 <div className={styles.totalRow}>
                                     <span>Total à payer</span>

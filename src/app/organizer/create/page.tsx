@@ -16,6 +16,7 @@ export default function CreateEventPage() {
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [categories, setCategories] = useState<any[]>([]);
@@ -124,7 +125,7 @@ export default function CreateEventPage() {
             console.error("Error creating event:", error);
             alert("Erreur lors de la création de l'évènement.");
         } else {
-            router.push('/organizer');
+            setShowSuccess(true);
         }
         setLoading(false);
     };
@@ -180,6 +181,25 @@ export default function CreateEventPage() {
                 {step === 4 && <Step4_Tickets onNext={nextStep} onPrev={prevStep} formData={formData} setFormData={setFormData} />}
                 {step === 5 && <Step5_Summary onPrev={prevStep} onFinish={handleFinish} loading={loading} formData={formData} categories={categories} />}
             </div>
+
+            {/* Success Modal */}
+            {showSuccess && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                        <div className={styles.successIcon}>✓</div>
+                        <h2>Évènement publié !</h2>
+                        <p>Votre évènement "<strong>{formData.title}</strong>" est maintenant en ligne et visible par tous.</p>
+                        <div className={styles.modalActions}>
+                            <button className={styles.modalBtn} onClick={() => router.push('/organizer')}>
+                                Retour au Dashboard
+                            </button>
+                            <button className={styles.modalBtnSecondary} onClick={() => window.location.href = '/'}>
+                                Voir sur le site
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
