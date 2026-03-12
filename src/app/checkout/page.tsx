@@ -100,8 +100,8 @@ function CheckoutContent() {
                 throw new Error("Erreur lors de l'enregistrement des tickets");
             }
         } catch (err: any) {
-            console.error("Erreur de paiement:", err);
-            alert("Une erreur est survenue lors de la création de vos tickets.");
+            console.error("Erreur de réservation:", err);
+            alert("Une erreur est survenue lors de la réservation de vos tickets.");
         } finally {
             setIsProcessing(false);
         }
@@ -170,9 +170,15 @@ function CheckoutContent() {
                         </button>
                     </div>
 
-                    <button className={styles.primaryNextBtn} onClick={() => setStep(2)}>
-                        Aller au paiement
-                    </button>
+                    {total === 0 ? (
+                        <button className={styles.primaryNextBtn} onClick={handlePayment} disabled={isProcessing}>
+                            {isProcessing ? "Traitement..." : "Confirmer la réservation"}
+                        </button>
+                    ) : (
+                        <button className={styles.primaryNextBtn} onClick={() => setStep(2)}>
+                            Aller au paiement
+                        </button>
+                    )}
                 </div>
             </div>
         );
