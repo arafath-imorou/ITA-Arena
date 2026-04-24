@@ -20,7 +20,7 @@ export default function RegisterPage() {
         setLoading(true);
         setError(null);
 
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
             email,
             password,
             options: {
@@ -30,10 +30,15 @@ export default function RegisterPage() {
 
         if (error) {
             setError(error.message);
+            setLoading(false);
+        } else if (data.session) {
+            // Si la confirmation est désactivée dans Supabase, data.session sera présent
+            router.push("/organizer");
         } else {
+            // Si la confirmation est encore activée
             setShowSuccess(true);
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const handleGoogleSignUp = async () => {
