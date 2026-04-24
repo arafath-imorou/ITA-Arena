@@ -53,16 +53,23 @@ export default function SubNav() {
     useEffect(() => {
         checkScroll();
         window.addEventListener('resize', checkScroll);
-        return () => window.removeEventListener('resize', checkScroll);
-    }, []);
+        // Also check after a small delay to ensure DOM is updated
+        const timer = setTimeout(checkScroll, 500);
+        return () => {
+            window.removeEventListener('resize', checkScroll);
+            clearTimeout(timer);
+        };
+    }, [categories]);
 
     const scroll = (direction: 'left' | 'right') => {
         if (scrollRef.current) {
-            const scrollAmount = 300;
+            const scrollAmount = window.innerWidth < 768 ? 200 : 400;
             scrollRef.current.scrollBy({
                 left: direction === 'left' ? -scrollAmount : scrollAmount,
                 behavior: 'smooth'
             });
+            // Re-check after animation
+            setTimeout(checkScroll, 400);
         }
     };
 
