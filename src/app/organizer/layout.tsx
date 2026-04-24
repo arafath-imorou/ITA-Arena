@@ -76,12 +76,22 @@ export default function OrganizerLayout({
 
                     <div className={styles.navGroup}>
                         <span className={styles.groupLabel}>Tickets et Profil</span>
-                        <Link
-                            href="/organizer/tickets"
-                            className={`${styles.navItem} ${pathname === '/organizer/tickets' ? styles.activeNavItem : ''}`}
-                        >
-                            <span className={styles.navIcon}>🎫</span> Mes tickets
-                        </Link>
+                        <div className={styles.collapsibleNav}>
+                            <Link
+                                href="/organizer/tickets"
+                                className={`${styles.navItem} ${pathname.startsWith('/organizer/tickets') ? styles.activeNavItem : ''}`}
+                            >
+                                <span className={styles.navIcon}>🎫</span> Mes tickets
+                                <span className={styles.chevron}>⌄</span>
+                            </Link>
+                            <div className={styles.subNav}>
+                                <Link href="/organizer/tickets?tab=upcoming" className={styles.subNavItem}>Mes tickets en cours</Link>
+                                <Link href="/organizer/tickets?tab=unfinished" className={styles.subNavItem}>Mes commandes non terminées</Link>
+                                <Link href="/organizer/tickets?tab=transferred" className={styles.subNavItem}>Mes tickets transférés</Link>
+                                <Link href="/organizer/tickets?tab=cancelled" className={styles.subNavItem}>Mes tickets annulés</Link>
+                                <Link href="/organizer/tickets?tab=past" className={styles.subNavItem}>Mes tickets passés</Link>
+                            </div>
+                        </div>
                     </div>
 
                     <div className={styles.navGroup}>

@@ -117,6 +117,37 @@
     cursor: pointer;
 }
 
+.subNav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 4px 0 10px 10px;
+    padding-left: 15px;
+    border-left: 1px solid #eee;
+}
+
+.subNavItem {
+    display: block;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    color: #666;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.subNavItem:hover {
+    background: #fff7ed;
+    color: var(--color-primary);
+}
+
+.subNavItemActive {
+    color: var(--color-primary);
+    background: #fff7ed;
+    font-weight: 700;
+}
+
 /* Main Area */
 .mainArea {
     flex: 1;
