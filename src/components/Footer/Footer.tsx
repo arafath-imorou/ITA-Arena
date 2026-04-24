@@ -10,10 +10,9 @@ export default function Footer() {
                 <div className={styles.footerTop}>
                     <div className={styles.footerBrand}>
                         <Link href="/" className={styles.logo}>
-                            <img src="/images/logo/ita_arena_logo.png" alt="ITA Arena Logo" className={styles.footerLogo} />
                             <div className={styles.logoText}>
                                 <span className={styles.logoIta}>ITA</span>
-                                <span className={styles.logoArena}>Arena</span>
+                                <span className={styles.logoArena}> ARENA</span>
                             </div>
                         </Link>
                         <p className={styles.footerDesc}>
