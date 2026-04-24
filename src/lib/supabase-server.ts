@@ -26,10 +26,6 @@ export async function createSupabaseServerClient() {
             // The `delete` method was called from a Server Component.
           }
         },
-      },
-      db: {
-        schema: 'ita_arena'
-      }
     }
   )
 }
