@@ -136,10 +136,11 @@
 .cardActive {
     background-color: #fff7ed;
     border-color: #ffedd5;
+    box-shadow: 0 8px 16px rgba(255, 90, 31, 0.08);
 }
 
 .cardActive .iconBox {
-    transform: scale(1.1);
+    transform: scale(1.15);
 }
 
 .iconBox {
