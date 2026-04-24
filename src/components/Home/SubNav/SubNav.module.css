@@ -161,8 +161,35 @@
 }
 
 @media (max-width: 768px) {
+    .section {
+        padding: 1.5rem 0 0.5rem;
+    }
+
+    .toggleContainer {
+        margin-bottom: 1.5rem;
+    }
+
+    .toggleBtn {
+        padding: 8px 20px;
+        font-size: 0.9rem;
+    }
+
     .categoryCard {
-        min-width: 95px;
-        height: 95px;
+        min-width: 90px;
+        height: 90px;
+        gap: 6px;
+    }
+
+    .iconBox {
+        font-size: 1.5rem;
+    }
+
+    .label {
+        font-size: 0.8rem;
+    }
+
+    .scrollArea {
+        padding-bottom: 1rem;
+        gap: 12px;
     }
 }

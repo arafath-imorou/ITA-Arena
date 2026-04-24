@@ -67,7 +67,7 @@
     .searchContent {
         flex-direction: column;
         align-items: stretch;
-        gap: 1.5rem;
+        gap: 1rem;
     }
 
     .divider {
@@ -76,10 +76,19 @@
 
     .searchBtn {
         width: 100%;
+        padding: 1rem;
+        font-size: 1rem;
     }
 
     .searchBarWrapper {
-        margin-top: -40px;
-        padding: 1.5rem;
+        margin-top: -30px;
+        padding: 1.25rem;
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+
+    .searchGroup input,
+    .searchGroup select {
+        font-size: 1rem;
     }
 }

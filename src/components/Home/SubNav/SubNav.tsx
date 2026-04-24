@@ -78,8 +78,9 @@ export default function SubNav() {
                 console.error("Error fetching categories:", error);
             } else if (data) {
                 console.log("Categories found:", data.length);
+                const filteredData = data.filter((c: any) => c.id !== 'toutes');
                 const allItem = { id: 'all', label: 'Toutes', icon: '🔲' };
-                setCategories([allItem, ...data]);
+                setCategories([allItem, ...filteredData]);
 
                 if (activeCategory !== 'all' && !data.find(c => c.id === activeCategory)) {
                     setActiveCategory('all');
