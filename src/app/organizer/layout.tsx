@@ -4,6 +4,7 @@ import styles from "./OrganizerLayout.module.css";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { useState } from "react";
 
 export default function OrganizerLayout({
     children,
@@ -12,6 +13,7 @@ export default function OrganizerLayout({
 }) {
     const pathname = usePathname();
     const router = useRouter();
+    const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
     const handleLogout = async () => {
         const { error } = await supabase.auth.signOut();
@@ -125,10 +127,27 @@ export default function OrganizerLayout({
                     <div className={styles.topIcons}>
                         <div className={styles.notifIcon}>🔔 <span className={styles.dot}></span></div>
                         <Link href="/" className={styles.homeIcon}>🏠</Link>
-                        <div className={styles.profileMenu}>
+                        <div className={styles.profileMenu} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
                             <div className={styles.avatar}>G</div>
                             <span className={styles.organizerName}>Global Events</span>
                             <span className={styles.chevron}>⌄</span>
+
+                            {showProfileDropdown && (
+                                <div className={styles.topDropdown} onClick={(e) => e.stopPropagation()}>
+                                    <div className={styles.dropdownHeader}>
+                                        <p className={styles.dropdownEmail}>arafathimorou@gmail.com</p>
+                                        <p className={styles.dropdownCode}>Code client: <span style={{ color: '#e53e3e', fontWeight: 800 }}>560337</span></p>
+                                    </div>
+                                    <hr className={styles.dropdownDivider} />
+                                    <Link href="/profile" className={styles.dropdownItem}>Mon Profil</Link>
+                                    <Link href="/organizer/account" className={styles.dropdownItem}>Paramètres</Link>
+                                    <hr className={styles.dropdownDivider} />
+                                    <button onClick={handleLogout} className={styles.dropdownLogoutBtn}>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                                        Déconnexion
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </header>

@@ -268,6 +268,76 @@
     margin: 0 auto;
 }
 
+.topDropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background: white;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    width: 240px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    border: 1px solid #f0f0f0;
+}
+
+.dropdownHeader {
+    padding: 8px 12px;
+}
+
+.dropdownEmail {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.dropdownCode {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.dropdownDivider {
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    margin: 8px 0;
+}
+
+.dropdownItem {
+    padding: 10px 12px;
+    color: #444;
+    text-decoration: none;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.dropdownItem:hover {
+    background: #f8f9fa;
+    color: var(--color-primary);
+}
+
+.dropdownLogoutBtn {
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: #e53e3e;
+    background: transparent;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.dropdownLogoutBtn:hover {
+    background: #fff5f5;
+}
+
 @media (max-width: 1100px) {
     .sidebar {
         width: 80px;
@@ -277,7 +347,8 @@
     .navItem span:last-child,
     .groupLabel,
     .sidebarFooter,
-    .chevron {
+    .chevron,
+    .logoutBtn span:last-child {
         display: none;
     }
 
@@ -285,7 +356,7 @@
         margin-left: 80px;
     }
 
-    .navItem {
+    .navItem, .logoutBtn {
         justify-content: center;
         padding: 1rem;
     }
