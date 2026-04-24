@@ -1,4 +1,5 @@
 import styles from "./Hero.module.css";
+import Link from "next/link";
 
 export default function Hero() {
     return (
@@ -15,12 +16,12 @@ export default function Hero() {
                         Réservez vos billets en ligne et vivez vos événements sans stress avec ITA Arena.
                     </p>
                     <div className={styles.heroActions}>
-                        <button className="btn btn-primary">
+                        <Link href="#events-grid" className="btn btn-primary">
                             🎟️ Voir les événements
-                        </button>
-                        <button className="btn btn-outline" style={{ borderColor: 'white', color: 'white' }}>
+                        </Link>
+                        <Link href="/organizer/create" className="btn btn-outline" style={{ borderColor: 'white', color: 'white' }}>
                             📅 Publier un événement
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>

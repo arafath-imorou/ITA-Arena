@@ -43,7 +43,7 @@ export default function FeaturedEvents() {
     if (loading) return <div className="container" style={{ padding: '2rem', textAlign: 'center' }}>Chargement...</div>;
 
     return (
-        <section className={styles.section}>
+        <section id="events-grid" className={styles.section}>
             <div className="container">
                 <div className={styles.grid}>
                     {data.map((item: any) => {
