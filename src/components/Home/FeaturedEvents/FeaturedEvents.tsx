@@ -19,9 +19,12 @@ export default function FeaturedEvents() {
                 .select(`
                     *,
                     organizer:profiles(name:full_name, avatar_url)
-                `);
+                `)
+                .eq('type', mode === 'events' ? 'event' : 'cotisation');
 
-
+            if (activeCategory !== 'all') {
+                query = query.eq('category_id', activeCategory);
+            }
 
             const { data: dbData, error } = await query;
 
