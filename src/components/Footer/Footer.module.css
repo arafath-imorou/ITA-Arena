@@ -127,7 +127,22 @@
 }
 
 @media (max-width: 768px) {
+    .footer {
+        padding: 3rem 0 2rem;
+        margin-top: 3rem;
+    }
+
+    .footerTop {
+        gap: 2rem;
+    }
+
     .footerLinksGrid {
         gap: 2rem;
+    }
+
+    .footerBottom {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
     }
 }
