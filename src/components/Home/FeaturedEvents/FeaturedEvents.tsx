@@ -18,7 +18,7 @@ export default function FeaturedEvents() {
                 .from('events')
                 .select(`
                     *,
-                    organizer:organizers(*)
+                    organizer:profiles(name:full_name, avatar_url)
                 `)
                 .eq('type', mode === 'events' ? 'event' : 'cotisation');
 

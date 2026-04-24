@@ -15,7 +15,11 @@ export default function EventsPage() {
                 .from('categories')
                 .select('*')
                 .eq('type', 'event');
-            if (!error && data) setCategories(data);
+            if (error) {
+                console.error("Error fetching categories:", error);
+            } else if (data) {
+                setCategories(data);
+            }
         }
         fetchCategories();
     }, []);
@@ -29,7 +33,7 @@ export default function EventsPage() {
                 .from('events')
                 .select(`
                     *,
-                    organizer:organizers(*)
+                    organizer:profiles(name:full_name, avatar_url)
                 `)
                 .eq('type', 'event');
 
@@ -39,7 +43,9 @@ export default function EventsPage() {
 
             const { data, error } = await query;
 
-            if (!error && data) {
+            if (error) {
+                console.error("Error fetching events:", error);
+            } else if (data) {
                 setEvents(data);
             }
             setLoading(false);

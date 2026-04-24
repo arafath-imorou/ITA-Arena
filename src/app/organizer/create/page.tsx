@@ -54,7 +54,9 @@ export default function CreateEventPage() {
                 .from('categories')
                 .select('*')
                 .eq('type', 'event');
-            if (!error && data) {
+            if (error) {
+                console.error("Error fetching categories:", error);
+            } else if (data) {
                 setCategories(data);
                 if (!formData.category_id && data.length > 0) {
                     setFormData(prev => ({ ...prev, category_id: data[0].id }));

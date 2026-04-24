@@ -26,7 +26,7 @@ export default function EventDetailClient({ id }: { id: string }) {
             // Fetch from database
             const { data, error } = await supabase
                 .from('events')
-                .select('*, organizer:organizers(*)')
+                .select('*, organizer:profiles(name:full_name, avatar_url)')
                 .eq('id', id)
                 .single();
 
@@ -37,7 +37,7 @@ export default function EventDetailClient({ id }: { id: string }) {
                     category: data.category_id?.toUpperCase() || (isCotisation ? "Solidarité" : "ÉVÉNEMENT")
                 });
             } else {
-                console.error("Error fetching event:", error);
+                if (error) console.error("Error fetching event:", error);
                 setItem(null);
             }
             setLoading(false);

@@ -27,6 +27,9 @@ export async function createSupabaseServerClient() {
           }
         },
       },
+      db: {
+        schema: 'ita_arena'
+      }
     }
   )
 }

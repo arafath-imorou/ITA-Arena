@@ -75,7 +75,9 @@ export default function SubNav() {
                 .select('*')
                 .eq('type', mode === 'events' ? 'event' : 'cotisation');
 
-            if (!error && data) {
+            if (error) {
+                console.error("Error fetching categories:", error);
+            } else if (data) {
                 const allItem = { id: 'all', label: 'Toutes', icon: '🔲' };
                 setCategories([allItem, ...data]);
 
