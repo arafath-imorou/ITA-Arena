@@ -42,19 +42,19 @@ export default function SubNav() {
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(false);
 
-    const checkScroll = () => {
-        if (scrollRef.current) {
-            const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-            setShowLeftArrow(scrollLeft > 0);
-            setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 5);
-        }
-    };
-
     useEffect(() => {
+        const checkScroll = () => {
+            if (scrollRef.current) {
+                const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+                setShowLeftArrow(scrollLeft > 0);
+                setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+            }
+        };
+
         checkScroll();
         window.addEventListener('resize', checkScroll);
         return () => window.removeEventListener('resize', checkScroll);
-    }, [categories]);
+    }, []);
 
     const scroll = (direction: 'left' | 'right') => {
         if (scrollRef.current) {
@@ -63,7 +63,6 @@ export default function SubNav() {
                 left: direction === 'left' ? -scrollAmount : scrollAmount,
                 behavior: 'smooth'
             });
-            setTimeout(checkScroll, 300);
         }
     };
 
@@ -78,6 +77,7 @@ export default function SubNav() {
             if (error) {
                 console.error("Error fetching categories:", error);
             } else if (data) {
+                console.log("Categories found:", data.length);
                 const allItem = { id: 'all', label: 'Toutes', icon: '🔲' };
                 setCategories([allItem, ...data]);
 
