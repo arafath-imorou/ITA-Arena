@@ -310,12 +310,35 @@
 
 .userInfo {
     padding: 8px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.userInfoItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #555;
 }
 
 .userEmail {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: #1a1a1a;
-    font-weight: 600;
+    font-weight: 500;
+    margin: 0;
+}
+
+.clientCodeText {
+    font-size: 0.9rem;
+    color: #1a1a1a;
+    font-weight: 500;
+    margin: 0;
+}
+
+.codeHighlight {
+    color: #e53e3e;
+    font-weight: 800;
 }
 
 .dropdownItem {
@@ -325,6 +348,7 @@
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
+    transition: all 0.2s;
 }
 
 .dropdownItem:hover {
@@ -339,16 +363,25 @@
 }
 
 .signOutBtn {
-    padding: 10px 12px;
+    padding: 12px;
     border-radius: 8px;
-    color: #FF5A1F;
+    color: #444;
     border: none;
     background: transparent;
     text-align: left;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
     width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s;
+}
+
+.signOutBtn:hover {
+    background: #fff5f5;
+    color: #e53e3e;
 }
 
 @media (max-width: 1000px) {

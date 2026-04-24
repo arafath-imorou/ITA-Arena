@@ -123,24 +123,34 @@ export default function Navbar() {
                 </div>
 
                 {showDropdown && (
-                  <div className={styles.dropdown} onClick={(e) => e.stopPropagation()}>
-                    {user ? (
-                      <>
-                        <div className={styles.userInfo}>
-                          <p className={styles.userEmail}>{user.email}</p>
-                        </div>
-                        <hr className={styles.divider} />
-                        <Link href="/organizer" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Tableau de bord</Link>
-                        <Link href="/organizer/events" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Mes évènements</Link>
-                        <Link href="/organizer/tickets" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Mes Tickets</Link>
-                        <Link href="/profile" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Mon Profil</Link>
-                        <hr className={styles.divider} />
-                        <Link href="/about" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Qui sommes nous?</Link>
-                        <Link href="/faq" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>FAQ</Link>
-                        <Link href="/contact" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Nous contacter</Link>
-                        <hr className={styles.divider} />
-                        <button onClick={handleSignOut} className={styles.signOutBtn}>Déconnexion</button>
-                      </>
+                    <div className={styles.dropdown} onClick={(e) => e.stopPropagation()}>
+                      {user ? (
+                        <>
+                          <div className={styles.userInfo}>
+                            <div className={styles.userInfoItem}>
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                              <p className={styles.userEmail}>{user.email}</p>
+                            </div>
+                            <div className={styles.userInfoItem}>
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9-9c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3z"></path></svg>
+                              <p className={styles.clientCodeText}>Code client : <span className={styles.codeHighlight}>560337</span></p>
+                            </div>
+                          </div>
+                          <hr className={styles.divider} />
+                          <Link href="/organizer" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Tableau de bord</Link>
+                          <Link href="/organizer/events" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Mes évènements</Link>
+                          <Link href="/organizer/tickets" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Mes Tickets</Link>
+                          <Link href="/profile" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Mon Profil</Link>
+                          <hr className={styles.divider} />
+                          <Link href="/about" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Qui sommes nous?</Link>
+                          <Link href="/faq" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>FAQ</Link>
+                          <Link href="/contact" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Nous contacter</Link>
+                          <hr className={styles.divider} />
+                          <button onClick={handleSignOut} className={styles.signOutBtn}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                            Déconnexion
+                          </button>
+                        </>
                     ) : (
                       <>
                         <Link href="/login" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Se connecter</Link>
