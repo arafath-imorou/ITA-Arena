@@ -1,4 +1,6 @@
 "use client";
+// Version 1.1 - Auto-login flow
+
 
 import Link from "next/link";
 import { useState } from "react";
