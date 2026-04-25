@@ -28,6 +28,7 @@ function ConfirmationContent() {
             try {
                 // 1. Fetch all tickets for this session
                 const { data: ticketsData, error: ticketsError } = await supabase
+                    .schema('ita_arena')
                     .from('tickets')
                     .select('*')
                     .eq('checkout_session_id', sessionId);
@@ -39,6 +40,7 @@ function ConfirmationContent() {
                 const idToUse = eventId || (ticketsData && ticketsData[0]?.event_id);
                 if (idToUse) {
                     const { data: eventData, error: eventError } = await supabase
+                        .schema('ita_arena')
                         .from('events')
                         .select('*')
                         .eq('id', idToUse)

@@ -92,6 +92,7 @@ function CheckoutContent() {
 
             if (ticketsToCreate.length > 0) {
                 const { data, error } = await supabase
+                    .schema('ita_arena')
                     .from('tickets')
                     .insert(ticketsToCreate)
                     .select();
