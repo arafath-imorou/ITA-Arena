@@ -30,7 +30,7 @@ function AdminDashboardContent() {
         setLoading(true);
         try {
             const { data: profilesData } = await supabase.from('profiles').select('*');
-            const { data: eventsData } = await supabase.from('events').select('*').order('created_at', { ascending: false });
+            const { data: eventsData } = await supabase.from('events_with_stats').select('*').order('created_at', { ascending: false });
             const { data: ticketsData } = await supabase.from('tickets').select('*').eq('status', 'valid').order('created_at', { ascending: false });
 
             setRawProfiles(profilesData || []);
@@ -72,16 +72,13 @@ function AdminDashboardContent() {
         const profileMap = rawProfiles.reduce((acc: any, p) => { acc[p.id] = p; return acc; }, {});
         const eventMap = rawEvents.reduce((acc: any, e) => { acc[e.id] = e; return acc; }, {});
 
-        // 1. Filter Events
+        // 1. Prepare Events with computed stats (now simplified because of view)
         let events = rawEvents.map(e => {
             const eventTickets = rawTickets.filter(t => t.event_id === e.id);
-            const soldCount = eventTickets.length;
-            const revenue = eventTickets.reduce((acc, t) => acc + Number(t.amount), 0);
             
-            let totalCapacity = 0;
+            // For category breakdown, we still need to filter tickets
             let categoriesWithStats = [];
             if (Array.isArray(e.ticket_categories)) {
-                totalCapacity = e.ticket_categories.reduce((acc: number, cat: any) => acc + Number(cat.capacity || 0), 0);
                 categoriesWithStats = e.ticket_categories.map((cat: any) => {
                     const catTickets = eventTickets.filter(t => t.category === cat.name);
                     const catSold = catTickets.length;
@@ -89,22 +86,17 @@ function AdminDashboardContent() {
                     const catCapacity = Number(cat.capacity || 0);
                     return { ...cat, sold: catSold, revenue: catRevenue, capacity: catCapacity, remaining: catCapacity - catSold, percent: catCapacity > 0 ? Math.round((catSold / catCapacity) * 100) : 0 };
                 });
-            } else if (e.target_amount) {
-                totalCapacity = Number(e.target_amount);
             }
 
             return {
                 ...e,
                 profiles: profileMap[e.organizer_id] || null,
-                soldCount,
-                revenue,
-                totalCapacity,
-                remaining: totalCapacity - soldCount,
-                percent: totalCapacity > 0 ? Math.round((soldCount / totalCapacity) * 100) : 0,
+                percent: e.total_capacity > 0 ? Math.round((e.sold_count / e.total_capacity) * 100) : 0,
                 categoriesWithStats,
                 createdDate: new Date(e.created_at)
             };
         });
+
 
         // Apply filters
         if (filters.search) {
@@ -312,7 +304,7 @@ function AdminDashboardContent() {
                                             <strong>{e.title}</strong>
                                             <p style={{ margin: 0, fontSize: '0.7rem', color: '#64748b' }}>{e.profiles?.full_name || 'Inconnu'}</p>
                                         </td>
-                                        <td>{e.soldCount} / {e.totalCapacity}</td>
+                                        <td>{e.sold_count} / {e.total_capacity}</td>
                                         <td>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                                 <div style={{ flex: 1, minWidth: '40px', height: '6px', background: '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}>
@@ -321,7 +313,7 @@ function AdminDashboardContent() {
                                                 <span style={{ fontSize: '0.7rem', fontWeight: 'bold' }}>{e.percent}%</span>
                                             </div>
                                         </td>
-                                        <td style={{ fontWeight: 'bold', color: '#059669' }}>{e.revenue.toLocaleString()} F</td>
+                                        <td style={{ fontWeight: 'bold', color: '#059669' }}>{Number(e.collected_amount || 0).toLocaleString()} F</td>
                                         <td><span className={`${styles.badge} ${e.is_published ? styles.badgeSuccess : styles.badgeInfo}`}>{e.is_published ? "Actif" : "Masqué"}</span></td>
                                         <td>
                                             <div style={{ display: 'flex', gap: '0.4rem' }}>
@@ -367,9 +359,9 @@ function AdminDashboardContent() {
                         <span className={styles.badge} style={{ background: '#ff5a1f', color: 'white', marginBottom: '1.5rem', display: 'inline-block' }}>{selectedEvent.type === 'cotisation' ? 'Cotisation' : 'Événement'}</span>
                         
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Total Vendus</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.soldCount}</h3></div>
-                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Revenu</p><h3 style={{ margin: 0, fontSize: '1.2rem', color: '#059669' }}>{selectedEvent.revenue.toLocaleString()} F</h3></div>
-                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Restants</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.remaining}</h3></div>
+                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Total Vendus</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.sold_count}</h3></div>
+                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Revenu</p><h3 style={{ margin: 0, fontSize: '1.2rem', color: '#059669' }}>{Number(selectedEvent.collected_amount || 0).toLocaleString()} F</h3></div>
+                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Restants</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.total_capacity - selectedEvent.sold_count}</h3></div>
                             <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Taux</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.percent}%</h3></div>
                         </div>
 
@@ -383,11 +375,12 @@ function AdminDashboardContent() {
                                             <td><strong>{cat.name}</strong></td>
                                             <td>{Number(cat.price).toLocaleString()} F</td>
                                             <td>{cat.sold} / {cat.capacity}</td>
-                                            <td>{cat.revenue.toLocaleString()} F</td>
+                                            <td>{Number(cat.revenue || 0).toLocaleString()} F</td>
                                             <td>{cat.percent}%</td>
                                         </tr>
                                     ))}
                                 </tbody>
+
                             </table>
                         </div>
                     </div>

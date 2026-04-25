@@ -31,9 +31,19 @@ export default function EventDetailClient({ id }: { id: string }) {
                 .single();
 
             if (!error && data) {
+                // Fetch collected amount from tickets
+                const { data: ticketsData } = await supabase
+                    .from('tickets')
+                    .select('amount')
+                    .eq('event_id', id)
+                    .eq('status', 'valid');
+                
+                const collectedAmount = ticketsData?.reduce((acc, t) => acc + Number(t.amount), 0) || 0;
+
                 setItem({
                     ...data,
                     image: data.image_url,
+                    collected_amount: collectedAmount,
                     category: data.category_id?.toUpperCase() || (isCotisation ? "Solidarité" : "ÉVÉNEMENT")
                 });
             } else {

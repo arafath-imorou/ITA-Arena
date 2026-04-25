@@ -22,49 +22,21 @@ function DashboardContent() {
             setLoading(true);
 
             try {
-                // 1. Fetch Events
-                const { data: eventsData, error: eventsError } = await supabase
-                    .from('events')
+                const { data, error } = await supabase
+                    .from('events_with_stats')
                     .select('*')
                     .eq('organizer_id', user.id)
                     .eq('type', mode === 'events' ? 'event' : 'cotisation')
                     .order('created_at', { ascending: false });
 
-                if (eventsError) throw eventsError;
+                if (error) throw error;
 
-                if (eventsData) {
-                    // 2. Fetch Tickets for all these events to calculate stats
-                    const eventIds = eventsData.map(e => e.id);
-                    
-                    let totalRevenue = 0;
-                    let totalTickets = 0;
-                    const itemsWithStats = [...eventsData];
-
-                    if (eventIds.length > 0) {
-                        const { data: ticketsData, error: ticketsError } = await supabase
-                            .from('tickets')
-                            .select('id, amount, event_id')
-                            .in('event_id', eventIds)
-                            .eq('status', 'valid');
-
-                        if (ticketsError) throw ticketsError;
-
-                        if (ticketsData) {
-                            totalTickets = ticketsData.length;
-                            totalRevenue = ticketsData.reduce((acc, t) => acc + Number(t.amount), 0);
-
-                            // Add sold count to each event item
-                            itemsWithStats.forEach(item => {
-                                item.sold_count = ticketsData.filter(t => t.event_id === item.id).length;
-                            });
-                        }
-                    }
-
-                    setItems(itemsWithStats);
+                if (data) {
+                    setItems(data);
                     setStats({
-                        primaryCount: eventsData.length,
-                        secondaryStat: totalTickets,
-                        revenue: totalRevenue
+                        primaryCount: data.length,
+                        secondaryStat: data.reduce((acc, item) => acc + (item.sold_count || 0), 0),
+                        revenue: data.reduce((acc, item) => acc + Number(item.collected_amount || 0), 0)
                     });
                 }
             } catch (err) {
@@ -154,7 +126,7 @@ function DashboardContent() {
                     <div className={styles.eventsList}>
                         {items.length > 0 ? items.map((item) => {
                             const sold = item.sold_count || 0;
-                            const total_capacity = item.total_tickets || 100;
+                            const total_capacity = item.total_capacity || 100;
                             const progress = Math.min(Math.round((sold / total_capacity) * 100), 100);
                             
                             return (
@@ -165,18 +137,20 @@ function DashboardContent() {
                                         <div className={styles.eventSales}>
                                             <div className={styles.salesInfo}>
                                                 <span>{progress}% {isEvents ? "vendus" : "collecté"}</span>
-                                                <span>{isEvents ? `${sold}/${total_capacity}` : `${item.current_amount?.toLocaleString() || 0} / ${item.target_amount?.toLocaleString() || '---'} F`}</span>
+                                                <span>{isEvents ? `${sold}/${total_capacity}` : `${Number(item.collected_amount || 0).toLocaleString()} / ${Number(item.target_amount || 0).toLocaleString()} F`}</span>
                                             </div>
                                             <div className={styles.progressBar}>
                                                 <div className={styles.progress} style={{ width: `${progress}%` }}></div>
                                             </div>
                                         </div>
                                     </div>
+
                                     <div className={styles.eventActions}>
                                         <span className={`${styles.badge} ${styles.badgeActive}`}>{isEvents ? "En vente" : "Ouverte"}</span>
                                         <Link href={`/organizer/events/${item.id}`} className={styles.editBtn}>Gérer</Link>
                                     </div>
                                 </div>
+
                             );
                         }) : (
                             <div className={styles.emptyState}>

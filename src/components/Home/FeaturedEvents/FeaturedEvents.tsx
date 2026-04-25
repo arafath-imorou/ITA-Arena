@@ -49,7 +49,7 @@ export default function FeaturedEvents() {
         async function fetchData() {
             setLoading(true);
             let query = supabase
-                .from('events')
+                .from('events_with_stats')
                 .select(`
                     *,
                     organizer:profiles(name:full_name, avatar_url)
@@ -83,7 +83,7 @@ export default function FeaturedEvents() {
                 {data.length > 0 ? (
                     <div className={styles.grid}>
                         {data.map((item: any) => {
-                            const percent = item.goal_amount ? Math.round((item.collected_amount / item.goal_amount) * 100) : 0;
+                            const percent = item.total_capacity > 0 ? Math.round((item.collected_amount / item.total_capacity) * 100) : 0;
                             const isLiked = likedEvents.includes(item.id);
                             return (
                                 <div key={item.id} className={styles.card}>
