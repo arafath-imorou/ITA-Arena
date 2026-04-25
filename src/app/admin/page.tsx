@@ -23,6 +23,9 @@ function AdminDashboardContent() {
     const [recentTickets, setRecentTickets] = useState<any[]>([]);
     const [isAdmin, setIsAdmin] = useState(false);
 
+    const fetchAdminData = async () => {
+        setLoading(true);
+        try {
             // 1. Fetch All Profiles
             const { data: profilesData } = await supabase
                 .schema('ita_arena')
