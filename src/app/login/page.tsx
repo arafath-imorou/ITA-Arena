@@ -53,10 +53,10 @@ export default function LoginPage() {
                         ITA ARENA ITA ARENA ITA ARENA ITA ARENA ITA ARENA ITA ARENA ITA ARENA
                     </div>
                     <img
-                        src="https://ouch-cdn2.icons8.com/P0-10lI6_3X1uY3_x4N4x3vO1_1X4z1X4z1X4z1X4z1X4z1X4z1X4z1X4z1X4z1X4z1X4z1X4z1X.png"
-                        alt="Illustration Login"
+                        src="/images/logo/ita_arena_logo.png"
+                        alt="ITA Arena Logo"
                         className={styles.illustrationImg}
-                        style={{ filter: 'none', background: 'white', borderRadius: '50%', padding: '20px' }}
+                        style={{ filter: 'none', background: 'white', borderRadius: '50%', padding: '30px', width: '220px', height: '220px', objectFit: 'contain' }}
                     />
                 </div>
 

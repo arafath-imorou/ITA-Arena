@@ -110,10 +110,10 @@ export default function RegisterPage() {
                         ITA Arena ITA Arena ITA Arena ITA Arena ITA Arena ITA Arena ITA Arena
                     </div>
                     <img
-                        src="https://ouch-cdn2.icons8.com/m-Wc-3X1uY3_x4N4x3vO1_1X4z1X4z1X4z1X4z1X4z1X4z1X4z1X4z1X4z1X4z1X4z1X.png"
-                        alt="Illustration Register"
+                        src="/images/logo/ita_arena_logo.png"
+                        alt="ITA Arena Logo"
                         className={styles.illustrationImg}
-                        style={{ filter: 'none', background: 'white', borderRadius: '50%', padding: '20px' }}
+                        style={{ filter: 'none', background: 'white', borderRadius: '50%', padding: '30px', width: '220px', height: '220px', objectFit: 'contain' }}
                     />
                 </div>
 
