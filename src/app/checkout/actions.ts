@@ -1,7 +1,7 @@
 "use server";
 
 export async function createFedaPayTransaction(amount: number, email: string, firstname: string, lastname: string, phone: string) {
-    const FEDAPAY_SECRET_KEY = process.env.FEDAPAY_SECRET_KEY || "sk_sandbox_6677889900"; // Should be in .env.local
+    const FEDAPAY_SECRET_KEY = process.env.FEDAPAY_SECRET_KEY;
     
     try {
         const response = await fetch("https://api.fedapay.com/v1/transactions", {

@@ -116,7 +116,7 @@ function CheckoutContent() {
                 // In a production app, we would use the transaction token from the server
                 // For now, we use the public key and simple checkout
                 const fedaConfig = {
-                    public_key: process.env.NEXT_PUBLIC_FEDAPAY_PUBLIC_KEY || "pk_sandbox_vL-7J4R3-v3-0-0-0-0-0-0-0-0",
+                    public_key: process.env.NEXT_PUBLIC_FEDAPAY_PUBLIC_KEY,
                     transaction: {
                         amount: total,
                         description: `Achat de tickets - ${eventName}`,
