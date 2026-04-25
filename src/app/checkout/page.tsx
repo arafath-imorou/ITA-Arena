@@ -115,6 +115,33 @@ function CheckoutContent() {
                 // 2. TRIGGER FEDAPAY (Programmatically)
                 // In a production app, we would use the transaction token from the server
                 // For now, we use the public key and simple checkout
+                // Helper to map country codes
+                const countryMapping: { [key: string]: string } = {
+                    "+229": "BJ",
+                    "+225": "CI",
+                    "+221": "SN",
+                    "+228": "TG",
+                    "+223": "ML",
+                    "+226": "BF",
+                    "+227": "NE",
+                    "+224": "GN"
+                };
+
+                // Clean phone number (remove spaces and current prefix if present to avoid duplication)
+                let cleanPhone = paymentPhone.replace(/\s+/g, '');
+                const prefix = selectedCountryObj.code;
+                if (cleanPhone.startsWith(prefix)) {
+                    cleanPhone = cleanPhone.substring(prefix.length);
+                } else if (cleanPhone.startsWith('+')) {
+                    // Remove any other prefix
+                    cleanPhone = cleanPhone.replace(/^\+\d+/, '');
+                }
+
+                // Handle name parsing more safely
+                const nameParts = fullName.trim().split(/\s+/);
+                const lastname = nameParts.length > 1 ? nameParts.pop() : nameParts[0];
+                const firstname = nameParts.length > 0 ? nameParts.join(' ') : 'Client';
+
                 const fedaConfig = {
                     public_key: process.env.NEXT_PUBLIC_FEDAPAY_PUBLIC_KEY,
                     transaction: {
@@ -122,12 +149,12 @@ function CheckoutContent() {
                         description: `Achat de tickets - ${eventName}`,
                     },
                     customer: {
-                        email: email,
-                        lastname: fullName.split(' ').pop(),
-                        firstname: fullName.split(' ').slice(0, -1).join(' '),
+                        email: email.trim(),
+                        lastname: lastname || 'Client',
+                        firstname: firstname || 'Client',
                         phone_number: {
-                            number: paymentPhone,
-                            country: selectedCountryObj.code.replace('+', '') === '229' ? 'BJ' : 'CI' // Simplified
+                            number: cleanPhone,
+                            country: countryMapping[selectedCountryObj.code] || 'BJ'
                         }
                     },
                     onComplete: async (response: any) => {
