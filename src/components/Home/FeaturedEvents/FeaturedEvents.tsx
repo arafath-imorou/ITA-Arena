@@ -4,10 +4,9 @@ import { useState, useEffect } from "react";
 import styles from "./FeaturedEvents.module.css";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { useMode } from "@/context/ModeContext";
 
-interface FeaturedEventsProps {
-    mode: 'events' | 'cotisations';
-}
+
 
 const countries = [
     { name: "Bénin", flag: "https://flagcdn.com/w40/bj.png" },
@@ -16,12 +15,13 @@ const countries = [
     { name: "Togo", flag: "https://flagcdn.com/w40/tg.png" },
 ];
 
-export default function FeaturedEvents({ mode }: FeaturedEventsProps) {
+export default function FeaturedEvents() {
+    const { mode, activeCategory } = useMode();
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeCategory, setActiveCategory] = useState('all');
     const [selectedCountry, setSelectedCountry] = useState(countries[0]);
     const [likedEvents, setLikedEvents] = useState<string[]>([]);
+
 
     useEffect(() => {
         async function fetchData() {
