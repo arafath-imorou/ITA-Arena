@@ -67,26 +67,27 @@ export default function OrganizerLayout({
                             <span className={styles.navIcon}>➕</span> Créer un événement
                         </Link>
                         <Link
-                            href="/organizer/events-upcoming"
-                            className={`${styles.navItem} ${pathname === '/organizer/events-upcoming' ? styles.activeNavItem : ''}`}
+                            href="/organizer?mode=events"
+                            className={`${styles.navItem} ${pathname === '/organizer' && (new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('mode') !== 'cotisations') ? styles.activeNavItem : ''}`}
                         >
-                            <span className={styles.navIcon}>📅</span> Événements à venir
+                            <span className={styles.navIcon}>📊</span> Dashboard Événements
+                        </Link>
+                    </div>
+
+                    <div className={styles.navGroup}>
+                        <span className={styles.groupLabel}>Cotisations</span>
+                        <Link
+                            href="/organizer/cotisation/create"
+                            className={`${styles.navItem} ${pathname === '/organizer/cotisation/create' ? styles.activeNavItem : ''}`}
+                        >
+                            <span className={styles.navIcon}>💰</span> Créer une cotisation
                         </Link>
                         <Link
-                            href="/organizer/events-past"
-                            className={`${styles.navItem} ${pathname === '/organizer/events-past' ? styles.activeNavItem : ''}`}
+                            href="/organizer?mode=cotisations"
+                            className={`${styles.navItem} ${pathname === '/organizer' && (new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('mode') === 'cotisations') ? styles.activeNavItem : ''}`}
                         >
-                            <span className={styles.navIcon}>⌛</span> Événements passés
+                            <span className={styles.navIcon}>📈</span> Dashboard Cotisations
                         </Link>
-                        <div className={styles.navItemWithBadge}>
-                            <Link
-                                href="/organizer/events-draft"
-                                className={`${styles.navItem} ${pathname === '/organizer/events-draft' ? styles.activeNavItem : ''}`}
-                            >
-                                <span className={styles.navIcon}>📝</span> Événements en préparation
-                            </Link>
-                            <span className={styles.navBadge}>1</span>
-                        </div>
                     </div>
 
                     <div className={styles.navGroup}>
@@ -134,8 +135,8 @@ export default function OrganizerLayout({
                 {/* Top Header */}
                 <header className={styles.topHeader}>
                     <div className={styles.topTabs}>
-                        <Link href="/organizer" className={`${styles.topTab} ${pathname === '/organizer' ? styles.activeTab : ''}`}>📈 Ventes</Link>
-                        <Link href="/organizer/events" className={`${styles.topTab} ${pathname === '/organizer/events' ? styles.activeTab : ''}`}>📅 Événements</Link>
+                        <Link href="/organizer?mode=events" className={`${styles.topTab} ${(new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('mode') !== 'cotisations') ? styles.activeTab : ''}`}>📅 Événements</Link>
+                        <Link href="/organizer?mode=cotisations" className={`${styles.topTab} ${(new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('mode') === 'cotisations') ? styles.activeTab : ''}`}>💰 Cotisations</Link>
                     </div>
                     <div className={styles.topIcons}>
                         <div className={styles.notifIcon}>🔔 <span className={styles.dot}></span></div>
