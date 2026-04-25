@@ -12,10 +12,7 @@ function ConfirmationContent() {
     const searchParams = useSearchParams();
     const sessionId = searchParams.get("session");
     const eventId = searchParams.get("event");
-    const [tickets, setTickets] = useState<any[]>([]);
-    const [event, setEvent] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
-    const router = useRouter();
+    const [qrCodes, setQrCodes] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
         if (!sessionId) {
@@ -35,6 +32,13 @@ function ConfirmationContent() {
 
                 if (ticketsError) throw ticketsError;
                 setTickets(ticketsData || []);
+
+                // Generate QR codes for UI
+                const codes: { [key: string]: string } = {};
+                for (const t of (ticketsData || [])) {
+                    codes[t.id] = await QRCode.toDataURL(t.qr_code_key);
+                }
+                setQrCodes(codes);
 
                 // 2. Fetch event
                 const idToUse = eventId || (ticketsData && ticketsData[0]?.event_id);
@@ -63,11 +67,7 @@ function ConfirmationContent() {
     const downloadSingleTicket = async (ticket: any) => {
         if (!event) return;
 
-        const qrDataUrl = await QRCode.toDataURL(ticket.qr_code_key, {
-            width: 400,
-            margin: 2,
-            color: { dark: "#1a1a1a", light: "#ffffff" }
-        });
+        const qrDataUrl = qrCodes[ticket.id] || await QRCode.toDataURL(ticket.qr_code_key);
 
         const doc = new jsPDF({
             orientation: "landscape",
@@ -119,7 +119,7 @@ function ConfirmationContent() {
         doc.text("ACHETEUR", 45, 58);
         doc.setFontSize(10);
         doc.setFont("helvetica", "bold");
-        doc.text(ticket.user_email, 45, 63);
+        doc.text(ticket.user_name || ticket.user_email, 45, 63);
 
         doc.setDrawColor(200, 200, 200);
         doc.setLineDashPattern([1, 1], 0);
@@ -162,42 +162,85 @@ function ConfirmationContent() {
         </div>
     );
 
+    const buyerName = tickets[0]?.user_name || "Client";
+    const totalPaid = tickets.reduce((acc, t) => acc + Number(t.amount), 0);
+
     return (
         <div className={styles.confirmationWrapper}>
             <div className={styles.successHeader}>
                 <div className={styles.checkIcon}>✓</div>
                 <h1>Paiement Réussi !</h1>
-                <p>Merci pour votre achat. Vous avez {tickets.length} ticket(s) disponible(s).</p>
-                {tickets.length > 1 && (
-                    <button className={styles.downloadAllBtn} onClick={downloadAllTickets}>
-                        📥 Tout télécharger ({tickets.length} tickets)
-                    </button>
-                )}
+                <p>Vos tickets sont prêts. Vous pouvez les télécharger ou les présenter à l'entrée.</p>
+            </div>
+
+            <div className={styles.receiptCard}>
+                <div className={styles.receiptHeader}>
+                    <div className={styles.receiptInfo}>
+                        <h2>Reçu de paiement</h2>
+                        <div className={styles.buyerDetails}>
+                            <span>👤 {buyerName}</span>
+                            <span>📧 {tickets[0]?.user_email}</span>
+                        </div>
+                    </div>
+                    <div className={styles.totalAmountBox}>
+                        <span>Total Payé</span>
+                        <strong>{totalPaid.toLocaleString()} F CFA</strong>
+                    </div>
+                </div>
             </div>
 
             <div className={styles.ticketsGrid}>
                 {tickets.map((t, index) => (
-                    <div key={t.id} className={styles.ticketCardSmall}>
-                        <div className={styles.ticketCardHeader}>
-                            <span className={styles.ticketCount}>Ticket {index + 1}/{tickets.length}</span>
-                            <span className={styles.ticketRef}>#{t.ticket_number.toString().padStart(5, '0')}</span>
+                    <div key={t.id} className={styles.ticketCardPremium}>
+                        <div 
+                            className={styles.ticketTop}
+                            style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url(${event.image_url || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30'})` }}
+                        >
+                            <div className={styles.ticketCategory}>{t.category}</div>
+                            <div className={styles.ticketEventName}>{event.title}</div>
                         </div>
-                        <div className={styles.ticketCardBody}>
-                            <div className={styles.eventTitleSmall}>{event.title}</div>
-                            <div className={styles.categoryBadge}>{t.category}</div>
-                            <div className={styles.priceSmall}>{t.amount.toLocaleString()} F CFA</div>
+                        
+                        <div className={styles.ticketDivider}></div>
+
+                        <div className={styles.ticketBottom}>
+                            <div className={styles.ticketInfo}>
+                                <div className={styles.ticketInfoGroup} style={{ marginBottom: '10px' }}>
+                                    <span>N° TICKET</span>
+                                    <strong>#{t.ticket_number.toString().padStart(5, '0')}</strong>
+                                </div>
+                                <div className={styles.ticketInfoGroup}>
+                                    <span>PRIX</span>
+                                    <strong>{t.amount.toLocaleString()} F CFA</strong>
+                                </div>
+                            </div>
+                            
+                            <div className={styles.ticketQRContainer}>
+                                {qrCodes[t.id] && <img src={qrCodes[t.id]} alt="QR Code" />}
+                            </div>
                         </div>
-                        <button className={styles.downloadSingleBtn} onClick={() => downloadSingleTicket(t)}>
-                            Télécharger PDF
+
+                        <button className={styles.downloadBtnSmall} onClick={() => downloadSingleTicket(t)}>
+                            📥 Télécharger PDF
                         </button>
                     </div>
                 ))}
             </div>
 
             <div className={styles.footerActions}>
+                <button className={styles.downloadAllBtn} onClick={downloadAllTickets}>
+                    📥 Télécharger tous les tickets ({tickets.length})
+                </button>
                 <Link href="/" className={styles.homeBtn}>Retour à l'accueil</Link>
             </div>
         </div>
+    );
+}
+
+export default function ConfirmationPage() {
+    return (
+        <Suspense fallback={<div className={styles.loadingContainer}><div className={styles.spinner}></div></div>}>
+            <ConfirmationContent />
+        </Suspense>
     );
 }
 
