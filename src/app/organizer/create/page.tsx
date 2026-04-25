@@ -348,10 +348,14 @@ function Step2_Location({ onNext, onPrev, formData, setFormData }: { onNext: () 
                             value={formData.country}
                             onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                         >
-                            <option>Côte d'Ivoire</option>
                             <option>Bénin</option>
+                            <option>Côte d'Ivoire</option>
                             <option>Sénégal</option>
-                            <option>France</option>
+                            <option>Togo</option>
+                            <option>Mali</option>
+                            <option>Burkina Faso</option>
+                            <option>Niger</option>
+                            <option>Guinée</option>
                         </select>
                     </div>
                     <div className={styles.inputGroup}>

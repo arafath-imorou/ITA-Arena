@@ -16,13 +16,14 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const countries = [
+    { name: "Bénin", flag: "https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Benin.svg" },
     { name: "Côte d'Ivoire", flag: "https://upload.wikimedia.org/wikipedia/commons/f/fe/Flag_of_Cote_d%27Ivoire.svg" },
     { name: "Sénégal", flag: "https://upload.wikimedia.org/wikipedia/commons/f/fd/Flag_of_Senegal.svg" },
+    { name: "Togo", flag: "https://upload.wikimedia.org/wikipedia/commons/6/68/Flag_of_Togo.svg" },
     { name: "Mali", flag: "https://upload.wikimedia.org/wikipedia/commons/9/92/Flag_of_Mali.svg" },
     { name: "Burkina Faso", flag: "https://upload.wikimedia.org/wikipedia/commons/3/31/Flag_of_Burkina_Faso.svg" },
-    { name: "Togo", flag: "https://upload.wikimedia.org/wikipedia/commons/6/68/Flag_of_Togo.svg" },
-    { name: "Bénin", flag: "https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Benin.svg" },
-    { name: "France", flag: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg" },
+    { name: "Niger", flag: "https://upload.wikimedia.org/wikipedia/commons/f/f8/Flag_of_Niger.svg" },
+    { name: "Guinée", flag: "https://upload.wikimedia.org/wikipedia/commons/e/ed/Flag_of_Guinea.svg" },
   ];
 
   const handleSignOut = async () => {

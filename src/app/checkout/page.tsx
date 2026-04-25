@@ -205,9 +205,14 @@ function CheckoutContent() {
                         <div className={styles.countrySelect}>
                             <label>Pays <span style={{ color: '#FF5A1F' }}>*</span></label>
                             <select className={styles.customSelect}>
-                                <option>Côte d'Ivoire</option>
                                 <option>Bénin</option>
+                                <option>Côte d'Ivoire</option>
                                 <option>Sénégal</option>
+                                <option>Togo</option>
+                                <option>Mali</option>
+                                <option>Burkina Faso</option>
+                                <option>Niger</option>
+                                <option>Guinée</option>
                             </select>
                         </div>
 
