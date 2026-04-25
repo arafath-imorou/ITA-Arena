@@ -130,8 +130,10 @@ export default function CreateEventPage() {
             .insert([submissionData]);
 
         if (error) {
-            console.error("Error creating event:", error);
-            alert("Erreur lors de la création de l'évènement.");
+            console.error('Error creating event:', error);
+            alert("Erreur lors de la création de l'évènement : " + error.message);
+            setLoading(false);
+            return;
         } else {
             setShowSuccess(true);
         }
