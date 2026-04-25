@@ -53,10 +53,10 @@ export default function AboutPage() {
                             </p>
                             <p>Nous aspirons à devenir :</p>
                             <ul className={styles.visionList}>
-                                <li><span>✨</span> La plateforme de référence de la billetterie digitale en Afrique</li>
-                                <li><span>🌍</span> Un pont technologique entre créateurs d’événements et participants</li>
-                                <li><span>📱</span> Une solution innovante adaptée aux réalités locales</li>
-                                <li><span>🎫</span> Un standard moderne pour l’événementiel culturel, professionnel et grand public</li>
+                                <li><span>—</span> La plateforme de référence de la billetterie digitale en Afrique</li>
+                                <li><span>—</span> Un pont technologique entre créateurs d’événements et participants</li>
+                                <li><span>—</span> Une solution innovante adaptée aux réalités locales</li>
+                                <li><span>—</span> Un standard moderne pour l’événementiel culturel, professionnel et grand public</li>
                             </ul>
                             <p>
                                 Notre vision est de contribuer activement à la transformation digitale du secteur événementiel africain.
