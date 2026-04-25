@@ -12,6 +12,8 @@
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.99.0",
     "@types/qrcode": "^1.5.6",
+    "fedapay": "^1.2.5",
+    "fedapay-reactjs": "^1.1.2",
     "jspdf": "^4.2.0",
     "next": "16.1.6",
     "qrcode": "^1.5.4",

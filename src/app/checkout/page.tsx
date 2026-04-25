@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import Script from "next/script";
 import styles from "./Payment.module.css";
 import Link from "next/link";
 import BackButton from "@/components/BackButton";
@@ -64,6 +65,11 @@ function CheckoutContent() {
             return;
         }
 
+        if (paymentMethod !== "card" && (!fullName || !paymentPhone)) {
+            alert("Veuillez renseigner votre nom et votre numéro de paiement.");
+            return;
+        }
+
         if (!termsAccepted) {
             alert("Veuillez accepter les conditions générales de vente.");
             return;
@@ -72,7 +78,7 @@ function CheckoutContent() {
         setIsProcessing(true);
 
         try {
-            // Ensure we have a valid UUID for checkout_session_id
+            // 1. Prepare ticket data
             const checkoutSessionId = typeof crypto !== 'undefined' && crypto.randomUUID 
                 ? crypto.randomUUID() 
                 : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -93,9 +99,9 @@ function CheckoutContent() {
                     ticketsToCreate.push({
                         event_id: eventId,
                         user_email: email,
-                        user_phone: phone, // Contact phone
-                        user_name: fullName, // Buyer name
-                        payment_phone: paymentPhone, // Phone used for payment
+                        user_phone: phone, 
+                        user_name: fullName, 
+                        payment_phone: paymentPhone, 
                         category: t.name,
                         amount: t.price,
                         qr_code_key: qrKey,
@@ -106,27 +112,65 @@ function CheckoutContent() {
             }
 
             if (ticketsToCreate.length > 0) {
-                // SIMULATION: Here we would normally call FedaPay / KKiaPay API
-                // console.log("Triggering payment prompt for:", paymentPhone, "Amount:", total);
-                
-                const { data, error } = await supabase
-                    .from('tickets')
-                    .insert(ticketsToCreate)
-                    .select();
+                // 2. TRIGGER FEDAPAY (Programmatically)
+                // In a production app, we would use the transaction token from the server
+                // For now, we use the public key and simple checkout
+                const fedaConfig = {
+                    public_key: process.env.NEXT_PUBLIC_FEDAPAY_PUBLIC_KEY || "pk_sandbox_vL-7J4R3-v3-0-0-0-0-0-0-0-0",
+                    transaction: {
+                        amount: total,
+                        description: `Achat de tickets - ${eventName}`,
+                    },
+                    customer: {
+                        email: email,
+                        lastname: fullName.split(' ').pop(),
+                        firstname: fullName.split(' ').slice(0, -1).join(' '),
+                        phone_number: {
+                            number: paymentPhone,
+                            country: selectedCountryObj.code.replace('+', '') === '229' ? 'BJ' : 'CI' // Simplified
+                        }
+                    },
+                    onComplete: async (response: any) => {
+                        if (response.status === 'approved') {
+                            // 3. Save to database only after approval
+                            const { data, error } = await supabase
+                                .from('tickets')
+                                .insert(ticketsToCreate)
+                                .select();
 
-                if (error) {
-                    console.error("Supabase insert error:", error);
-                    throw error;
+                            if (error) {
+                                console.error("Supabase insert error:", error);
+                                alert("Paiement réussi, mais une erreur est survenue lors de la création de vos billets. Veuillez contacter le support.");
+                            } else {
+                                router.push(`/checkout/confirmation?session=${checkoutSessionId}&event=${eventId}`);
+                            }
+                        } else {
+                            alert("Le paiement n'a pas été approuvé.");
+                            setIsProcessing(false);
+                        }
+                    }
+                };
+
+                // @ts-ignore
+                if (window.FedaPay) {
+                    // @ts-ignore
+                    window.FedaPay.init('#feda-payment-container', fedaConfig);
+                    // @ts-ignore
+                    const checkout = window.FedaPay.checkout(fedaConfig);
+                    checkout.open();
+                } else {
+                    // Fallback to manual save for now if script not loaded
+                    console.warn("FedaPay SDK not found. Loading tickets anyway for demo.");
+                    const { data, error } = await supabase
+                        .from('tickets')
+                        .insert(ticketsToCreate)
+                        .select();
+                    if (!error) router.push(`/checkout/confirmation?session=${checkoutSessionId}&event=${eventId}`);
                 }
-
-                // Redirect to confirmation with session ID
-                router.push(`/checkout/confirmation?session=${checkoutSessionId}&event=${eventId}`);
-            } else {
-                throw new Error("Erreur lors de l'enregistrement des tickets");
             }
         } catch (err: any) {
             console.error("Erreur de réservation:", err);
-            alert(`Une erreur est survenue lors de la réservation de vos tickets: ${err.message || "Erreur inconnue"}`);
+            alert(`Une erreur est survenue: ${err.message || "Erreur inconnue"}`);
         } finally {
             setIsProcessing(false);
         }
@@ -291,6 +335,7 @@ function CheckoutContent() {
 
     return (
         <div className="container" style={{ paddingTop: '100px', paddingBottom: '100px' }}>
+            <Script src="https://cdn.fedapay.com/checkout.js?v=1.1.7" strategy="beforeInteractive" />
             <h1 className={styles.pageTitleHeader}>Paiement</h1>
 
             <div className={styles.checkoutLayout}>
