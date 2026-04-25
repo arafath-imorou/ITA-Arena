@@ -88,6 +88,10 @@ export default function AboutPage() {
                                 <h3>Adapté au marché</h3>
                                 <p>Interface optimisée pour mobile et paiements locaux intégrés aux réalités du continent.</p>
                             </div>
+                            <div className={styles.featureCard}>
+                                <h3>Support dédié</h3>
+                                <p>Une équipe réactive à votre écoute pour vous accompagner dans la réussite de tous vos projets événementiels.</p>
+                            </div>
                         </div>
                     </section>
 
