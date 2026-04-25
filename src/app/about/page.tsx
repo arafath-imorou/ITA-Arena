@@ -31,7 +31,6 @@ export default function AboutPage() {
                                 Nous permettons aux organisateurs de vendre leurs billets en ligne simplement et au public de réserver leurs places en quelques clics, de manière rapide, sécurisée et intuitive.
                             </p>
                             <div className={styles.missionBox}>
-                                <span className={styles.targetIcon}>🎯</span>
                                 <p>Faciliter l’accès aux événements grâce à une expérience digitale moderne, fiable et professionnelle.</p>
                             </div>
                             <p>
