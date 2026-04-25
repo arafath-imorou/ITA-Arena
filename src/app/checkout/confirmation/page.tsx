@@ -243,11 +243,3 @@ export default function ConfirmationPage() {
         </Suspense>
     );
 }
-
-export default function ConfirmationPage() {
-    return (
-        <Suspense fallback={<div className={styles.loadingContainer}><div className={styles.spinner}></div></div>}>
-            <ConfirmationContent />
-        </Suspense>
-    );
-}
