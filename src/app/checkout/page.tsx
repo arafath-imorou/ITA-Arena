@@ -14,7 +14,7 @@ function CheckoutContent() {
     const [timeLeft, setTimeLeft] = useState(1799); // 29:59 (approx 30 mins)
     const [email, setEmail] = useState("arafathimorou@gmail.com");
     const [phone, setPhone] = useState("");
-    const [isProcessing, setIsProcessing] = useState(false);
+    const [termsAccepted, setTermsAccepted] = useState(false);
     const router = useRouter();
 
     const eventId = searchParams.get("id") || "d5d140e6-921a-4c9c-b36d-dcc6c478a846"; // Default or from URL
@@ -61,22 +61,31 @@ function CheckoutContent() {
             return;
         }
 
+        if (!termsAccepted) {
+            alert("Veuillez accepter les conditions générales de vente.");
+            return;
+        }
+
         setIsProcessing(true);
 
         try {
-            // In a real app, we would call the payment provider API here.
-            // After successful payment, we register the tickets in Supabase.
-            
+            // Ensure we have a valid UUID for checkout_session_id
             const checkoutSessionId = typeof crypto !== 'undefined' && crypto.randomUUID 
                 ? crypto.randomUUID() 
-                : Math.random().toString(36).substring(2, 15);
+                : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
 
             const ticketsToCreate: any[] = [];
             for (const t of tickets) {
                 for (let j = 0; j < t.qty; j++) {
                     const qrKey = typeof crypto !== 'undefined' && crypto.randomUUID 
                         ? crypto.randomUUID() 
-                        : Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                        : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                            return v.toString(16);
+                        });
 
                     ticketsToCreate.push({
                         event_id: eventId,
@@ -86,7 +95,7 @@ function CheckoutContent() {
                         amount: t.price,
                         qr_code_key: qrKey,
                         status: 'valid',
-                        checkout_session_id: checkoutSessionId // Added for grouping
+                        checkout_session_id: checkoutSessionId
                     });
                 }
             }
@@ -97,7 +106,10 @@ function CheckoutContent() {
                     .insert(ticketsToCreate)
                     .select();
 
-                if (error) throw error;
+                if (error) {
+                    console.error("Supabase insert error:", error);
+                    throw error;
+                }
 
                 // Redirect to confirmation with session ID instead of just one ticket ID
                 router.push(`/checkout/confirmation?session=${checkoutSessionId}&event=${eventId}`);
@@ -106,7 +118,7 @@ function CheckoutContent() {
             }
         } catch (err: any) {
             console.error("Erreur de réservation:", err);
-            alert("Une erreur est survenue lors de la réservation de vos tickets.");
+            alert(`Une erreur est survenue lors de la réservation de vos tickets: ${err.message || "Erreur inconnue"}`);
         } finally {
             setIsProcessing(false);
         }
@@ -232,13 +244,13 @@ function CheckoutContent() {
     const operatorData: { [key: string]: { name: string; logo: string }[] } = {
         "Bénin": [
             { name: "MTN", logo: "https://upload.wikimedia.org/wikipedia/commons/9/93/New-mtn-logo.jpg" },
-            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Moov_Africa_logo.svg/1200px-Moov_Africa_logo.svg.png" },
-            { name: "Celtiis", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_x7J6pP-n59pT_3_6_p_5v_m_J_m_J_m_J_w&s" }
+            { name: "Moov", logo: "https://moov-africa.bj/wp-content/uploads/2021/01/logo-moov-africa.png" },
+            { name: "Celtiis", logo: "https://play-lh.googleusercontent.com/tYt6vP-m5WjC5I0M2eY9K6y9v5f8z7H9w8_p_k2w4O2_x6Q1S2q7E1u4n6M8R8f8f8" }
         ],
         "Côte d'Ivoire": [
             { name: "Orange", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/1024px-Orange_logo.svg.png" },
             { name: "MTN", logo: "https://upload.wikimedia.org/wikipedia/commons/9/93/New-mtn-logo.jpg" },
-            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Moov_Africa_logo.svg/1200px-Moov_Africa_logo.svg.png" }
+            { name: "Moov", logo: "https://moov-africa.bj/wp-content/uploads/2021/01/logo-moov-africa.png" }
         ],
         "Sénégal": [
             { name: "Orange", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/1024px-Orange_logo.svg.png" },
@@ -251,18 +263,18 @@ function CheckoutContent() {
         ],
         "Mali": [
             { name: "Orange", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/1024px-Orange_logo.svg.png" },
-            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Moov_Africa_logo.svg/1200px-Moov_Africa_logo.svg.png" }
+            { name: "Moov", logo: "https://moov-africa.bj/wp-content/uploads/2021/01/logo-moov-africa.png" }
         ],
         "Togo": [
-            { name: "TMoney", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_x7J6pP-n59pT_3_6_p_5v_m_J_m_J_m_J_w&s" },
-            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Moov_Africa_logo.svg/1200px-Moov_Africa_logo.svg.png" }
+            { name: "TMoney", logo: "https://www.togocom.tg/wp-content/uploads/2020/09/Logo-Tmoney.png" },
+            { name: "Moov", logo: "https://moov-africa.bj/wp-content/uploads/2021/01/logo-moov-africa.png" }
         ],
         "Burkina Faso": [
             { name: "Orange", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/1024px-Orange_logo.svg.png" },
-            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Moov_Africa_logo.svg/1200px-Moov_Africa_logo.svg.png" }
+            { name: "Moov", logo: "https://moov-africa.bj/wp-content/uploads/2021/01/logo-moov-africa.png" }
         ],
         "Niger": [
-            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Moov_Africa_logo.svg/1200px-Moov_Africa_logo.svg.png" },
+            { name: "Moov", logo: "https://moov-africa.bj/wp-content/uploads/2021/01/logo-moov-africa.png" },
             { name: "Airtel", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Airtel_logo.svg/2560px-Airtel_logo.svg.png" }
         ]
     };
@@ -327,14 +339,20 @@ function CheckoutContent() {
                         </div>
 
                         <div className={styles.termsBox}>
-                            <input type="checkbox" id="terms" />
+                            <input 
+                                type="checkbox" 
+                                id="terms" 
+                                checked={termsAccepted}
+                                onChange={(e) => setTermsAccepted(e.target.checked)}
+                            />
                             <label htmlFor="terms">J'accepte les conditions générales de vente et la politique de confidentialité</label>
                         </div>
 
                         <button 
                             className={styles.proceedBtn} 
                             onClick={handlePayment}
-                            disabled={isProcessing}
+                            disabled={isProcessing || !termsAccepted}
+                            style={{ opacity: termsAccepted ? 1 : 0.5, cursor: termsAccepted ? 'pointer' : 'not-allowed' }}
                         >
                             {isProcessing ? "Traitement..." : "Procéder au paiement"} <span className={styles.doubleArrow}>»</span>
                         </button>
