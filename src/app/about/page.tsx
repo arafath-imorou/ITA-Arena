@@ -1,3 +1,4 @@
+// Version 1.1 - Background Hero Update
 import styles from "./About.module.css";
 import BackButton from "@/components/BackButton";
 
