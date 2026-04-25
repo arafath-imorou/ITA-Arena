@@ -71,6 +71,39 @@
     height: fit-content;
 }
 
+.filterGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.filterItem {
+    display: flex;
+    flex-direction: column;
+}
+
+.filterLabel {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #64748b;
+    margin-bottom: 0.4rem;
+}
+
+.filterInput {
+    width: 100%;
+    border: 1px solid #e2e8f0;
+    background: white;
+    padding: 0.6rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.filterInput:focus {
+    border-color: #ff5a1f;
+}
+
 .activityFeed {
     display: flex;
     flex-direction: column;
@@ -129,9 +162,16 @@
     font-weight: 700;
 }
 
+.tableWrapper {
+    overflow-x: auto;
+    margin: 0 -1.5rem;
+    padding: 0 1.5rem;
+}
+
 .table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 600px;
 }
 
 .table th {
@@ -182,9 +222,73 @@
     animation: spin 1s linear infinite;
 }
 
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.modalContent {
+    background: white;
+    padding: 2rem;
+    border-radius: 1.5rem;
+    maxWidth: 800px;
+    width: 100%;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* Media Queries for Mobile Responsiveness */
+@media (max-width: 768px) {
+    .adminWrapper {
+        padding: 1rem;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .title {
+        font-size: 1.5rem;
+    }
+
+    .statsGrid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .statCard {
+        padding: 1rem;
+    }
+
+    .section {
+        padding: 1rem;
+    }
+
+    .filterGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .modalContent {
+        padding: 1.5rem;
+        border-radius: 1rem;
+    }
 }
 
 @media (max-width: 1024px) {

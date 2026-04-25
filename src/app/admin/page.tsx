@@ -162,101 +162,96 @@ function AdminDashboardContent() {
     };
 
     const deleteEvent = async (eventId: string) => {
-        if (!confirm("Supprimer ?")) return;
+        if (!confirm("Voulez-vous supprimer définitivement ce projet ?")) return;
         try {
             await supabase.from('events').delete().eq('id', eventId);
             setRawEvents(rawEvents.filter(e => e.id !== eventId));
             if (selectedEvent?.id === eventId) setSelectedEvent(null);
         } catch (err) {
-            alert("Erreur");
+            alert("Erreur de suppression");
         }
     };
 
-    if (loading) return <div className={styles.loadingContainer}><div className={styles.spinner}></div><p>Analyse des filtres...</p></div>;
+    if (loading) return <div className={styles.loadingContainer}><div className={styles.spinner}></div><p>Optimisation responsive...</p></div>;
     if (!isAdmin) return null;
 
     return (
         <div className={styles.adminWrapper}>
             <div className={styles.header}>
                 <div>
-                    <h1 className={styles.title}>Super Admin Dashboard</h1>
-                    <p className={styles.subtitle}>Pilotage stratégique de la plateforme</p>
+                    <h1 className={styles.title}>Super Admin</h1>
+                    <p className={styles.subtitle}>Plateforme ITA Arena</p>
                 </div>
                 <Link href="/" className={styles.badgeInfo}>Retour au site</Link>
             </div>
 
             {/* Filter Bar */}
-            <div className={styles.section} style={{ marginBottom: '2rem', padding: '1.5rem' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem' }}>
-                    <div>
-                        <label style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#64748b', display: 'block', marginBottom: '0.4rem' }}>Rechercher un projet</label>
+            <div className={styles.section} style={{ marginBottom: '2rem' }}>
+                <div className={styles.filterGrid}>
+                    <div className={styles.filterItem}>
+                        <label className={styles.filterLabel}>Projet</label>
                         <input 
                             type="text" 
-                            placeholder="Nom du projet..."
-                            className={styles.badge}
-                            style={{ width: '100%', border: '1px solid #e2e8f0', background: 'white', padding: '0.5rem' }}
+                            placeholder="Nom..."
+                            className={styles.filterInput}
                             value={filters.search}
                             onChange={e => setFilters({...filters, search: e.target.value})}
                         />
                     </div>
-                    <div>
-                        <label style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#64748b', display: 'block', marginBottom: '0.4rem' }}>Type</label>
+                    <div className={styles.filterItem}>
+                        <label className={styles.filterLabel}>Type</label>
                         <select 
-                            className={styles.badge}
-                            style={{ width: '100%', border: '1px solid #e2e8f0', background: 'white', padding: '0.5rem' }}
+                            className={styles.filterInput}
                             value={filters.type}
                             onChange={e => setFilters({...filters, type: e.target.value})}
                         >
-                            <option value="all">Tous les types</option>
+                            <option value="all">Tous</option>
                             <option value="event">Événements</option>
                             <option value="cotisation">Cotisations</option>
                         </select>
                     </div>
-                    <div>
-                        <label style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#64748b', display: 'block', marginBottom: '0.4rem' }}>Organisateur</label>
+                    <div className={styles.filterItem}>
+                        <label className={styles.filterLabel}>Organisateur</label>
                         <select 
-                            className={styles.badge}
-                            style={{ width: '100%', border: '1px solid #e2e8f0', background: 'white', padding: '0.5rem' }}
+                            className={styles.filterInput}
                             value={filters.organizerId}
                             onChange={e => setFilters({...filters, organizerId: e.target.value})}
                         >
-                            <option value="all">Tous les organisateurs</option>
+                            <option value="all">Tous</option>
                             {organizersList.map(o => (
                                 <option key={o.id} value={o.id}>{o.company_name || o.full_name || o.email}</option>
                             ))}
                         </select>
                     </div>
-                    <div>
-                        <label style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#64748b', display: 'block', marginBottom: '0.4rem' }}>Année</label>
+                    <div className={styles.filterItem}>
+                        <label className={styles.filterLabel}>Année</label>
                         <select 
-                            className={styles.badge}
-                            style={{ width: '100%', border: '1px solid #e2e8f0', background: 'white', padding: '0.5rem' }}
+                            className={styles.filterInput}
                             value={filters.year}
                             onChange={e => setFilters({...filters, year: e.target.value})}
                         >
-                            <option value="all">Toutes les années</option>
+                            <option value="all">Toutes</option>
                             {yearsList.map(y => <option key={y} value={y}>{y}</option>)}
                         </select>
                     </div>
-                    <div>
-                        <label style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#64748b', display: 'block', marginBottom: '0.4rem' }}>Mois</label>
+                    <div className={styles.filterItem}>
+                        <label className={styles.filterLabel}>Mois</label>
                         <select 
-                            className={styles.badge}
-                            style={{ width: '100%', border: '1px solid #e2e8f0', background: 'white', padding: '0.5rem' }}
+                            className={styles.filterInput}
                             value={filters.month}
                             onChange={e => setFilters({...filters, month: e.target.value})}
                         >
-                            <option value="all">Tous les mois</option>
-                            {["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"].map((m, i) => (
+                            <option value="all">Tous</option>
+                            {["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"].map((m, i) => (
                                 <option key={i} value={(i + 1).toString()}>{m}</option>
                             ))}
                         </select>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                    <div className={styles.filterItem} style={{ justifyContent: 'flex-end' }}>
                         <button 
                             onClick={() => setFilters({search: '', type: 'all', organizerId: 'all', year: 'all', month: 'all'})}
                             className={styles.badge}
-                            style={{ width: '100%', border: 'none', background: '#f1f5f9', color: '#64748b', cursor: 'pointer', padding: '0.5rem' }}
+                            style={{ width: '100%', border: 'none', background: '#f1f5f9', color: '#64748b', cursor: 'pointer', height: '42px' }}
                         >
                             Réinitialiser
                         </button>
@@ -267,14 +262,14 @@ function AdminDashboardContent() {
             <div className={styles.statsGrid}>
                 <div className={styles.statCard}>
                     <div className={styles.statInfo}>
-                        <span>Revenu (Filtre)</span>
-                        <h2>{stats.totalRevenue.toLocaleString()} F CFA</h2>
+                        <span>Revenu</span>
+                        <h2>{stats.totalRevenue.toLocaleString()} F</h2>
                     </div>
                     <div className={styles.statIcon}>💰</div>
                 </div>
                 <div className={styles.statCard}>
                     <div className={styles.statInfo}>
-                        <span>Tickets / Paiements</span>
+                        <span>Tickets</span>
                         <h2>{stats.totalTickets}</h2>
                     </div>
                     <div className={styles.statIcon}>🎫</div>
@@ -297,15 +292,13 @@ function AdminDashboardContent() {
 
             <div className={styles.dashboardContent}>
                 <div className={styles.section}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                        <h3 style={{ margin: 0 }}>Résultats filtrés ({filteredEvents.length})</h3>
-                    </div>
-                    <div style={{ overflowX: 'auto' }}>
+                    <h3>Performances ({filteredEvents.length})</h3>
+                    <div className={styles.tableWrapper}>
                         <table className={styles.table}>
                             <thead>
                                 <tr>
                                     <th>Projet</th>
-                                    <th>Ventes / Capacité</th>
+                                    <th>Ventes</th>
                                     <th>Progression</th>
                                     <th>Revenu</th>
                                     <th>Statut</th>
@@ -317,15 +310,15 @@ function AdminDashboardContent() {
                                     <tr key={e.id}>
                                         <td>
                                             <strong>{e.title}</strong>
-                                            <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748b' }}>Par {e.profiles?.full_name || 'Inconnu'}</p>
+                                            <p style={{ margin: 0, fontSize: '0.7rem', color: '#64748b' }}>{e.profiles?.full_name || 'Inconnu'}</p>
                                         </td>
                                         <td>{e.soldCount} / {e.totalCapacity}</td>
                                         <td>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                <div style={{ flex: 1, height: '8px', background: '#f1f5f9', borderRadius: '4px', overflow: 'hidden' }}>
+                                                <div style={{ flex: 1, minWidth: '40px', height: '6px', background: '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}>
                                                     <div style={{ width: `${Math.min(e.percent, 100)}%`, height: '100%', background: '#ff5a1f' }}></div>
                                                 </div>
-                                                <span style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>{e.percent}%</span>
+                                                <span style={{ fontSize: '0.7rem', fontWeight: 'bold' }}>{e.percent}%</span>
                                             </div>
                                         </td>
                                         <td style={{ fontWeight: 'bold', color: '#059669' }}>{e.revenue.toLocaleString()} F</td>
@@ -339,7 +332,6 @@ function AdminDashboardContent() {
                                         </td>
                                     </tr>
                                 ))}
-                                {filteredEvents.length === 0 && <tr><td colSpan={6} style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>Aucun résultat correspondant aux filtres</td></tr>}
                             </tbody>
                         </table>
                     </div>
@@ -348,7 +340,7 @@ function AdminDashboardContent() {
                 <div className={styles.section}>
                     <h3>Activité Récente</h3>
                     <div className={styles.activityFeed}>
-                        {filteredTickets.slice(0, 10).map(t => (
+                        {filteredTickets.slice(0, 8).map(t => (
                             <div key={t.id} className={styles.activityItem}>
                                 <div className={styles.activityMain}>
                                     <div className={styles.activityCircle} style={{ background: t.events?.type === 'cotisation' ? '#e0f2fe' : '#fef3c7' }}>
@@ -356,7 +348,7 @@ function AdminDashboardContent() {
                                     </div>
                                     <div className={styles.activityInfo}>
                                         <p><strong>{t.user_name || 'Client'}</strong></p>
-                                        <span>{t.events?.title || 'Événement'}</span>
+                                        <span style={{ fontSize: '0.65rem' }}>{t.events?.title || 'Événement'}</span>
                                     </div>
                                 </div>
                                 <div className={styles.activityAmount}>+{Number(t.amount).toLocaleString()} F</div>
@@ -368,24 +360,32 @@ function AdminDashboardContent() {
 
             {/* Détails Modal Overlay */}
             {selectedEvent && (
-                <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
-                    <div style={{ background: 'white', padding: '2rem', borderRadius: '1.5rem', maxWidth: '800px', width: '100%', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}>
+                <div className={styles.modalOverlay} onClick={() => setSelectedEvent(null)}>
+                    <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
                         <button onClick={() => setSelectedEvent(null)} style={{ position: 'absolute', top: '1rem', right: '1rem', border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }}>×</button>
-                        <h2 style={{ marginBottom: '0.5rem' }}>{selectedEvent.title}</h2>
+                        <h2 style={{ marginBottom: '0.5rem', fontSize: '1.25rem' }}>{selectedEvent.title}</h2>
                         <span className={styles.badge} style={{ background: '#ff5a1f', color: 'white', marginBottom: '1.5rem', display: 'inline-block' }}>{selectedEvent.type === 'cotisation' ? 'Cotisation' : 'Événement'}</span>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-                            <div style={{ padding: '1rem', background: '#f8fafc', borderRadius: '1rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.875rem' }}>Total Vendus</p><h3 style={{ margin: 0, fontSize: '1.5rem' }}>{selectedEvent.soldCount}</h3></div>
-                            <div style={{ padding: '1rem', background: '#f8fafc', borderRadius: '1rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.875rem' }}>Chiffre d'Affaire</p><h3 style={{ margin: 0, fontSize: '1.5rem', color: '#059669' }}>{selectedEvent.revenue.toLocaleString()} F</h3></div>
-                            <div style={{ padding: '1rem', background: '#f8fafc', borderRadius: '1rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.875rem' }}>Places Restantes</p><h3 style={{ margin: 0, fontSize: '1.5rem' }}>{selectedEvent.remaining}</h3></div>
-                            <div style={{ padding: '1rem', background: '#f8fafc', borderRadius: '1rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.875rem' }}>Taux de Vente</p><h3 style={{ margin: 0, fontSize: '1.5rem' }}>{selectedEvent.percent}%</h3></div>
+                        
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Total Vendus</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.soldCount}</h3></div>
+                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Revenu</p><h3 style={{ margin: 0, fontSize: '1.2rem', color: '#059669' }}>{selectedEvent.revenue.toLocaleString()} F</h3></div>
+                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Restants</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.remaining}</h3></div>
+                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Taux</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.percent}%</h3></div>
                         </div>
-                        <h3>Statistiques par Catégorie</h3>
-                        <div style={{ overflowX: 'auto' }}>
-                            <table className={styles.table} style={{ fontSize: '0.875rem' }}>
-                                <thead><tr><th>Catégorie</th><th>Prix</th><th>Vendus</th><th>Restant</th><th>Revenu</th><th>Taux</th></tr></thead>
+
+                        <h3>Par Catégorie</h3>
+                        <div className={styles.tableWrapper}>
+                            <table className={styles.table} style={{ fontSize: '0.75rem', minWidth: '400px' }}>
+                                <thead><tr><th>Cat</th><th>Prix</th><th>Ventes</th><th>Revenu</th><th>Taux</th></tr></thead>
                                 <tbody>
                                     {selectedEvent.categoriesWithStats.map((cat: any, idx: number) => (
-                                        <tr key={idx}><td><strong>{cat.name}</strong></td><td>{Number(cat.price).toLocaleString()} F</td><td>{cat.sold} / {cat.capacity}</td><td>{cat.remaining}</td><td style={{ fontWeight: 'bold' }}>{cat.revenue.toLocaleString()} F</td><td><div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}><div style={{ width: '40px', height: '6px', background: '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}><div style={{ width: `${cat.percent}%`, height: '100%', background: '#ff5a1f' }}></div></div><span>{cat.percent}%</span></div></td></tr>
+                                        <tr key={idx}>
+                                            <td><strong>{cat.name}</strong></td>
+                                            <td>{Number(cat.price).toLocaleString()} F</td>
+                                            <td>{cat.sold} / {cat.capacity}</td>
+                                            <td>{cat.revenue.toLocaleString()} F</td>
+                                            <td>{cat.percent}%</td>
+                                        </tr>
                                     ))}
                                 </tbody>
                             </table>
