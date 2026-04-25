@@ -83,21 +83,37 @@
 }
 
 .countryFlag {
-    padding: 0 1rem;
+    padding: 0 0.8rem;
     background: white;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.3rem;
     border-right: 1px solid #DEE5ED;
     cursor: pointer;
+    position: relative;
+    min-width: 65px;
 }
 
 .countryFlag img {
-    width: 20px;
+    width: 24px;
+    height: 16px;
+    object-fit: cover;
+    border-radius: 2px;
+}
+
+.hiddenSelect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
 }
 
 .phoneInputWrap input {
     border: none;
+    flex: 1;
 }
 
 .couponDropdown {

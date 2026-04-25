@@ -112,6 +112,37 @@ function CheckoutContent() {
         }
     };
 
+    const countryData = [
+        { name: "Bénin", code: "+229", flag: "https://flagcdn.com/w40/bj.png" },
+        { name: "Côte d'Ivoire", code: "+225", flag: "https://flagcdn.com/w40/ci.png" },
+        { name: "Sénégal", code: "+221", flag: "https://flagcdn.com/w40/sn.png" },
+        { name: "Togo", code: "+228", flag: "https://flagcdn.com/w40/tg.png" },
+        { name: "Mali", code: "+223", flag: "https://flagcdn.com/w40/ml.png" },
+        { name: "Burkina Faso", code: "+226", flag: "https://flagcdn.com/w40/bf.png" },
+        { name: "Niger", code: "+227", flag: "https://flagcdn.com/w40/ne.png" },
+        { name: "Guinée", code: "+224", flag: "https://flagcdn.com/w40/gn.png" },
+    ];
+
+    const [selectedCountryObj, setSelectedCountryObj] = useState(countryData[0]);
+
+    const handleCountryChange = (countryName: string) => {
+        const country = countryData.find(c => c.name === countryName);
+        if (country) {
+            setSelectedCountryObj(country);
+            // If phone is empty or only contains a prefix, update it
+            if (!phone || phone.startsWith('+')) {
+                setPhone(country.code + " ");
+            }
+        }
+    };
+
+    // Initialize phone with prefix on mount
+    useEffect(() => {
+        if (!phone) {
+            setPhone(selectedCountryObj.code + " ");
+        }
+    }, []);
+
     if (step === 1) {
         return (
             <div className="container" style={{ paddingTop: '100px', paddingBottom: '100px', maxWidth: '600px' }}>
@@ -155,8 +186,17 @@ function CheckoutContent() {
                             <label>Numéro de téléphone</label>
                             <div className={styles.phoneInputWrap}>
                                 <div className={styles.countryFlag}>
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fe/Flag_of_Cote_d%27Ivoire.svg" alt="CI" />
+                                    <img src={selectedCountryObj.flag} alt={selectedCountryObj.name} />
                                     <span>▾</span>
+                                    <select 
+                                        className={styles.hiddenSelect}
+                                        value={selectedCountryObj.name}
+                                        onChange={(e) => handleCountryChange(e.target.value)}
+                                    >
+                                        {countryData.map(c => (
+                                            <option key={c.name} value={c.name}>{c.name} ({c.code})</option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <input 
                                     type="tel" 
@@ -204,15 +244,14 @@ function CheckoutContent() {
 
                         <div className={styles.countrySelect}>
                             <label>Pays <span style={{ color: '#FF5A1F' }}>*</span></label>
-                            <select className={styles.customSelect}>
-                                <option>Bénin</option>
-                                <option>Côte d'Ivoire</option>
-                                <option>Sénégal</option>
-                                <option>Togo</option>
-                                <option>Mali</option>
-                                <option>Burkina Faso</option>
-                                <option>Niger</option>
-                                <option>Guinée</option>
+                            <select 
+                                className={styles.customSelect}
+                                value={selectedCountryObj.name}
+                                onChange={(e) => handleCountryChange(e.target.value)}
+                            >
+                                {countryData.map(c => (
+                                    <option key={c.name} value={c.name}>{c.name}</option>
+                                ))}
                             </select>
                         </div>
 
