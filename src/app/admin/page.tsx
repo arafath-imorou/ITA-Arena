@@ -15,10 +15,12 @@ function AdminDashboardContent() {
         totalRevenue: 0,
         totalTickets: 0,
         totalOrganizers: 0,
-        totalEvents: 0
+        totalEvents: 0,
+        totalCotisations: 0
     });
     const [events, setEvents] = useState<any[]>([]);
     const [organizers, setOrganizers] = useState<any[]>([]);
+    const [recentTickets, setRecentTickets] = useState<any[]>([]);
     const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
@@ -29,14 +31,13 @@ function AdminDashboardContent() {
 
         async function verifyAdmin() {
             const { data: profile } = await supabase
-                .schema('ita_arena')
                 .from('profiles')
                 .select('role')
                 .eq('id', user?.id)
                 .single();
 
             if (profile?.role !== 'admin') {
-                router.push("/"); // Redirect if not admin
+                router.push("/");
                 return;
             }
             setIsAdmin(true);
@@ -53,31 +54,36 @@ function AdminDashboardContent() {
                     .select('*')
                     .eq('role', 'organizer');
                 
-                // 2. Fetch Events
-                const { data: evts } = await supabase
+                // 2. Fetch All Items (Events + Cotisations)
+                const { data: allItems } = await supabase
                     .schema('ita_arena')
                     .from('events')
-                    .select('*, profiles(email)')
+                    .select('*, profiles(email, full_name)')
                     .order('created_at', { ascending: false });
 
-                // 3. Fetch Tickets
+                // 3. Fetch Tickets with Event info
                 const { data: tix } = await supabase
                     .schema('ita_arena')
                     .from('tickets')
-                    .select('*')
-                    .eq('status', 'valid');
+                    .select('*, events(title, type)')
+                    .eq('status', 'valid')
+                    .order('created_at', { ascending: false });
 
                 const totalRev = (tix || []).reduce((acc, t) => acc + Number(t.amount), 0);
+                const evtsOnly = (allItems || []).filter(i => i.type === 'event' || !i.type);
+                const cotisOnly = (allItems || []).filter(i => i.type === 'cotisation');
 
                 setStats({
                     totalRevenue: totalRev,
                     totalTickets: (tix || []).length,
                     totalOrganizers: (orgs || []).length,
-                    totalEvents: (evts || []).length
+                    totalEvents: evtsOnly.length,
+                    totalCotisations: cotisOnly.length
                 });
 
-                setEvents(evts || []);
+                setEvents(allItems || []);
                 setOrganizers(orgs || []);
+                setRecentTickets((tix || []).slice(0, 10));
 
             } catch (err) {
                 console.error("Admin Data Error:", err);
@@ -92,7 +98,7 @@ function AdminDashboardContent() {
     if (loading) return (
         <div className={styles.loadingContainer}>
             <div className={styles.spinner}></div>
-            <p>Chargement de la tour de contrôle...</p>
+            <p>Initialisation de la tour de contrôle...</p>
         </div>
     );
 
@@ -103,7 +109,7 @@ function AdminDashboardContent() {
             <div className={styles.header}>
                 <div>
                     <h1 className={styles.title}>Super Admin Dashboard</h1>
-                    <p className={styles.subtitle}>Vue d'ensemble de la plateforme ITA Arena</p>
+                    <p className={styles.subtitle}>Pilotez l'ensemble de la plateforme ITA Arena</p>
                 </div>
                 <Link href="/" className={styles.badgeInfo}>Retour au site</Link>
             </div>
@@ -111,44 +117,47 @@ function AdminDashboardContent() {
             <div className={styles.statsGrid}>
                 <div className={styles.statCard}>
                     <div className={styles.statInfo}>
-                        <span>Revenu Global</span>
+                        <span>Chiffre d'Affaires Global</span>
                         <h2>{stats.totalRevenue.toLocaleString()} F CFA</h2>
                     </div>
                     <div className={styles.statIcon}>💰</div>
                 </div>
                 <div className={styles.statCard}>
                     <div className={styles.statInfo}>
-                        <span>Total Tickets</span>
+                        <span>Tickets / Paiements</span>
                         <h2>{stats.totalTickets}</h2>
                     </div>
                     <div className={styles.statIcon}>🎫</div>
                 </div>
                 <div className={styles.statCard}>
                     <div className={styles.statInfo}>
-                        <span>Organisateurs</span>
-                        <h2>{stats.totalOrganizers}</h2>
-                    </div>
-                    <div className={styles.statIcon}>👥</div>
-                </div>
-                <div className={styles.statCard}>
-                    <div className={styles.statInfo}>
-                        <span>Événements</span>
+                        <span>Événements Actifs</span>
                         <h2>{stats.totalEvents}</h2>
                     </div>
                     <div className={styles.statIcon}>📅</div>
                 </div>
+                <div className={styles.statCard}>
+                    <div className={styles.statInfo}>
+                        <span>Cotisations / Collectes</span>
+                        <h2>{stats.totalCotisations}</h2>
+                    </div>
+                    <div className={styles.statIcon}>🤝</div>
+                </div>
             </div>
 
             <div className={styles.dashboardContent}>
+                {/* Main Section: Events & Items */}
                 <div className={styles.section}>
-                    <h3>Tous les Événements</h3>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                        <h3 style={{ margin: 0 }}>Tous les projets (Événements & Cotisations)</h3>
+                    </div>
                     <div style={{ overflowX: 'auto' }}>
                         <table className={styles.table}>
                             <thead>
                                 <tr>
-                                    <th>Événement</th>
+                                    <th>Nom du Projet</th>
+                                    <th>Type</th>
                                     <th>Organisateur</th>
-                                    <th>Date</th>
                                     <th>Statut</th>
                                 </tr>
                             </thead>
@@ -156,11 +165,15 @@ function AdminDashboardContent() {
                                 {events.map(e => (
                                     <tr key={e.id}>
                                         <td><strong>{e.title}</strong></td>
-                                        <td>{e.profiles?.email || 'Inconnu'}</td>
-                                        <td>{new Date(e.date).toLocaleDateString()}</td>
+                                        <td>
+                                            <span className={styles.badge} style={{ background: e.type === 'cotisation' ? '#e0f2fe' : '#f1f5f9' }}>
+                                                {e.type === 'cotisation' ? '🤝 Cotisation' : '📅 Événement'}
+                                            </span>
+                                        </td>
+                                        <td>{e.profiles?.full_name || e.profiles?.email || 'Inconnu'}</td>
                                         <td>
                                             <span className={`${styles.badge} ${e.is_published ? styles.badgeSuccess : styles.badgeInfo}`}>
-                                                {e.is_published ? "Publié" : "Brouillon"}
+                                                {e.is_published ? "Actif" : "Brouillon"}
                                             </span>
                                         </td>
                                     </tr>
@@ -170,17 +183,42 @@ function AdminDashboardContent() {
                     </div>
                 </div>
 
+                {/* Sidebar Section: Recent Sales */}
                 <div className={styles.section}>
-                    <h3>Derniers Organisateurs</h3>
+                    <h3>Ventes Récentes</h3>
+                    <div className={styles.activityFeed}>
+                        {recentTickets.length > 0 ? recentTickets.map(t => (
+                            <div key={t.id} className={styles.activityItem}>
+                                <div className={styles.activityMain}>
+                                    <div className={styles.activityCircle} style={{ background: t.events?.type === 'cotisation' ? '#e0f2fe' : '#fef3c7' }}>
+                                        {t.events?.type === 'cotisation' ? '🤝' : '🎟️'}
+                                    </div>
+                                    <div className={styles.activityInfo}>
+                                        <p><strong>{t.user_name || 'Client'}</strong></p>
+                                        <span>{t.events?.title || 'Événement'}</span>
+                                    </div>
+                                </div>
+                                <div className={styles.activityAmount}>
+                                    +{Number(t.amount).toLocaleString()} F
+                                </div>
+                            </div>
+                        )) : (
+                            <p style={{ textAlign: 'center', color: '#64748b', fontSize: '0.875rem' }}>Aucune vente récente</p>
+                        )}
+                    </div>
+
+                    <h3 style={{ marginTop: '2rem' }}>Nouveaux Organisateurs</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         {organizers.slice(0, 5).map(o => (
                             <div key={o.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.5rem', borderBottom: '1px solid #f1f5f9' }}>
-                                <div style={{ width: '40px', height: '40px', background: '#ff5a1f', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>
+                                <div style={{ width: '32px', height: '32px', background: '#ff5a1f', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '0.8rem' }}>
                                     {o.email?.charAt(0).toUpperCase()}
                                 </div>
-                                <div>
-                                    <p style={{ margin: 0, fontWeight: 'bold' }}>{o.company_name || o.full_name || o.email?.split('@')[0]}</p>
-                                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748b' }}>{o.email}</p>
+                                <div style={{ overflow: 'hidden' }}>
+                                    <p style={{ margin: 0, fontWeight: 'bold', fontSize: '0.875rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        {o.company_name || o.full_name || o.email?.split('@')[0]}
+                                    </p>
+                                    <p style={{ margin: 0, fontSize: '0.7rem', color: '#64748b' }}>{o.email}</p>
                                 </div>
                             </div>
                         ))}
