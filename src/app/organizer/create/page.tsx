@@ -57,13 +57,18 @@ export default function CreateEventPage() {
     useEffect(() => {
         async function fetchCategories() {
             const { data, error } = await supabase
-                .schema('ita_arena')
                 .from('categories')
                 .select('*')
                 .eq('type', 'event');
+            
             if (error) {
                 console.error("Error fetching categories:", error);
+                alert("Erreur catégories : " + error.message);
             } else if (data) {
+                console.log("Categories loaded:", data);
+                if (data.length === 0) {
+                    alert("Aucune catégorie trouvée dans la base de données.");
+                }
                 setCategories(data);
                 if (!formData.category_id && data.length > 0) {
                     setFormData(prev => ({ ...prev, category_id: data[0].id }));
