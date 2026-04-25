@@ -1,59 +1,34 @@
 "use client";
 
-import styles from "./FeaturedEvents.module.css";
-import { useMode } from "@/context/ModeContext";
-import { useCountry } from "@/context/CountryContext";
-import Link from "next/link";
 import { useState, useEffect } from "react";
+import styles from "./FeaturedEvents.module.css";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
-export default function FeaturedEvents() {
-    const { mode, activeCategory } = useMode();
-    const { selectedCountry, countries } = useCountry();
+interface FeaturedEventsProps {
+    mode: 'events' | 'cotisations';
+}
+
+const countries = [
+    { name: "Bénin", flag: "https://flagcdn.com/w40/bj.png" },
+    { name: "Côte d'Ivoire", flag: "https://flagcdn.com/w40/ci.png" },
+    { name: "Sénégal", flag: "https://flagcdn.com/w40/sn.png" },
+    { name: "Togo", flag: "https://flagcdn.com/w40/tg.png" },
+];
+
+export default function FeaturedEvents({ mode }: FeaturedEventsProps) {
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-
+    const [activeCategory, setActiveCategory] = useState('all');
+    const [selectedCountry, setSelectedCountry] = useState(countries[0]);
     const [likedEvents, setLikedEvents] = useState<string[]>([]);
-
-    useEffect(() => {
-        const saved = localStorage.getItem("likedEvents");
-        if (saved) {
-            setLikedEvents(JSON.parse(saved));
-        }
-    }, []);
-
-    const handleLike = async (e: React.MouseEvent, eventId: string) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (likedEvents.includes(eventId)) return;
-
-        // Optimistic update
-        const newData = data.map(item => 
-            item.id === eventId ? { ...item, likes_count: (item.likes_count || 0) + 1 } : item
-        );
-        setData(newData);
-        
-        const newLiked = [...likedEvents, eventId];
-        setLikedEvents(newLiked);
-        localStorage.setItem("likedEvents", JSON.stringify(newLiked));
-
-        // DB update
-        const { error } = await supabase.rpc('increment_likes', { event_id: eventId });
-        if (error) {
-            console.error("Error liking event:", error);
-        }
-    };
 
     useEffect(() => {
         async function fetchData() {
             setLoading(true);
             let query = supabase
                 .from('events_with_stats')
-                .select(`
-                    *,
-                    organizer:profiles(name:full_name, avatar_url)
-                `)
+                .select('*')
                 .eq('type', mode === 'events' ? 'event' : 'cotisation')
                 .eq('country', selectedCountry.name);
 
@@ -75,11 +50,36 @@ export default function FeaturedEvents() {
         fetchData();
     }, [mode, activeCategory, selectedCountry]);
 
+    const handleLike = async (e: React.MouseEvent, id: string) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (likedEvents.includes(id)) {
+            setLikedEvents(prev => prev.filter(item => item !== id));
+        } else {
+            setLikedEvents(prev => [...prev, id]);
+        }
+    };
+
     if (loading) return <div className="container" style={{ padding: '2rem', textAlign: 'center' }}>Chargement...</div>;
 
     return (
         <section id="events-grid" className={styles.section}>
             <div className="container">
+                <div className={styles.filters}>
+                    <div className={styles.countryTabs}>
+                        {countries.map(c => (
+                            <button 
+                                key={c.name}
+                                className={`${styles.countryTab} ${selectedCountry.name === c.name ? styles.activeCountry : ""}`}
+                                onClick={() => setSelectedCountry(c)}
+                            >
+                                <img src={c.flag} alt={c.name} className={styles.flag} />
+                                <span>{c.name}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
                 {data.length > 0 ? (
                     <div className={styles.grid}>
                         {data.map((item: any) => {
@@ -114,6 +114,15 @@ export default function FeaturedEvents() {
                                             </div>
                                         </div>
 
+                                        <div className={styles.organizerRow}>
+                                            <img 
+                                                src={item.organizer_avatar || "/placeholder-avatar.png"} 
+                                                alt={item.organizer_name} 
+                                                className={styles.miniAvatar} 
+                                            />
+                                            <span className={styles.orgName}>{item.organizer_name || "Organisateur"}</span>
+                                        </div>
+
                                         <div className={styles.metaInfo}>
                                             <div className={styles.metaLine}>
                                                 <span>📅</span>
@@ -138,7 +147,7 @@ export default function FeaturedEvents() {
                                                         <div className={styles.progressFill} style={{ width: `${percent}%` }}></div>
                                                     </div>
                                                     <div className={styles.goalLine}>
-                                                        <span>Objectif: {new Intl.NumberFormat('fr-FR').format(item.goal_amount)} F CFA</span>
+                                                        <span>Objectif: {new Intl.NumberFormat('fr-FR').format(item.target_amount)} F CFA</span>
                                                     </div>
                                                 </div>
                                             )}
@@ -150,50 +159,23 @@ export default function FeaturedEvents() {
                                                     className={styles.miniFlag} 
                                                 />
                                                 <span>📍</span>
-                                                <span>{item.location}</span>
+                                                <span className={styles.locationText}>{item.location}</span>
                                             </div>
                                         </div>
 
                                         <Link href={`/events/${item.id}`} className={styles.buyBtn}>
-                                            {mode === 'events' ? 'Acheter tickets' : 'Faire un don'}
+                                            {mode === 'events' ? "Réserver mon ticket" : "Contribuer"}
                                         </Link>
-
-                                        <div className={styles.organizerFooter}>
-                                            <div className={styles.orgInfo}>
-                                                {item.organizer && (
-                                                    <>
-                                                        {item.organizer.avatar_url ? (
-                                                            <img src={item.organizer.avatar_url} alt={item.organizer.name} className={styles.orgAvatar} />
-                                                        ) : (
-                                                            <div className={styles.orgInitials}>
-                                                                {item.organizer.name ? item.organizer.name.split(' ').map((n: any) => n[0]).join('').toUpperCase().substring(0, 2) : '??'}
-                                                            </div>
-                                                        )}
-                                                        <div className={styles.orgNameWrap}>
-                                                            <span className={styles.publiePar}>Publié par</span>
-                                                            <div className={styles.orgNameLine}>
-                                                                <span className={styles.orgName}>{item.organizer.name}</span>
-                                                                {item.organizer.is_verified && <span className={styles.verifiedCheck}>✓</span>}
-                                                            </div>
-                                                        </div>
-                                                    </>
-                                                )}
-                                            </div>
-                                            <button className={styles.subscribeBtn}>S'abonner</button>
-                                        </div>
                                     </div>
                                 </div>
                             );
                         })}
                     </div>
                 ) : (
-                    <div className={styles.noEvents}>
-                        <div className={styles.noEventsIcon}>🎭</div>
-                        <h3>Aucun évènement disponible</h3>
-                        <p>Il n'y a pas encore d'évènements dans cette catégorie. Revenez plus tard ou publiez le vôtre !</p>
-                        <Link href="/organizer/create" className={styles.publishPromptBtn}>
-                            Publier un évènement
-                        </Link>
+                    <div className={styles.empty}>
+                        <div className={styles.emptyIcon}>🎭</div>
+                        <h3>Aucun événement trouvé</h3>
+                        <p>Essayez de changer de catégorie ou de pays.</p>
                     </div>
                 )}
             </div>
