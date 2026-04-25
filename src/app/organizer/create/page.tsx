@@ -118,6 +118,17 @@ export default function CreateEventPage() {
         const finalDate = `${formData.start_date} au ${formData.end_date}`;
         const finalTime = `${formData.start_time}`;
 
+        // Calculate minimum price among ticket categories
+        let minPrice = "0";
+        if (!formData.is_free && formData.ticket_categories.length > 0) {
+            const prices = formData.ticket_categories
+                .map(cat => parseFloat(cat.price))
+                .filter(p => !isNaN(p));
+            if (prices.length > 0) {
+                minPrice = Math.min(...prices).toString();
+            }
+        }
+
         const submissionData = {
             title: formData.title,
             category_id: formData.category_id,
@@ -125,10 +136,11 @@ export default function CreateEventPage() {
             location: finalLocation,
             date: finalDate,
             time: finalTime,
-            price: formData.is_free ? "0" : (formData.ticket_categories[0]?.price || "0"),
+            price: formData.is_free ? "Gratuit" : (formData.ticket_categories.length > 1 ? `À partir de ${minPrice}` : minPrice),
             image_url: formData.image_url,
             type: formData.type,
-            organizer_id: formData.organizer_id
+            organizer_id: formData.organizer_id,
+            ticket_categories: formData.ticket_categories
         };
 
         const { data, error } = await supabase

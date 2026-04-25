@@ -21,21 +21,22 @@ function CheckoutContent() {
 
     // Data from URL or default fallback
     const eventName = searchParams.get("event") || "Événement ITA Arena";
-    const q1 = parseInt(searchParams.get("q1") || (searchParams.get("event") ? "0" : "1"));
-    const q2 = parseInt(searchParams.get("q2") || (searchParams.get("event") ? "0" : "1"));
-    const q3 = parseInt(searchParams.get("q3") || (searchParams.get("event") ? "0" : "1"));
+    // Dynamic ticket parsing from URL
+    const tickets = [];
+    for (let i = 1; i <= 10; i++) {
+        const qty = parseInt(searchParams.get(`q${i}`) || "0");
+        const price = parseInt(searchParams.get(`p${i}`) || "0");
+        const name = searchParams.get(`n${i}`) || (i === 1 ? "Standard" : i === 2 ? "VIP" : "VVIP");
+        
+        if (qty > 0) {
+            tickets.push({ name, price, qty });
+        }
+    }
 
-    const isSpecialEvent = eventName.includes("LA FOUINE") || eventName.includes("DIDI B");
-
-    const p1 = parseInt(searchParams.get("p1") || (isSpecialEvent ? "30000" : "10000"));
-    const p2 = parseInt(searchParams.get("p2") || (isSpecialEvent ? "50000" : "25000"));
-    const p3 = parseInt(searchParams.get("p3") || (isSpecialEvent ? "100000" : "50000"));
-
-    const tickets = [
-        { name: isSpecialEvent ? "GRAND PUBLIC" : "Pass Standard", price: p1, qty: q1 },
-        { name: isSpecialEvent ? "VIP" : "Pass VIP", price: p2, qty: q2 },
-        { name: isSpecialEvent ? "VVIP" : "Pass VVIP", price: p3, qty: q3 },
-    ].filter(t => t.qty > 0);
+    // Fallback for old URL format or default
+    if (tickets.length === 0 && !searchParams.get("event")) {
+        tickets.push({ name: "Pass Standard", price: 10000, qty: 1 });
+    }
 
     const total = tickets.reduce((acc, t) => acc + t.price * t.qty, 0);
 

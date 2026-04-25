@@ -78,7 +78,10 @@ export default function FeaturedEvents() {
                                             {mode === 'events' ? (
                                                 <div className={styles.priceLine}>
                                                     <span>💵</span>
-                                                    <span className={styles.priceText}>À partir de {item.price}</span>
+                                                    <span className={styles.priceText}>
+                                                        {item.price.includes("À partir de") ? item.price : `À partir de ${item.price}`}
+                                                        {item.price !== "Gratuit" && !item.price.includes("F CFA") ? " F CFA" : ""}
+                                                    </span>
                                                 </div>
                                             ) : (
                                                 <div className={styles.progressBarWrapper}>

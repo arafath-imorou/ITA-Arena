@@ -117,6 +117,7 @@ export default function EventDetailClient({ id }: { id: string }) {
                     <div className={styles.meta}>
                         <div className={styles.metaItem}>📅 {item.date} {item.time ? `| ${item.time}` : ''}</div>
                         <div className={styles.metaItem}>📍 {item.location}</div>
+                        <div className={styles.metaItem}>💵 {item.price}{item.price !== "Gratuit" && !item.price.includes("F CFA") ? " F CFA" : ""}</div>
                     </div>
                 </div>
             </div>
@@ -176,39 +177,53 @@ export default function EventDetailClient({ id }: { id: string }) {
                                 <h3>Billetterie</h3>
                                 <p className={styles.actionSub}>Réservez vos places</p>
 
-                                <div className={styles.ticketOption}>
-                                    <div className={styles.ticketInfo}>
-                                        <span className={styles.ticketName}>Pass Standard</span>
-                                        <span className={styles.ticketPrice}>{priceRegular === 0 ? "GRATUIT" : `${priceRegular.toLocaleString()} FCFA`}</span>
+                                {item.ticket_categories && item.ticket_categories.length > 0 ? (
+                                    item.ticket_categories.map((cat: any, idx: number) => (
+                                        <div key={idx} className={styles.ticketOption}>
+                                            <div className={styles.ticketInfo}>
+                                                <span className={styles.ticketName}>{cat.name}</span>
+                                                <span className={styles.ticketPrice}>
+                                                    {parseFloat(cat.price) === 0 ? "GRATUIT" : `${new Intl.NumberFormat('fr-FR').format(cat.price)} F CFA`}
+                                                </span>
+                                            </div>
+                                            <div className={styles.qtyControl}>
+                                                <button onClick={() => handleQtyChange(cat.name, -1)} className={styles.qtyBtn}>-</button>
+                                                <span className={styles.qtyVal}>{quantities[cat.name] || 0}</span>
+                                                <button onClick={() => handleQtyChange(cat.name, 1)} className={styles.qtyBtn}>+</button>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className={styles.ticketOption}>
+                                        <div className={styles.ticketInfo}>
+                                            <span className={styles.ticketName}>Entrée</span>
+                                            <span className={styles.ticketPrice}>{item.price}</span>
+                                        </div>
                                     </div>
-                                    <div className={styles.qtyControl}>
-                                        <button onClick={() => handleQtyChange("regular", -1)} className={styles.qtyBtn}>-</button>
-                                        <span className={styles.qtyVal}>{quantities.regular}</span>
-                                        <button onClick={() => handleQtyChange("regular", 1)} className={styles.qtyBtn}>+</button>
-                                    </div>
-                                </div>
-
-                                <div className={styles.ticketOption}>
-                                    <div className={styles.ticketInfo}>
-                                        <span className={styles.ticketName}>Pass VIP</span>
-                                        <span className={styles.ticketPrice}>{priceVip === 0 ? "GRATUIT" : `${priceVip.toLocaleString()} FCFA`}</span>
-                                    </div>
-                                    <div className={styles.qtyControl}>
-                                        <button onClick={() => handleQtyChange("vip", -1)} className={styles.qtyBtn}>-</button>
-                                        <span className={styles.qtyVal}>{quantities.vip}</span>
-                                        <button onClick={() => handleQtyChange("vip", 1)} className={styles.qtyBtn}>+</button>
-                                    </div>
-                                </div>
+                                )}
 
                                 <div className={styles.totalRow}>
                                     <span>Total à payer</span>
-                                    <span className={styles.totalVal}>{total.toLocaleString()} F CFA</span>
+                                    <span className={styles.totalVal}>{new Intl.NumberFormat('fr-FR').format(
+                                        (item.ticket_categories || []).reduce((acc: number, cat: any) => acc + (quantities[cat.name] || 0) * parseFloat(cat.price), 0)
+                                    )} F CFA</span>
                                 </div>
 
                                 <button
                                     className={styles.ctaBtn}
-                                    disabled={total === 0}
-                                    onClick={handlePurchase}
+                                    disabled={(item.ticket_categories || []).reduce((acc: number, cat: any) => acc + (quantities[cat.name] || 0), 0) === 0}
+                                    onClick={() => {
+                                        const params = new URLSearchParams();
+                                        params.set("event", item.title);
+                                        item.ticket_categories.forEach((cat: any, idx: number) => {
+                                            if (quantities[cat.name] > 0) {
+                                                params.set(`q${idx+1}`, quantities[cat.name].toString());
+                                                params.set(`p${idx+1}`, cat.price.toString());
+                                                params.set(`n${idx+1}`, cat.name);
+                                            }
+                                        });
+                                        window.location.href = `/checkout?${params.toString()}`;
+                                    }}
                                 >
                                     🎟️ ACHETER TICKETS
                                 </button>
