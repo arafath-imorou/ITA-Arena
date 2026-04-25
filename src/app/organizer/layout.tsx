@@ -137,7 +137,12 @@ export default function OrganizerLayout({
                 <div className={styles.sidebarFooter}>
                     <p>Version 2.0.0</p>
                     <p>© 2026 ITA Arena.</p>
+                    <div className={styles.sidebarSupport}>
+                        <span>Support: </span>
+                        <a href="tel:+2290152818100">+229 01 52 81 81 00</a>
+                    </div>
                 </div>
+
             </aside>
 
             {/* Main Content Area */}
