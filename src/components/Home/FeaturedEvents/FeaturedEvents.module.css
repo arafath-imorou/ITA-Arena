@@ -28,7 +28,7 @@
 
 .imageWrapper {
     position: relative;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 4 / 3;
     overflow: hidden;
     background: #f8f9fa;
 }
