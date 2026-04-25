@@ -15,7 +15,6 @@ export default function FeaturedEvents() {
         async function fetchData() {
             setLoading(true);
             let query = supabase
-                .schema('ita_arena')
                 .from('events')
                 .select(`
                     *,
