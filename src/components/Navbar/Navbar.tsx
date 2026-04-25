@@ -127,9 +127,9 @@ export default function Navbar() {
                           </div>
                           <hr className={styles.divider} />
                           <Link href="/organizer" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Tableau de bord</Link>
-                          <Link href="/organizer/events" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Mes évènements</Link>
+                          <Link href="/organizer" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Mes évènements</Link>
                           <Link href="/organizer/tickets" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Mes Tickets</Link>
-                          <Link href="/profile" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Mon Profil</Link>
+                          <Link href="/organizer/account" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Mon Profil</Link>
                           <hr className={styles.divider} />
                           <Link href="/about" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Qui sommes nous?</Link>
                           <Link href="/faq" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>FAQ</Link>

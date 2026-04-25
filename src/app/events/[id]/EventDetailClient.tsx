@@ -53,7 +53,24 @@ export default function EventDetailClient({ id }: { id: string }) {
         }));
     };
 
-    if (loading || !item) return <div className="container" style={{ padding: '4rem', textAlign: 'center' }}>Chargement de l'événement...</div>;
+    if (loading) return (
+        <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #FF5A1F', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+        </div>
+    );
+
+    if (!item) return (
+        <div className="container" style={{ padding: '100px 20px', textAlign: 'center' }}>
+            <div style={{ fontSize: '5rem', marginBottom: '20px' }}>🔍</div>
+            <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '15px' }}>Évènement introuvable</h2>
+            <p style={{ color: '#666', marginBottom: '30px', maxWidth: '500px', margin: '0 auto 30px' }}>
+                Désolé, cet évènement n'existe pas ou a été supprimé par son organisateur.
+            </p>
+            <Link href="/" className={styles.ctaBtn} style={{ maxWidth: '300px', margin: '0 auto', display: 'block', textDecoration: 'none' }}>
+                Retour à l'accueil
+            </Link>
+        </div>
+    );
 
     const priceRegular = item.regular_price ?? (isCotisation ? 0 : 10000);
     const priceVip = item.vip_price ?? (isCotisation ? 0 : 25000);

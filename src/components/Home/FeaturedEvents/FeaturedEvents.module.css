@@ -311,3 +311,56 @@
         grid-template-columns: 1fr;
     }
 }
+
+.noEvents {
+    background: #fdfdfd;
+    border: 2px dashed #eeeeee;
+    border-radius: 40px;
+    padding: 100px 40px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.noEventsIcon {
+    font-size: 5rem;
+    margin-bottom: 10px;
+    opacity: 0.8;
+}
+
+.noEvents h3 {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.noEvents p {
+    font-size: 1.2rem;
+    color: #666;
+    max-width: 500px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.publishPromptBtn {
+    background: var(--color-primary);
+    color: white;
+    padding: 18px 40px;
+    border-radius: 20px;
+    font-weight: 800;
+    text-decoration: none;
+    font-size: 1.1rem;
+    margin-top: 15px;
+    box-shadow: 0 10px 25px rgba(255, 90, 31, 0.2);
+    transition: all 0.3s ease;
+}
+
+.publishPromptBtn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(255, 90, 31, 0.3);
+}
