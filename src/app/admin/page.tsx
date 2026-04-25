@@ -23,6 +23,54 @@ function AdminDashboardContent() {
     const [recentTickets, setRecentTickets] = useState<any[]>([]);
     const [isAdmin, setIsAdmin] = useState(false);
 
+    const fetchAdminData = async () => {
+        setLoading(true);
+        try {
+            // 1. Fetch All Profiles that are organizers OR have created events
+            const { data: orgs } = await supabase
+                .schema('ita_arena')
+                .from('profiles')
+                .select('*')
+                .or('role.eq.organizer,id.in.(select organizer_id from ita_arena.events)');
+            
+            // 2. Fetch All Items (Events + Cotisations)
+            const { data: allItems } = await supabase
+                .schema('ita_arena')
+                .from('events')
+                .select('*, profiles!events_organizer_id_fkey(email, full_name)')
+                .order('created_at', { ascending: false });
+
+            // 3. Fetch Tickets with Event info
+            const { data: tix } = await supabase
+                .schema('ita_arena')
+                .from('tickets')
+                .select('*, events(title, type)')
+                .eq('status', 'valid')
+                .order('created_at', { ascending: false });
+
+            const totalRev = (tix || []).reduce((acc, t) => acc + Number(t.amount), 0);
+            const evtsOnly = (allItems || []).filter(i => i.type === 'event' || !i.type);
+            const cotisOnly = (allItems || []).filter(i => i.type === 'cotisation');
+
+            setStats({
+                totalRevenue: totalRev,
+                totalTickets: (tix || []).length,
+                totalOrganizers: (orgs || []).length,
+                totalEvents: evtsOnly.length,
+                totalCotisations: cotisOnly.length
+            });
+
+            setEvents(allItems || []);
+            setOrganizers(orgs || []);
+            setRecentTickets((tix || []).slice(0, 10));
+
+        } catch (err) {
+            console.error("Admin Data Error:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (!user) {
             router.push("/login");
@@ -44,56 +92,40 @@ function AdminDashboardContent() {
             fetchAdminData();
         }
 
-        async function fetchAdminData() {
-            setLoading(true);
-            try {
-                // 1. Fetch All Profiles that are organizers OR have created events
-                const { data: orgs } = await supabase
-                    .schema('ita_arena')
-                    .from('profiles')
-                    .select('*')
-                    .or('role.eq.organizer,id.in.(select organizer_id from ita_arena.events)');
-                
-                // 2. Fetch All Items (Events + Cotisations)
-                const { data: allItems } = await supabase
-                    .schema('ita_arena')
-                    .from('events')
-                    .select('*, profiles!events_organizer_id_fkey(email, full_name)')
-                    .order('created_at', { ascending: false });
-
-                // 3. Fetch Tickets with Event info
-                const { data: tix } = await supabase
-                    .schema('ita_arena')
-                    .from('tickets')
-                    .select('*, events(title, type)')
-                    .eq('status', 'valid')
-                    .order('created_at', { ascending: false });
-
-                const totalRev = (tix || []).reduce((acc, t) => acc + Number(t.amount), 0);
-                const evtsOnly = (allItems || []).filter(i => i.type === 'event' || !i.type);
-                const cotisOnly = (allItems || []).filter(i => i.type === 'cotisation');
-
-                setStats({
-                    totalRevenue: totalRev,
-                    totalTickets: (tix || []).length,
-                    totalOrganizers: (orgs || []).length,
-                    totalEvents: evtsOnly.length,
-                    totalCotisations: cotisOnly.length
-                });
-
-                setEvents(allItems || []);
-                setOrganizers(orgs || []);
-                setRecentTickets((tix || []).slice(0, 10));
-
-            } catch (err) {
-                console.error("Admin Data Error:", err);
-            } finally {
-                setLoading(false);
-            }
-        }
-
         verifyAdmin();
     }, [user, router]);
+
+    const togglePublish = async (eventId: string, currentStatus: boolean) => {
+        try {
+            const { error } = await supabase
+                .schema('ita_arena')
+                .from('events')
+                .update({ is_published: !currentStatus })
+                .eq('id', eventId);
+
+            if (error) throw error;
+            setEvents(events.map(e => e.id === eventId ? { ...e, is_published: !currentStatus } : e));
+        } catch (err) {
+            alert("Erreur lors de la modification du statut");
+        }
+    };
+
+    const deleteEvent = async (eventId: string) => {
+        if (!confirm("Voulez-vous vraiment supprimer définitivement cet événement ? Cette action est irréversible.")) return;
+
+        try {
+            const { error } = await supabase
+                .schema('ita_arena')
+                .from('events')
+                .delete()
+                .eq('id', eventId);
+
+            if (error) throw error;
+            setEvents(events.filter(e => e.id !== eventId));
+        } catch (err) {
+            alert("Erreur lors de la suppression. Il se peut que des tickets y soient liés.");
+        }
+    };
 
     if (loading) return (
         <div className={styles.loadingContainer}>
@@ -159,6 +191,7 @@ function AdminDashboardContent() {
                                     <th>Type</th>
                                     <th>Organisateur</th>
                                     <th>Statut</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -173,8 +206,28 @@ function AdminDashboardContent() {
                                         <td>{e.profiles?.full_name || e.profiles?.email || 'Inconnu'}</td>
                                         <td>
                                             <span className={`${styles.badge} ${e.is_published ? styles.badgeSuccess : styles.badgeInfo}`}>
-                                                {e.is_published ? "Actif" : "Brouillon"}
+                                                {e.is_published ? "Actif" : "Masqué"}
                                             </span>
+                                        </td>
+                                        <td>
+                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                <button 
+                                                    onClick={() => togglePublish(e.id, e.is_published)}
+                                                    className={styles.badge}
+                                                    style={{ border: 'none', cursor: 'pointer', background: e.is_published ? '#fef3c7' : '#dcfce7', color: e.is_published ? '#92400e' : '#166534' }}
+                                                    title={e.is_published ? "Masquer" : "Publier"}
+                                                >
+                                                    {e.is_published ? "⏸️" : "▶️"}
+                                                </button>
+                                                <button 
+                                                    onClick={() => deleteEvent(e.id)}
+                                                    className={styles.badge}
+                                                    style={{ border: 'none', cursor: 'pointer', background: '#fee2e2', color: '#991b1b' }}
+                                                    title="Supprimer"
+                                                >
+                                                    🗑️
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
