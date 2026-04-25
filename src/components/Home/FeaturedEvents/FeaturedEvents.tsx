@@ -26,25 +26,31 @@ export default function FeaturedEvents() {
     useEffect(() => {
         async function fetchData() {
             setLoading(true);
-            let query = supabase
-                .from('events_with_stats')
-                .select('*')
-                .eq('type', mode === 'events' ? 'event' : 'cotisation')
-                .eq('country', selectedCountry.name);
+            try {
+                let query = supabase
+                    .from('events_with_stats')
+                    .select('*')
+                    .eq('type', mode === 'events' ? 'event' : 'cotisation')
+                    .eq('is_published', true);
 
-            if (activeCategory !== 'all') {
-                query = query.eq('category_id', activeCategory);
-            }
+                if (selectedCountry) {
+                    query = query.eq('country', selectedCountry.name);
+                }
 
-            const { data: dbData, error } = await query;
+                if (activeCategory !== 'all') {
+                    query = query.eq('category_id', activeCategory);
+                }
 
-            if (error) {
-                console.error("Error fetching events:", error);
+                const { data: dbData, error } = await query;
+
+                if (error) throw error;
+                setData(dbData || []);
+            } catch (err) {
+                console.error("Error fetching events:", err);
                 setData([]);
-            } else if (dbData) {
-                setData(dbData);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         }
 
         fetchData();
