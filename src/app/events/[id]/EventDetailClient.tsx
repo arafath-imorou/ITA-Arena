@@ -148,7 +148,13 @@ export default function EventDetailClient({ id }: { id: string }) {
                     <section className={styles.organizerSection}>
                         <h2 className={styles.heading}>Organisateur</h2>
                         <div className={styles.organizerCard}>
-                            <img src={item.organizer?.avatar_url || "https://i.pravatar.cc/150?u=org"} alt={item.organizer?.name} className={styles.orgAvatar} />
+                            {item.organizer?.avatar_url ? (
+                                <img src={item.organizer.avatar_url} alt={item.organizer.name} className={styles.orgAvatar} />
+                            ) : (
+                                <div className={styles.orgInitials}>
+                                    {item.organizer?.name ? item.organizer.name.split(' ').map((n: any) => n[0]).join('').toUpperCase().substring(0, 2) : '??'}
+                                </div>
+                            )}
                             <div className={styles.orgMeta}>
                                 <h4>{item.organizer?.name || "Organisateur ITA"}</h4>
                                 <p>{item.organizer?.is_verified ? "Organisation vérifiée" : "Organisateur certifié"}</p>

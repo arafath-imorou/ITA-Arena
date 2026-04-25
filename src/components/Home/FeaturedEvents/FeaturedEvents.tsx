@@ -120,7 +120,13 @@ export default function FeaturedEvents() {
                                             <div className={styles.orgInfo}>
                                                 {item.organizer && (
                                                     <>
-                                                        <img src={item.organizer.avatar_url} alt={item.organizer.name} className={styles.orgAvatar} />
+                                                        {item.organizer.avatar_url ? (
+                                                            <img src={item.organizer.avatar_url} alt={item.organizer.name} className={styles.orgAvatar} />
+                                                        ) : (
+                                                            <div className={styles.orgInitials}>
+                                                                {item.organizer.name ? item.organizer.name.split(' ').map((n: any) => n[0]).join('').toUpperCase().substring(0, 2) : '??'}
+                                                            </div>
+                                                        )}
                                                         <div className={styles.orgNameWrap}>
                                                             <span className={styles.publiePar}>Publié par</span>
                                                             <div className={styles.orgNameLine}>
