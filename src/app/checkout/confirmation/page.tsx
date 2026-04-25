@@ -12,6 +12,10 @@ function ConfirmationContent() {
     const searchParams = useSearchParams();
     const sessionId = searchParams.get("session");
     const eventId = searchParams.get("event");
+    const [tickets, setTickets] = useState<any[]>([]);
+    const [event, setEvent] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const router = useRouter();
     const [qrCodes, setQrCodes] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
