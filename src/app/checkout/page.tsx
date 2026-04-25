@@ -93,7 +93,9 @@ function CheckoutContent() {
                     ticketsToCreate.push({
                         event_id: eventId,
                         user_email: email,
-                        user_phone: phone,
+                        user_phone: phone, // Contact phone
+                        user_name: fullName, // Buyer name
+                        payment_phone: paymentPhone, // Phone used for payment
                         category: t.name,
                         amount: t.price,
                         qr_code_key: qrKey,
@@ -104,6 +106,9 @@ function CheckoutContent() {
             }
 
             if (ticketsToCreate.length > 0) {
+                // SIMULATION: Here we would normally call FedaPay / KKiaPay API
+                // console.log("Triggering payment prompt for:", paymentPhone, "Amount:", total);
+                
                 const { data, error } = await supabase
                     .from('tickets')
                     .insert(ticketsToCreate)
@@ -114,7 +119,7 @@ function CheckoutContent() {
                     throw error;
                 }
 
-                // Redirect to confirmation with session ID instead of just one ticket ID
+                // Redirect to confirmation with session ID
                 router.push(`/checkout/confirmation?session=${checkoutSessionId}&event=${eventId}`);
             } else {
                 throw new Error("Erreur lors de l'enregistrement des tickets");
