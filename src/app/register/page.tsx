@@ -1,4 +1,5 @@
 "use client";
+// Version 1.2 - Extended Onboarding (Individual/Enterprise)
 
 import Link from "next/link";
 import { useState } from "react";
