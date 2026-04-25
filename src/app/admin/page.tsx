@@ -23,42 +23,63 @@ function AdminDashboardContent() {
     const [recentTickets, setRecentTickets] = useState<any[]>([]);
     const [isAdmin, setIsAdmin] = useState(false);
 
-    const fetchAdminData = async () => {
-        setLoading(true);
-        try {
-            // 1. Fetch All Profiles (from public schema)
-            const { data: orgs } = await supabase
+            // 1. Fetch All Profiles
+            const { data: profilesData } = await supabase
                 .from('profiles')
                 .select('*');
             
-            // 2. Fetch All Items (Events + Cotisations) from public view
-            const { data: allItems } = await supabase
+            // 2. Fetch All Items (Events + Cotisations)
+            const { data: eventsData } = await supabase
                 .from('events')
-                .select('*, profiles:organizer_id(email, full_name)')
+                .select('*')
                 .order('created_at', { ascending: false });
 
-            // 3. Fetch Tickets (from public schema)
-            const { data: tix } = await supabase
+            // 3. Fetch Tickets
+            const { data: ticketsData } = await supabase
                 .from('tickets')
-                .select('*, events:event_id(title, type)')
+                .select('*')
                 .eq('status', 'valid')
                 .order('created_at', { ascending: false });
 
-            const totalRev = (tix || []).reduce((acc, t) => acc + Number(t.amount), 0);
-            const evtsOnly = (allItems || []).filter(i => i.type === 'event' || !i.type);
-            const cotisOnly = (allItems || []).filter(i => i.type === 'cotisation');
+            // Create a map for easy profile lookup
+            const profileMap = (profilesData || []).reduce((acc: any, p) => {
+                acc[p.id] = p;
+                return acc;
+            }, {});
+
+            // Create a map for easy event lookup
+            const eventMap = (eventsData || []).reduce((acc: any, e) => {
+                acc[e.id] = e;
+                return acc;
+            }, {});
+
+            // Enrich events with their profiles
+            const enrichedEvents = (eventsData || []).map(e => ({
+                ...e,
+                profiles: profileMap[e.organizer_id] || null
+            }));
+
+            // Enrich tickets with their events
+            const enrichedTickets = (ticketsData || []).map(t => ({
+                ...t,
+                events: eventMap[t.event_id] || null
+            }));
+
+            const totalRev = (ticketsData || []).reduce((acc, t) => acc + Number(t.amount), 0);
+            const evtsOnly = enrichedEvents.filter(i => i.type === 'event' || !i.type);
+            const cotisOnly = enrichedEvents.filter(i => i.type === 'cotisation');
 
             setStats({
                 totalRevenue: totalRev,
-                totalTickets: (tix || []).length,
-                totalOrganizers: (orgs || []).length,
+                totalTickets: (ticketsData || []).length,
+                totalOrganizers: (profilesData || []).filter(p => p.role === 'organizer').length,
                 totalEvents: evtsOnly.length,
                 totalCotisations: cotisOnly.length
             });
 
-            setEvents(allItems || []);
-            setOrganizers(orgs || []);
-            setRecentTickets((tix || []).slice(0, 10));
+            setEvents(enrichedEvents);
+            setOrganizers((profilesData || []).filter(p => p.role === 'organizer' || enrichedEvents.some(e => e.organizer_id === p.id)));
+            setRecentTickets(enrichedTickets.slice(0, 10));
 
         } catch (err) {
             console.error("Admin Data Error:", err);
