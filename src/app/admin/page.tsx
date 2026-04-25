@@ -175,7 +175,7 @@ function AdminDashboardContent() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         {organizers.slice(0, 5).map(o => (
                             <div key={o.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.5rem', borderBottom: '1px solid #f1f5f9' }}>
-                                <div style={{ width: '40px', height: '40px', background: '#ff5a1f', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyCenter: 'center', color: 'white', fontWeight: 'bold' }}>
+                                <div style={{ width: '40px', height: '40px', background: '#ff5a1f', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>
                                     {o.email?.charAt(0).toUpperCase()}
                                 </div>
                                 <div>
