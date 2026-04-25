@@ -13,7 +13,7 @@ export default function OrganizerLayout({
 }) {
     const pathname = usePathname();
     const router = useRouter();
-    const { user, loading, signOut } = useAuth();
+    const { user, loading, signOut, role } = useAuth();
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
     useEffect(() => {
@@ -57,6 +57,16 @@ export default function OrganizerLayout({
                     >
                         <span className={styles.navIcon}>📊</span> Tableau de bord
                     </Link>
+
+                    {role === 'admin' && (
+                        <Link
+                            href="/admin"
+                            className={`${styles.navItem}`}
+                            style={{ background: 'rgba(255, 90, 31, 0.1)', color: '#ff5a1f', fontWeight: 'bold', borderLeft: '4px solid #ff5a1f' }}
+                        >
+                            <span className={styles.navIcon}>🔧</span> Administration
+                        </Link>
+                    )}
 
                     <div className={styles.navGroup}>
                         <span className={styles.groupLabel}>Événements</span>
@@ -153,6 +163,12 @@ export default function OrganizerLayout({
                                         <p className={styles.dropdownCode}>Code client: <span style={{ color: '#e53e3e', fontWeight: 800 }}>INVITE</span></p>
                                     </div>
                                     <hr className={styles.dropdownDivider} />
+                                    {role === 'admin' && (
+                                        <>
+                                            <Link href="/admin" className={styles.dropdownItem} style={{ color: '#ff5a1f', fontWeight: 'bold' }}>🔧 Administration</Link>
+                                            <hr className={styles.dropdownDivider} />
+                                        </>
+                                    )}
                                     <Link href="/profile" className={styles.dropdownItem}>Mon Profil</Link>
                                     <Link href="/organizer/account" className={styles.dropdownItem}>Paramètres</Link>
                                     <hr className={styles.dropdownDivider} />
