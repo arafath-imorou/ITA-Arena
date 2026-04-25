@@ -257,6 +257,14 @@
     border: 2px solid white;
 }
 
+.paymentDetailsForm {
+    background-color: #F8FAFC;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px dashed #DEE5ED;
+    margin-bottom: 2rem;
+}
+
 .totalDisplay {
     text-align: center;
     font-size: 1.1rem;

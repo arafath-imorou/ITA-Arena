@@ -14,7 +14,10 @@ function CheckoutContent() {
     const [timeLeft, setTimeLeft] = useState(1799); // 29:59 (approx 30 mins)
     const [email, setEmail] = useState("arafathimorou@gmail.com");
     const [phone, setPhone] = useState("");
+    const [fullName, setFullName] = useState("");
+    const [paymentPhone, setPaymentPhone] = useState("");
     const [termsAccepted, setTermsAccepted] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
     const router = useRouter();
 
     const eventId = searchParams.get("id") || "d5d140e6-921a-4c9c-b36d-dcc6c478a846"; // Default or from URL
@@ -312,7 +315,10 @@ function CheckoutContent() {
                                 <div
                                     key={op.name}
                                     className={`${styles.paymentMethodCard} ${paymentMethod === op.name.toLowerCase() ? styles.active : ''}`}
-                                    onClick={() => setPaymentMethod(op.name.toLowerCase())}
+                                    onClick={() => {
+                                        setPaymentMethod(op.name.toLowerCase());
+                                        if (!paymentPhone) setPaymentPhone(phone);
+                                    }}
                                 >
                                     <div className={styles.methodLogo}>
                                         <img src={op.logo} alt={op.name} />
@@ -333,6 +339,33 @@ function CheckoutContent() {
                                 <span>Carte bancaire</span>
                             </div>
                         </div>
+
+                        {paymentMethod !== "card" && (
+                            <div className={styles.paymentDetailsForm}>
+                                <div className={styles.inputGroup}>
+                                    <label>Nom & Prénom <span style={{ color: '#FF5A1F' }}>*</span></label>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Ex: Sadath IMOROU" 
+                                        className={styles.customInput} 
+                                        value={fullName}
+                                        onChange={(e) => setFullName(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div className={styles.inputGroup}>
+                                    <label>Numéro de paiement ({paymentMethod.toUpperCase()}) <span style={{ color: '#FF5A1F' }}>*</span></label>
+                                    <input 
+                                        type="tel" 
+                                        placeholder="Ex: +229 90 00 00 00" 
+                                        className={styles.customInput} 
+                                        value={paymentPhone}
+                                        onChange={(e) => setPaymentPhone(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        )}
 
                         <div className={styles.totalDisplay}>
                             Total à payer : <strong>{total.toLocaleString()} F CFA</strong>
