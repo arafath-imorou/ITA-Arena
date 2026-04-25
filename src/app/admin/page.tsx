@@ -26,46 +26,44 @@ function AdminDashboardContent() {
     const fetchAdminData = async () => {
         setLoading(true);
         try {
+            // On utilise uniquement le schéma par défaut pour une fiabilité maximale
+            
             // 1. Fetch All Profiles
             const { data: profilesData } = await supabase
-                .schema('ita_arena')
                 .from('profiles')
                 .select('*');
             
-            // 2. Fetch All Items (Events + Cotisations)
+            // 2. Fetch All Items (via la vue public.events)
             const { data: eventsData } = await supabase
-                .schema('ita_arena')
                 .from('events')
                 .select('*')
                 .order('created_at', { ascending: false });
 
             // 3. Fetch Tickets
             const { data: ticketsData } = await supabase
-                .schema('ita_arena')
                 .from('tickets')
                 .select('*')
                 .eq('status', 'valid')
                 .order('created_at', { ascending: false });
 
-            // Create a map for easy profile lookup
+            // Création des maps pour le croisement des données en mémoire
             const profileMap = (profilesData || []).reduce((acc: any, p) => {
                 acc[p.id] = p;
                 return acc;
             }, {});
 
-            // Create a map for easy event lookup
             const eventMap = (eventsData || []).reduce((acc: any, e) => {
                 acc[e.id] = e;
                 return acc;
             }, {});
 
-            // Enrich events with their profiles
+            // Enrichissement des événements avec les profils
             const enrichedEvents = (eventsData || []).map(e => ({
                 ...e,
                 profiles: profileMap[e.organizer_id] || null
             }));
 
-            // Enrich tickets with their events
+            // Enrichissement des tickets avec les événements
             const enrichedTickets = (ticketsData || []).map(t => ({
                 ...t,
                 events: eventMap[t.event_id] || null
@@ -121,7 +119,6 @@ function AdminDashboardContent() {
     const togglePublish = async (eventId: string, currentStatus: boolean) => {
         try {
             const { error } = await supabase
-                .schema('ita_arena')
                 .from('events')
                 .update({ is_published: !currentStatus })
                 .eq('id', eventId);
@@ -138,7 +135,6 @@ function AdminDashboardContent() {
 
         try {
             const { error } = await supabase
-                .schema('ita_arena')
                 .from('events')
                 .delete()
                 .eq('id', eventId);
@@ -146,7 +142,7 @@ function AdminDashboardContent() {
             if (error) throw error;
             setEvents(events.filter(e => e.id !== eventId));
         } catch (err) {
-            alert("Erreur lors de la suppression. Il se peut que des tickets y soient liés.");
+            alert("Erreur lors de la suppression.");
         }
     };
 
