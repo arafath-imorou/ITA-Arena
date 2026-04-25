@@ -12,7 +12,6 @@ export default function EventsPage() {
     useEffect(() => {
         async function fetchCategories() {
             const { data, error } = await supabase
-                .schema('ita_arena')
                 .from('categories')
                 .select('*')
                 .eq('type', 'event');
@@ -31,7 +30,6 @@ export default function EventsPage() {
         async function fetchEvents() {
             setLoading(true);
             let query = supabase
-                .schema('ita_arena')
                 .from('events')
                 .select(`
                     *,

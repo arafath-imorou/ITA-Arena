@@ -103,7 +103,6 @@ export default function CreateCotisationPage() {
         };
 
         const { data, error } = await supabase
-            .schema('ita_arena')
             .from('events')
             .insert([submissionData]);
 

@@ -25,7 +25,6 @@ export default function AccountPage() {
             if (!user) return;
             
             const { data, error } = await supabase
-                .schema('ita_arena')
                 .from('profiles')
                 .select('*')
                 .eq('id', user.id)
@@ -51,7 +50,6 @@ export default function AccountPage() {
         setIsEditing(false);
         
         const { error } = await supabase
-            .schema('ita_arena')
             .from('profiles')
             .update({
                 full_name: profile.name,

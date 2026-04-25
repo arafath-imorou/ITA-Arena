@@ -132,7 +132,6 @@ export default function CreateEventPage() {
         };
 
         const { data, error } = await supabase
-            .schema('ita_arena')
             .from('events')
             .insert([submissionData]);
 

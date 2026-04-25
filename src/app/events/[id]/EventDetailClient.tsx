@@ -25,7 +25,6 @@ export default function EventDetailClient({ id }: { id: string }) {
             
             // Fetch from database
             const { data, error } = await supabase
-                .schema('ita_arena')
                 .from('events')
                 .select('*, organizer:profiles(name:full_name, avatar_url)')
                 .eq('id', id)

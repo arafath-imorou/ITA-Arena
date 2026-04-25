@@ -23,7 +23,6 @@ function DashboardContent() {
 
             // Fetch based on mode
             const { data, error } = await supabase
-                .schema('ita_arena')
                 .from('events')
                 .select('*')
                 .eq('organizer_id', user.id)

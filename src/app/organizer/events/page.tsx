@@ -17,7 +17,6 @@ function EventsListContent() {
             if (!user) return;
             setLoading(true);
             const { data, error } = await supabase
-                .schema('ita_arena')
                 .from('events')
                 .select('*')
                 .eq('organizer_id', user.id)
