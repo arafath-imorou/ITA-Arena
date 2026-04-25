@@ -19,6 +19,7 @@ export default function OrganizerDashboard() {
 
             // Fetch all events for this organizer
             const { data: eventsData, error: eventsError } = await supabase
+                .schema('ita_arena')
                 .from('events')
                 .select('*')
                 .eq('organizer_id', user.id)

@@ -57,6 +57,7 @@ export default function CreateEventPage() {
     useEffect(() => {
         async function fetchCategories() {
             const { data, error } = await supabase
+                .schema('ita_arena')
                 .from('categories')
                 .select('*')
                 .eq('type', 'event');
@@ -126,6 +127,7 @@ export default function CreateEventPage() {
         };
 
         const { data, error } = await supabase
+            .schema('ita_arena')
             .from('events')
             .insert([submissionData]);
 
