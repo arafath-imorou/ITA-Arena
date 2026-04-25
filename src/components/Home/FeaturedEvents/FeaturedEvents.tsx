@@ -2,12 +2,14 @@
 
 import styles from "./FeaturedEvents.module.css";
 import { useMode } from "@/context/ModeContext";
+import { useCountry } from "@/context/CountryContext";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 
 export default function FeaturedEvents() {
     const { mode, activeCategory } = useMode();
+    const { selectedCountry, countries } = useCountry();
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -20,7 +22,8 @@ export default function FeaturedEvents() {
                     *,
                     organizer:profiles(name:full_name, avatar_url)
                 `)
-                .eq('type', mode === 'events' ? 'event' : 'cotisation');
+                .eq('type', mode === 'events' ? 'event' : 'cotisation')
+                .eq('country', selectedCountry.name);
 
             if (activeCategory !== 'all') {
                 query = query.eq('category_id', activeCategory);
@@ -38,7 +41,7 @@ export default function FeaturedEvents() {
         }
 
         fetchData();
-    }, [mode, activeCategory]);
+    }, [mode, activeCategory, selectedCountry]);
 
     if (loading) return <div className="container" style={{ padding: '2rem', textAlign: 'center' }}>Chargement...</div>;
 
@@ -99,7 +102,11 @@ export default function FeaturedEvents() {
                                             )}
 
                                             <div className={styles.locationLine}>
-                                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fe/Flag_of_Cote_d%27Ivoire.svg" alt="CI" className={styles.miniFlag} />
+                                                <img 
+                                                    src={countries.find(c => c.name === item.country)?.flag || "https://flagcdn.com/w40/bj.png"} 
+                                                    alt={item.country} 
+                                                    className={styles.miniFlag} 
+                                                />
                                                 <span>📍</span>
                                                 <span>{item.location}</span>
                                             </div>

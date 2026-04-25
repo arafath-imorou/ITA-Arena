@@ -4,10 +4,12 @@ import { useState, useEffect } from "react";
 import styles from "./Events.module.css";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { useCountry } from "@/context/CountryContext";
 
 export default function EventsPage() {
     const [categories, setCategories] = useState<any[]>([]);
     const [events, setEvents] = useState<any[]>([]);
+    const { selectedCountry } = useCountry();
 
     useEffect(() => {
         async function fetchCategories() {
@@ -35,7 +37,8 @@ export default function EventsPage() {
                     *,
                     organizer:profiles(name:full_name, avatar_url)
                 `)
-                .eq('type', 'event');
+                .eq('type', 'event')
+                .eq('country', selectedCountry.name);
 
             if (selectedCategory !== "all") {
                 query = query.eq('category_id', selectedCategory.toLowerCase());
@@ -52,7 +55,7 @@ export default function EventsPage() {
         }
 
         fetchEvents();
-    }, [selectedCategory]);
+    }, [selectedCategory, selectedCountry]);
 
     return (
         <div className={styles.page}>

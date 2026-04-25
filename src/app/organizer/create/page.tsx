@@ -140,7 +140,8 @@ export default function CreateEventPage() {
             image_url: formData.image_url,
             type: formData.type,
             organizer_id: formData.organizer_id,
-            ticket_categories: formData.ticket_categories
+            ticket_categories: formData.ticket_categories,
+            country: formData.country
         };
 
         const { data, error } = await supabase
