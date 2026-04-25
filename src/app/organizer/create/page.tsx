@@ -8,11 +8,11 @@ import { supabase } from "@/lib/supabase";
 import { useMode } from "@/context/ModeContext";
 import BackButton from "@/components/BackButton";
 
-// Placeholder for current organizer until real auth is integrated
-const ORGANIZER_ID = 'd5d140e6-921a-4c9c-b36d-dcc6c478a846';
+import { useAuth } from "@/context/AuthContext";
 
 export default function CreateEventPage() {
     const router = useRouter();
+    const { user } = useAuth();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -45,8 +45,14 @@ export default function CreateEventPage() {
         ],
         image_url: "",
         type: "event",
-        organizer_id: ORGANIZER_ID
+        organizer_id: "" // Will be set on submit
     });
+
+    useEffect(() => {
+        if (user) {
+            setFormData(prev => ({ ...prev, organizer_id: user.id }));
+        }
+    }, [user]);
 
     useEffect(() => {
         async function fetchCategories() {

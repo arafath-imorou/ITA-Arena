@@ -1,26 +1,74 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "../Organizer.module.css";
 import Link from "next/link";
 import BackButton from "@/components/BackButton";
+import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabase";
 
 export default function AccountPage() {
+    const { user } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState({
-        name: "Global Events Africa",
-        email: "groupita25@gmail.com",
-        phone: "002290152818100",
-        address: "Parakou (BENIN)",
-        bio: "La référence en organisation d'événements culturels et corporatifs au Bénin.",
-        website: "www.ita-arena.com"
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
+        bio: "",
+        website: ""
     });
 
-    const handleSave = () => {
+    useEffect(() => {
+        async function fetchProfile() {
+            if (!user) return;
+            
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            if (data) {
+                setProfile({
+                    name: data.full_name || data.company_name || user.email?.split('@')[0] || "",
+                    email: data.email || user.email || "",
+                    phone: data.phone || "",
+                    address: `${data.city || ""}${data.city && data.country ? ", " : ""}${data.country || ""}`,
+                    bio: data.profession || data.business_sector || "",
+                    website: ""
+                });
+            }
+            setLoading(false);
+        }
+        fetchProfile();
+    }, [user]);
+
+    const handleSave = async () => {
+        if (!user) return;
         setIsEditing(false);
-        // In a real app, you'd call supabase.from('organizers').update(...) here
-        alert("Profil mis à jour avec succès !");
+        
+        const { error } = await supabase
+            .from('profiles')
+            .update({
+                full_name: profile.name,
+                phone: profile.phone,
+            })
+            .eq('id', user.id);
+
+        if (error) {
+            alert("Erreur lors de la mise à jour : " + error.message);
+        } else {
+            alert("Profil mis à jour avec succès !");
+        }
     };
+
+    if (loading) return (
+        <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #FF5A1F', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+        </div>
+    );
 
     return (
         <div className={styles.accountPage}>
@@ -49,7 +97,7 @@ export default function AccountPage() {
             <div className={styles.accountGrid}>
                 <div className={styles.profileCard}>
                     <div className={styles.profileHeader}>
-                        <div className={styles.largeAvatar}>G</div>
+                        <div className={styles.largeAvatar}>{profile.name?.charAt(0).toUpperCase()}</div>
                         <div>
                             <h3>{profile.name}</h3>
                             <p>{profile.email}</p>

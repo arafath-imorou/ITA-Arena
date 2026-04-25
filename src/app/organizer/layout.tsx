@@ -3,8 +3,8 @@
 import styles from "./OrganizerLayout.module.css";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function OrganizerLayout({
     children,
@@ -13,15 +13,28 @@ export default function OrganizerLayout({
 }) {
     const pathname = usePathname();
     const router = useRouter();
+    const { user, loading, signOut } = useAuth();
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
-    const handleLogout = async () => {
-        const { error } = await supabase.auth.signOut();
-        if (error) {
-            console.error("Error signing out:", error);
+    useEffect(() => {
+        if (!loading && !user) {
+            router.push('/login');
         }
+    }, [user, loading, router]);
+
+    const handleLogout = async () => {
+        await signOut();
         router.push('/');
     };
+
+    if (loading) return (
+        <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #FF5A1F', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+            <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+        </div>
+    );
+
+    if (!user) return null;
 
     return (
         <div className={styles.dashboardLayout}>
@@ -128,15 +141,15 @@ export default function OrganizerLayout({
                         <div className={styles.notifIcon}>🔔 <span className={styles.dot}></span></div>
                         <Link href="/" className={styles.homeIcon}>🏠</Link>
                         <div className={styles.profileMenu} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
-                            <div className={styles.avatar}>G</div>
-                            <span className={styles.organizerName}>Global Events</span>
+                            <div className={styles.avatar}>{user?.email?.charAt(0).toUpperCase()}</div>
+                            <span className={styles.organizerName}>{user?.email?.split('@')[0]}</span>
                             <span className={styles.chevron}>⌄</span>
 
                             {showProfileDropdown && (
                                 <div className={styles.topDropdown} onClick={(e) => e.stopPropagation()}>
                                     <div className={styles.dropdownHeader}>
-                                        <p className={styles.dropdownEmail}>arafathimorou@gmail.com</p>
-                                        <p className={styles.dropdownCode}>Code client: <span style={{ color: '#e53e3e', fontWeight: 800 }}>560337</span></p>
+                                        <p className={styles.dropdownEmail}>{user?.email}</p>
+                                        <p className={styles.dropdownCode}>Code client: <span style={{ color: '#e53e3e', fontWeight: 800 }}>INVITE</span></p>
                                     </div>
                                     <hr className={styles.dropdownDivider} />
                                     <Link href="/profile" className={styles.dropdownItem}>Mon Profil</Link>
