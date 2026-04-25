@@ -56,18 +56,35 @@ function AdminDashboardContent() {
                 return acc;
             }, {});
 
-            // Enrich events with sales data
+            // Enrich events with sales data and category breakdown
             const enrichedEvents = (eventsData || []).map(e => {
                 const eventTickets = (ticketsData || []).filter(t => t.event_id === e.id);
                 const soldCount = eventTickets.length;
                 const revenue = eventTickets.reduce((acc, t) => acc + Number(t.amount), 0);
                 
-                // Calculate capacity
+                // Calculate capacity and breakdown
                 let totalCapacity = 0;
+                let categoriesWithStats = [];
+
                 if (Array.isArray(e.ticket_categories)) {
                     totalCapacity = e.ticket_categories.reduce((acc: number, cat: any) => acc + Number(cat.capacity || 0), 0);
+                    
+                    // Breakdown per category
+                    categoriesWithStats = e.ticket_categories.map((cat: any) => {
+                        const catTickets = eventTickets.filter(t => t.category === cat.name);
+                        const catSold = catTickets.length;
+                        const catRevenue = catTickets.reduce((acc, t) => acc + Number(t.amount), 0);
+                        const catCapacity = Number(cat.capacity || 0);
+                        return {
+                            ...cat,
+                            sold: catSold,
+                            revenue: catRevenue,
+                            capacity: catCapacity,
+                            remaining: catCapacity - catSold,
+                            percent: catCapacity > 0 ? Math.round((catSold / catCapacity) * 100) : 0
+                        };
+                    });
                 } else if (e.target_amount) {
-                    // For cotisations, capacity is the target amount
                     totalCapacity = Number(e.target_amount);
                 }
 
@@ -78,7 +95,8 @@ function AdminDashboardContent() {
                     revenue,
                     totalCapacity,
                     remaining: totalCapacity - soldCount,
-                    percent: totalCapacity > 0 ? Math.round((soldCount / totalCapacity) * 100) : 0
+                    percent: totalCapacity > 0 ? Math.round((soldCount / totalCapacity) * 100) : 0,
+                    categoriesWithStats
                 };
             });
 
@@ -169,7 +187,7 @@ function AdminDashboardContent() {
     if (loading) return (
         <div className={styles.loadingContainer}>
             <div className={styles.spinner}></div>
-            <p>Chargement des statistiques détaillées...</p>
+            <p>Calcul des statistiques par catégorie...</p>
         </div>
     );
 
@@ -180,7 +198,7 @@ function AdminDashboardContent() {
             <div className={styles.header}>
                 <div>
                     <h1 className={styles.title}>Super Admin Dashboard</h1>
-                    <p className={styles.subtitle}>Analyse et pilotage de la plateforme</p>
+                    <p className={styles.subtitle}>Analyse granulaire des performances</p>
                 </div>
                 <Link href="/" className={styles.badgeInfo}>Retour au site</Link>
             </div>
@@ -195,7 +213,7 @@ function AdminDashboardContent() {
                 </div>
                 <div className={styles.statCard}>
                     <div className={styles.statInfo}>
-                        <span>Total Ventes</span>
+                        <span>Ventes Totales</span>
                         <h2>{stats.totalTickets}</h2>
                     </div>
                     <div className={styles.statIcon}>🎫</div>
@@ -299,7 +317,7 @@ function AdminDashboardContent() {
             {/* Détails Modal Overlay */}
             {selectedEvent && (
                 <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
-                    <div style={{ background: 'white', padding: '2rem', borderRadius: '1.5rem', maxWidth: '600px', width: '100%', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}>
+                    <div style={{ background: 'white', padding: '2rem', borderRadius: '1.5rem', maxWidth: '800px', width: '100%', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}>
                         <button onClick={() => setSelectedEvent(null)} style={{ position: 'absolute', top: '1rem', right: '1rem', border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }}>×</button>
                         
                         <h2 style={{ marginBottom: '0.5rem' }}>{selectedEvent.title}</h2>
@@ -307,9 +325,9 @@ function AdminDashboardContent() {
                             {selectedEvent.type === 'cotisation' ? 'Cotisation' : 'Événement'}
                         </span>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
                             <div style={{ padding: '1rem', background: '#f8fafc', borderRadius: '1rem' }}>
-                                <p style={{ margin: 0, color: '#64748b', fontSize: '0.875rem' }}>Tickets Vendus</p>
+                                <p style={{ margin: 0, color: '#64748b', fontSize: '0.875rem' }}>Total Vendus</p>
                                 <h3 style={{ margin: 0, fontSize: '1.5rem' }}>{selectedEvent.soldCount}</h3>
                             </div>
                             <div style={{ padding: '1rem', background: '#f8fafc', borderRadius: '1rem' }}>
@@ -326,24 +344,62 @@ function AdminDashboardContent() {
                             </div>
                         </div>
 
-                        <h3>Détails par Catégorie</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                            {Array.isArray(selectedEvent.ticket_categories) ? selectedEvent.ticket_categories.map((cat: any, idx: number) => (
-                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem', borderBottom: '1px solid #f1f5f9' }}>
-                                    <div>
-                                        <p style={{ margin: 0, fontWeight: 'bold' }}>{cat.name}</p>
-                                        <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748b' }}>Prix: {Number(cat.price).toLocaleString()} F</p>
-                                    </div>
-                                    <div style={{ textAlign: 'right' }}>
-                                        <p style={{ margin: 0 }}>Capacité: <strong>{cat.capacity}</strong></p>
-                                    </div>
-                                </div>
-                            )) : <p>Aucune catégorie de ticket définie</p>}
+                        <h3>Statistiques par Catégorie</h3>
+                        <div style={{ overflowX: 'auto' }}>
+                            <table className={styles.table} style={{ fontSize: '0.875rem' }}>
+                                <thead>
+                                    <tr>
+                                        <th>Catégorie</th>
+                                        <th>Prix</th>
+                                        <th>Vendus</th>
+                                        <th>Restant</th>
+                                        <th>Revenu</th>
+                                        <th>Taux</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {selectedEvent.categoriesWithStats.length > 0 ? selectedEvent.categoriesWithStats.map((cat: any, idx: number) => (
+                                        <tr key={idx}>
+                                            <td><strong>{cat.name}</strong></td>
+                                            <td>{Number(cat.price).toLocaleString()} F</td>
+                                            <td>{cat.sold} / {cat.capacity}</td>
+                                            <td>{cat.remaining}</td>
+                                            <td style={{ fontWeight: 'bold' }}>{cat.revenue.toLocaleString()} F</td>
+                                            <td>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                                    <div style={{ width: '40px', height: '6px', background: '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}>
+                                                        <div style={{ width: `${cat.percent}%`, height: '100%', background: '#ff5a1f' }}></div>
+                                                    </div>
+                                                    <span>{cat.percent}%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )) : (
+                                        <tr>
+                                            <td colSpan={6} style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                                                Aucune catégorie de ticket détaillée.
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
 
                         <div style={{ marginTop: '2rem', borderTop: '1px solid #f1f5f9', paddingTop: '1rem' }}>
-                            <p style={{ fontSize: '0.875rem' }}><strong>Organisateur:</strong> {selectedEvent.profiles?.full_name} ({selectedEvent.profiles?.email})</p>
-                            <p style={{ fontSize: '0.875rem' }}><strong>Date:</strong> {new Date(selectedEvent.date).toLocaleDateString()} à {selectedEvent.time}</p>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                <div>
+                                    <p style={{ fontSize: '0.875rem', marginBottom: '0.25rem' }}><strong>Organisateur:</strong></p>
+                                    <p style={{ margin: 0, fontSize: '0.875rem' }}>{selectedEvent.profiles?.full_name}</p>
+                                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748b' }}>{selectedEvent.profiles?.email}</p>
+                                </div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <p style={{ fontSize: '0.875rem', marginBottom: '0.25rem' }}><strong>Programmation:</strong></p>
+                                    <p style={{ margin: 0, fontSize: '0.875rem' }}>
+                                        {selectedEvent.date ? new Date(selectedEvent.date).toLocaleDateString() : 'Date non définie'}
+                                    </p>
+                                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748b' }}>À {selectedEvent.time || '--:--'}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
