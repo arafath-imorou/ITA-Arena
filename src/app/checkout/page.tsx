@@ -22,7 +22,7 @@ function CheckoutContent() {
     // Data from URL or default fallback
     const eventName = searchParams.get("event") || "Événement ITA Arena";
     // Dynamic ticket parsing from URL
-    const tickets = [];
+    const tickets: { name: string; price: number; qty: number }[] = [];
     for (let i = 1; i <= 10; i++) {
         const qty = parseInt(searchParams.get(`q${i}`) || "0");
         const price = parseInt(searchParams.get(`p${i}`) || "0");
