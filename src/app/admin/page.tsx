@@ -305,7 +305,7 @@ function AdminDashboardContent() {
                         <h2 style={{ marginBottom: '0.5rem' }}>{selectedEvent.title}</h2>
                         <span className={styles.badge} style={{ background: '#ff5a1f', color: 'white', marginBottom: '1.5rem', display: 'inline-block' }}>
                             {selectedEvent.type === 'cotisation' ? 'Cotisation' : 'Événement'}
-                        </h2>
+                        </span>
 
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
                             <div style={{ padding: '1rem', background: '#f8fafc', borderRadius: '1rem' }}>
