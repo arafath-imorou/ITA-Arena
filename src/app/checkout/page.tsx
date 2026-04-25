@@ -78,6 +78,12 @@ function CheckoutContent() {
         setIsProcessing(true);
 
         try {
+            const fedapayKey = process.env.NEXT_PUBLIC_FEDAPAY_PUBLIC_KEY;
+            if (!fedapayKey) {
+                alert("Erreur de configuration : La clé de paiement FedaPay est manquante. Veuillez contacter le support (+229 0152818100).");
+                return;
+            }
+
             // 1. Prepare ticket data
             const checkoutSessionId = typeof crypto !== 'undefined' && crypto.randomUUID 
                 ? crypto.randomUUID() 
@@ -336,8 +342,8 @@ function CheckoutContent() {
     const operatorData: { [key: string]: { name: string; logo: string }[] } = {
         "Bénin": [
             { name: "MTN", logo: "https://upload.wikimedia.org/wikipedia/commons/9/93/New-mtn-logo.jpg" },
-            { name: "Moov", logo: "https://moov-africa.bj/wp-content/uploads/2021/01/logo-moov-africa.png" },
-            { name: "Celtiis", logo: "https://play-lh.googleusercontent.com/tYt6vP-m5WjC5I0M2eY9K6y9v5f8z7H9w8_p_k2w4O2_x6Q1S2q7E1u4n6M8R8f8f8" }
+            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/v/8/86/Moov_Africa_logo.png" },
+            { name: "Celtiis", logo: "https://www.celtiis.bj/wp-content/uploads/2022/10/Logo-Celtiis-Bénin.png" }
         ],
         "Côte d'Ivoire": [
             { name: "Orange", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/1024px-Orange_logo.svg.png" },
