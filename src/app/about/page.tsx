@@ -69,27 +69,22 @@ export default function AboutPage() {
                         </div>
                         <div className={styles.featureGrid}>
                             <div className={styles.featureCard}>
-                                <span className={styles.featureEmoji}>🎟️</span>
                                 <h3>Billetterie simplifiée</h3>
                                 <p>Réservez vos billets en ligne sans files d’attente ni déplacements inutiles.</p>
                             </div>
                             <div className={styles.featureCard}>
-                                <span className={styles.featureEmoji}>🔐</span>
                                 <h3>Paiements sécurisés</h3>
                                 <p>Profitez de transactions fiables grâce à l’intégration des solutions Mobile Money et des paiements par carte bancaire.</p>
                             </div>
                             <div className={styles.featureCard}>
-                                <span className={styles.featureEmoji}>📲</span>
                                 <h3>Billets intelligents</h3>
                                 <p>Chaque billet inclut un QR Code unique permettant un accès rapide et sécurisé aux événements.</p>
                             </div>
                             <div className={styles.featureCard}>
-                                <span className={styles.featureEmoji}>🏢</span>
                                 <h3>Outils professionnels</h3>
                                 <p>Suivi des ventes en temps réel, statistiques détaillées, gestion des participants et contrôle d'accès.</p>
                             </div>
                             <div className={styles.featureCard}>
-                                <span className={styles.featureEmoji}>🌍</span>
                                 <h3>Adapté au marché</h3>
                                 <p>Interface optimisée pour mobile et paiements locaux intégrés aux réalités du continent.</p>
                             </div>
