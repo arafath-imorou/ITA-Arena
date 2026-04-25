@@ -96,9 +96,9 @@ export default function CreateEventPage() {
                 .getPublicUrl(filePath);
 
             setFormData({ ...formData, image_url: publicUrl });
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error uploading image:', error);
-            alert("Erreur lors de l'envoi de l'image.");
+            alert("Erreur lors de l'envoi de l'image : " + (error.message || "Erreur inconnue"));
         } finally {
             setUploading(false);
         }
