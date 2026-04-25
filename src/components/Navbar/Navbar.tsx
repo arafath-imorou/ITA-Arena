@@ -70,7 +70,8 @@ export default function Navbar() {
             </div>
           </div>
           <div className={styles.rightTop}>
-            <span className={styles.topContact}>Support: +229 00 00 00 00</span>
+            <span className={styles.topContact}>Support: <a href="tel:+2290152818100" style={{ color: 'inherit', textDecoration: 'none' }}>+229 01 52 81 81 00</a></span>
+
           </div>
         </div>
       </div>
