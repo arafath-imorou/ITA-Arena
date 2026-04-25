@@ -71,7 +71,7 @@ function CheckoutContent() {
                 ? crypto.randomUUID() 
                 : Math.random().toString(36).substring(2, 15);
 
-            const ticketsToCreate = [];
+            const ticketsToCreate: any[] = [];
             for (const t of tickets) {
                 for (let j = 0; j < t.qty; j++) {
                     const qrKey = typeof crypto !== 'undefined' && crypto.randomUUID 
