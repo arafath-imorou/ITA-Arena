@@ -229,6 +229,46 @@ function CheckoutContent() {
         );
     }
 
+    const operatorData: { [key: string]: { name: string; logo: string }[] } = {
+        "Bénin": [
+            { name: "MTN", logo: "https://upload.wikimedia.org/wikipedia/commons/9/93/New-mtn-logo.jpg" },
+            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Moov_Africa_logo.svg/1200px-Moov_Africa_logo.svg.png" },
+            { name: "Celtiis", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_x7J6pP-n59pT_3_6_p_5v_m_J_m_J_m_J_w&s" }
+        ],
+        "Côte d'Ivoire": [
+            { name: "Orange", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/1024px-Orange_logo.svg.png" },
+            { name: "MTN", logo: "https://upload.wikimedia.org/wikipedia/commons/9/93/New-mtn-logo.jpg" },
+            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Moov_Africa_logo.svg/1200px-Moov_Africa_logo.svg.png" }
+        ],
+        "Sénégal": [
+            { name: "Orange", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/1024px-Orange_logo.svg.png" },
+            { name: "Free", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Logo_Free_S%C3%A9n%C3%A9gal.svg/2560px-Logo_Free_S%C3%A9n%C3%A9gal.svg.png" },
+            { name: "Wave", logo: "https://upload.wikimedia.org/wikipedia/commons/c/c2/Wave-logo.png" }
+        ],
+        "Guinée": [
+            { name: "Orange", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/1024px-Orange_logo.svg.png" },
+            { name: "MTN", logo: "https://upload.wikimedia.org/wikipedia/commons/9/93/New-mtn-logo.jpg" }
+        ],
+        "Mali": [
+            { name: "Orange", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/1024px-Orange_logo.svg.png" },
+            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Moov_Africa_logo.svg/1200px-Moov_Africa_logo.svg.png" }
+        ],
+        "Togo": [
+            { name: "TMoney", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_x7J6pP-n59pT_3_6_p_5v_m_J_m_J_m_J_w&s" },
+            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Moov_Africa_logo.svg/1200px-Moov_Africa_logo.svg.png" }
+        ],
+        "Burkina Faso": [
+            { name: "Orange", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/1024px-Orange_logo.svg.png" },
+            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Moov_Africa_logo.svg/1200px-Moov_Africa_logo.svg.png" }
+        ],
+        "Niger": [
+            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Moov_Africa_logo.svg/1200px-Moov_Africa_logo.svg.png" },
+            { name: "Airtel", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Airtel_logo.svg/2560px-Airtel_logo.svg.png" }
+        ]
+    };
+
+    const currentOperators = operatorData[selectedCountryObj.name] || [];
+
     return (
         <div className="container" style={{ paddingTop: '100px', paddingBottom: '100px' }}>
             <h1 className={styles.pageTitleHeader}>Paiement</h1>
@@ -256,38 +296,19 @@ function CheckoutContent() {
                         </div>
 
                         <div className={styles.methodGrid}>
-                            <div
-                                className={`${styles.paymentMethodCard} ${paymentMethod === 'wave' ? styles.active : ''}`}
-                                onClick={() => setPaymentMethod('wave')}
-                            >
-                                <div className={styles.methodLogo}>
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c2/Wave-logo.png" alt="Wave" />
-                                    {paymentMethod === 'wave' && <div className={styles.checkIcon}>✓</div>}
+                            {currentOperators.map((op) => (
+                                <div
+                                    key={op.name}
+                                    className={`${styles.paymentMethodCard} ${paymentMethod === op.name.toLowerCase() ? styles.active : ''}`}
+                                    onClick={() => setPaymentMethod(op.name.toLowerCase())}
+                                >
+                                    <div className={styles.methodLogo}>
+                                        <img src={op.logo} alt={op.name} />
+                                        {paymentMethod === op.name.toLowerCase() && <div className={styles.checkIcon}>✓</div>}
+                                    </div>
+                                    <span>{op.name}</span>
                                 </div>
-                                <span>Wave</span>
-                            </div>
-
-                            <div
-                                className={`${styles.paymentMethodCard} ${paymentMethod === 'momo' ? styles.active : ''}`}
-                                onClick={() => setPaymentMethod('momo')}
-                            >
-                                <div className={styles.methodLogo}>
-                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_x7J6pP-n59pT_3_6_p_5v_m_J_m_J_m_J_w&s" alt="MOMO" />
-                                    {paymentMethod === 'momo' && <div className={styles.checkIcon}>✓</div>}
-                                </div>
-                                <span>Mobile Money</span>
-                            </div>
-
-                            <div
-                                className={`${styles.paymentMethodCard} ${paymentMethod === 'djamo' ? styles.active : ''}`}
-                                onClick={() => setPaymentMethod('djamo')}
-                            >
-                                <div className={styles.methodLogo}>
-                                    <img src="https://djamo.com/_next/image?url=%2Fassets%2Ficons%2Flogo.svg&w=128&q=75" alt="Djamo" />
-                                    {paymentMethod === 'djamo' && <div className={styles.checkIcon}>✓</div>}
-                                </div>
-                                <span>Djamo</span>
-                            </div>
+                            ))}
 
                             <div
                                 className={`${styles.paymentMethodCard} ${paymentMethod === 'card' ? styles.active : ''}`}
