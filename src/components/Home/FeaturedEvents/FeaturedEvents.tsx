@@ -13,6 +13,38 @@ export default function FeaturedEvents() {
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const [likedEvents, setLikedEvents] = useState<string[]>([]);
+
+    useEffect(() => {
+        const saved = localStorage.getItem("likedEvents");
+        if (saved) {
+            setLikedEvents(JSON.parse(saved));
+        }
+    }, []);
+
+    const handleLike = async (e: React.MouseEvent, eventId: string) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (likedEvents.includes(eventId)) return;
+
+        // Optimistic update
+        const newData = data.map(item => 
+            item.id === eventId ? { ...item, likes_count: (item.likes_count || 0) + 1 } : item
+        );
+        setData(newData);
+        
+        const newLiked = [...likedEvents, eventId];
+        setLikedEvents(newLiked);
+        localStorage.setItem("likedEvents", JSON.stringify(newLiked));
+
+        // DB update
+        const { error } = await supabase.rpc('increment_likes', { event_id: eventId });
+        if (error) {
+            console.error("Error liking event:", error);
+        }
+    };
+
     useEffect(() => {
         async function fetchData() {
             setLoading(true);
@@ -52,11 +84,17 @@ export default function FeaturedEvents() {
                     <div className={styles.grid}>
                         {data.map((item: any) => {
                             const percent = item.goal_amount ? Math.round((item.collected_amount / item.goal_amount) * 100) : 0;
+                            const isLiked = likedEvents.includes(item.id);
                             return (
                                 <div key={item.id} className={styles.card}>
                                     <div className={styles.imageWrapper}>
                                         <img src={item.image_url} alt={item.title} className={styles.image} />
-                                        <button className={styles.favBtn}>🤍</button>
+                                        <button 
+                                            className={`${styles.favBtn} ${isLiked ? styles.activeFav : ""}`}
+                                            onClick={(e) => handleLike(e, item.id)}
+                                        >
+                                            {isLiked ? "❤️" : "🤍"}
+                                        </button>
                                         <div className={styles.categoryTag}>
                                             <span>📍</span>
                                             <span>{item.category_id}</span>
@@ -66,9 +104,13 @@ export default function FeaturedEvents() {
                                     <div className={styles.cardBody}>
                                         <div className={styles.titleRow}>
                                             <h3 className={styles.eventTitle}>{item.title}</h3>
-                                            <div className={styles.likesArea}>
-                                                <span className={styles.heartIcon}>♡</span>
-                                                <span className={styles.likesCount}>{item.likes_count}</span>
+                                            <div 
+                                                className={`${styles.likesArea} ${isLiked ? styles.liked : ""}`}
+                                                onClick={(e) => handleLike(e, item.id)}
+                                                style={{ cursor: 'pointer' }}
+                                            >
+                                                <span className={styles.heartIcon}>{isLiked ? "❤️" : "♡"}</span>
+                                                <span className={styles.likesCount}>{item.likes_count || 0}</span>
                                             </div>
                                         </div>
 

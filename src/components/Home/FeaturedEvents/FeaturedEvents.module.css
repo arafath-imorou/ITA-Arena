@@ -131,6 +131,20 @@
     font-weight: 700;
 }
 
+.liked .heartIcon,
+.activeFav {
+    color: var(--color-primary) !important;
+}
+
+.liked .likesCount {
+    color: var(--color-primary);
+}
+
+.activeFav {
+    background: white !important;
+    transform: scale(1.1);
+}
+
 .metaInfo {
     display: flex;
     flex-direction: column;
