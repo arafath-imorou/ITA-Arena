@@ -18,6 +18,11 @@ export default function Footer() {
                         <p className={styles.footerDesc}>
                             La scène digitale des grands événements. La billetterie premium pour l'Afrique.
                         </p>
+                        <div className={styles.supportInfo}>
+                            <span className={styles.supportLabel}>Support 24/7 :</span>
+                            <a href="tel:+2290152818100" className={styles.supportNumber}>+229 01 52 81 81 00</a>
+                        </div>
+
                     </div>
 
                     <div className={styles.footerLinksGrid}>

@@ -124,8 +124,9 @@ export default function ContactPage() {
                                     </div>
                                     <div className={styles.coordItem}>
                                         <span className={styles.coordIcon}>📞</span>
-                                        <p>002290152818100</p>
+                                        <a href="tel:+2290152818100" style={{ color: 'inherit', textDecoration: 'none' }}>+229 01 52 81 81 00</a>
                                     </div>
+
                                     <div className={styles.coordItem}>
                                         <span className={styles.coordIcon}>✉️</span>
                                         <p>groupita25@gmail.com</p>

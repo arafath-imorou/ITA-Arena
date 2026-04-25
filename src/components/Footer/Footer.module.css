@@ -59,7 +59,36 @@
     color: var(--color-gray-300);
     line-height: 1.6;
     max-width: 320px;
+    margin-bottom: 1.5rem;
 }
+
+.supportInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.supportLabel {
+    font-size: 0.8rem;
+    color: var(--color-gray-400);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.supportNumber {
+    font-size: 1.2rem;
+    color: var(--color-secondary);
+    font-weight: 900;
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+
+.supportNumber:hover {
+    color: var(--color-primary);
+    transform: translateX(5px);
+}
+
 
 .footerLinksGrid {
     display: flex;
