@@ -66,6 +66,7 @@
     font-size: 1.1rem;
     font-weight: 600;
     opacity: 0.9;
+    flex-wrap: wrap;
 }
 
 .metaItem {
@@ -79,7 +80,6 @@
     grid-template-columns: 1fr 400px;
     gap: 4rem;
     margin-top: -3rem;
-    /* Overlap the hero slightly */
     position: relative;
     z-index: 4;
 }
@@ -100,8 +100,8 @@
 }
 
 .descriptionText {
-    font-size: 1.2rem;
-    line-height: 1.8;
+    font-size: 1.1rem;
+    line-height: 1.7;
     color: #444;
 }
 
@@ -210,9 +210,9 @@
 .qtyControl {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1rem;
     background: #f8f9fa;
-    padding: 8px 16px;
+    padding: 6px 12px;
     border-radius: 12px;
 }
 
@@ -223,13 +223,12 @@
     font-weight: 600;
     cursor: pointer;
     color: #555;
-    width: 30px;
 }
 
 .qtyVal {
     font-weight: 900;
     font-size: 1.1rem;
-    width: 20px;
+    min-width: 20px;
     text-align: center;
 }
 
@@ -257,18 +256,6 @@
     font-weight: 810;
     font-size: 1.1rem;
     cursor: pointer;
-    box-shadow: 0 10px 25px rgba(255, 90, 31, 0.25);
-    transition: transform 0.2s;
-}
-
-.ctaBtn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    background-color: #e5531d;
-}
-
-.ctaBtn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
 }
 
 .footerActions {
@@ -288,83 +275,12 @@
     cursor: pointer;
 }
 
-/* Cotisation Styles */
-.amountInputWrap {
-    display: flex;
-    align-items: center;
-    border: 2px solid #eee;
-    border-radius: 15px;
-    padding: 0 1rem;
-    margin-bottom: 2rem;
-}
-
-.currencyLabel {
-    font-weight: 900;
-    color: #999;
-    border-right: 1px solid #eee;
-    padding-right: 1rem;
-    margin-right: 1rem;
-}
-
-.amountInput {
-    border: none;
-    padding: 1.2rem 0;
-    font-size: 1.2rem;
-    font-weight: 800;
-    width: 100%;
-    outline: none;
-}
-
-.largeProgressWrapper {
-    background: white;
-    padding: 2rem;
-    border-radius: 24px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-    border: 1px solid #f0f0f0;
-}
-
-.progressHeader {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-    align-items: flex-end;
-}
-
-.collectedValue {
-    font-size: 2rem;
-    font-weight: 950;
-    color: var(--color-primary);
-}
-
-.percentText {
-    font-weight: 800;
-    color: #333;
-    opacity: 0.8;
-}
-
-.progressTrack {
-    height: 12px;
-    background: #eee;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 1rem;
-}
-
-.progressFill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--color-primary) 0%, #ff8c00 100%);
-    border-radius: 10px;
-}
-
-.goalText {
-    color: #777;
-    margin: 0;
-}
-
+/* Responsive Overrides */
 @media (max-width: 1024px) {
     .mainGrid {
         grid-template-columns: 1fr;
         gap: 2rem;
+        margin-top: 0;
     }
 
     .stickyColumn {
@@ -372,7 +288,67 @@
         order: -1;
     }
 
+    .heroSection {
+        height: 50vh;
+    }
+
     .title {
         font-size: 2.5rem;
+    }
+
+    .meta {
+        gap: 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .heroSection {
+        height: 40vh;
+        min-height: 300px;
+    }
+
+    .heroContent {
+        padding-bottom: 2rem;
+    }
+
+    .title {
+        font-size: 2rem;
+        letter-spacing: -1px;
+    }
+
+    .actionCard {
+        padding: 1.5rem;
+        border-radius: 24px;
+    }
+
+    .heading {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .organizerCard {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .followLink {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .title {
+        font-size: 1.75rem;
+    }
+
+    .meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .collectedValue {
+        font-size: 1.5rem;
     }
 }

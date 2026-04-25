@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useCountry } from "@/context/CountryContext";
 import styles from "./Navbar.module.css";
@@ -9,6 +9,7 @@ import styles from "./Navbar.module.css";
 export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, signOut, role } = useAuth();
   const { selectedCountry, setSelectedCountry, countries } = useCountry();
   const [searchQuery, setSearchQuery] = useState("");
@@ -16,11 +17,21 @@ export default function Navbar() {
   const handleSignOut = async () => {
     await signOut();
     setShowDropdown(false);
+    setIsMobileMenuOpen(false);
   };
+
+  // Close mobile menu when clicking outside (simple version)
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isMobileMenuOpen]);
 
   return (
     <header className={styles.header}>
-      {/* Top Utility Bar */}
+      {/* Top Utility Bar - Hidden on small mobile */}
       <div className={styles.topBar}>
         <div className={`container ${styles.topBarContainer}`}>
           <div className={styles.leftTop}>
@@ -59,6 +70,7 @@ export default function Navbar() {
             </div>
           </div>
           <div className={styles.rightTop}>
+            <span className={styles.topContact}>Support: +229 00 00 00 00</span>
           </div>
         </div>
       </div>
@@ -66,8 +78,18 @@ export default function Navbar() {
       {/* Main Navbar */}
       <nav className={styles.mainNav}>
         <div className={`container ${styles.navContainer}`}>
+          
+          {/* Mobile Menu Toggle */}
+          <button 
+            className={styles.mobileToggle} 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle Menu"
+          >
+            {isMobileMenuOpen ? "✕" : "☰"}
+          </button>
+
           {/* Logo */}
-          <Link href="/" className={styles.logo}>
+          <Link href="/" className={styles.logo} onClick={() => setIsMobileMenuOpen(false)}>
             <img
               src="/images/logo/ita_arena_logo.png"
               alt="ITA Arena Logo"
@@ -75,7 +97,7 @@ export default function Navbar() {
             />
           </Link>
 
-          {/* Search bar */}
+          {/* Search bar - Hidden on mobile, shown in menu */}
           <div className={styles.searchContainer}>
             <div className={styles.searchWrapper}>
               <button className={styles.filterBtn}>
@@ -89,15 +111,23 @@ export default function Navbar() {
           </div>
 
           {/* Actions */}
-          <div className={styles.navActions}>
-            <Link href={user ? "/organizer/create" : "/signin"} className={styles.publishBtn}>
+          <div className={`${styles.navActions} ${isMobileMenuOpen ? styles.mobileActionsOpen : ""}`}>
+            
+            {/* Mobile specific search */}
+            <div className={styles.mobileSearch}>
+               <input type="text" placeholder="Rechercher un événement..." />
+            </div>
+
+            <Link href={user ? "/organizer/create" : "/signin"} className={styles.publishBtn} onClick={() => setIsMobileMenuOpen(false)}>
               Publier un événement
             </Link>
+            
             <div className={styles.profileMenu} onClick={() => setShowDropdown(!showDropdown)}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 <div className={styles.avatarCircle}>
                   {user ? user.email?.charAt(0).toUpperCase() : "👤"}
                 </div>
+                <span className={styles.userNameLabel}>{user ? "Mon Compte" : "Connexion"}</span>
+                <span className={styles.chevron}>▾</span>
 
                 {showDropdown && (
                     <div className={styles.dropdown} onClick={(e) => e.stopPropagation()}>
@@ -108,28 +138,24 @@ export default function Navbar() {
                               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                               <p className={styles.userEmail}>{user.email}</p>
                             </div>
-                            <div className={styles.userInfoItem}>
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9-9c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3z"></path></svg>
-                              <p className={styles.clientCodeText}>Code client : <span className={styles.codeHighlight}>560337</span></p>
-                            </div>
                           </div>
                           <hr className={styles.divider} />
                           {role === 'admin' && (
                             <>
-                              <Link href="/admin" className={styles.dropdownItem} style={{ color: '#ff5a1f', fontWeight: 'bold' }} onClick={() => setShowDropdown(false)}>
+                              <Link href="/admin" className={styles.dropdownItem} style={{ color: '#ff5a1f', fontWeight: 'bold' }} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>
                                 🔧 Administration
                               </Link>
                               <hr className={styles.divider} />
                             </>
                           )}
-                          <Link href="/organizer" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Tableau de bord</Link>
-                          <Link href="/organizer" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Mes évènements</Link>
-                          <Link href="/organizer/tickets" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Mes Tickets</Link>
-                          <Link href="/organizer/account" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Mon Profil</Link>
+                          <Link href="/organizer" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Tableau de bord</Link>
+                          <Link href="/organizer" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Mes évènements</Link>
+                          <Link href="/organizer/tickets" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Mes Tickets</Link>
+                          <Link href="/organizer/account" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Mon Profil</Link>
                           <hr className={styles.divider} />
-                          <Link href="/about" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Qui sommes nous?</Link>
-                          <Link href="/faq" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>FAQ</Link>
-                          <Link href="/contact" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Nous contacter</Link>
+                          <Link href="/about" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Qui sommes nous?</Link>
+                          <Link href="/faq" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>FAQ</Link>
+                          <Link href="/contact" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Nous contacter</Link>
                           <hr className={styles.divider} />
                           <button onClick={handleSignOut} className={styles.signOutBtn}>
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
@@ -138,14 +164,14 @@ export default function Navbar() {
                         </>
                     ) : (
                       <>
-                        <Link href="/login" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Se connecter</Link>
-                        <Link href="/register" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>S'inscrire</Link>
+                        <Link href="/login" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Se connecter</Link>
+                        <Link href="/register" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>S'inscrire</Link>
                         <hr className={styles.divider} />
-                        <Link href="/pricing" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Tarif</Link>
+                        <Link href="/pricing" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Tarif</Link>
                         <hr className={styles.divider} />
-                        <Link href="/about" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Qui sommes nous?</Link>
-                        <Link href="/faq" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>FAQ</Link>
-                        <Link href="/contact" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Nous contacter</Link>
+                        <Link href="/about" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Qui sommes nous?</Link>
+                        <Link href="/faq" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>FAQ</Link>
+                        <Link href="/contact" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Nous contacter</Link>
                       </>
                     )}
                   </div>

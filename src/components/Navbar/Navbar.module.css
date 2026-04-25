@@ -109,30 +109,8 @@
     gap: 2rem;
 }
 
-.topSocials {
-    display: flex;
-    gap: 1rem;
-    color: #333;
-}
-
-.socialIcon {
-    cursor: pointer;
-    font-size: 0.9rem;
-    opacity: 0.8;
-}
-
-.posLink {
-    font-size: 0.75rem;
-    color: #333;
-    text-decoration: none;
-    background: white;
-    padding: 4px 12px;
-    border: 1px solid #e5e5e5;
-    border-radius: 4px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+.topContact {
+    opacity: 0.7;
 }
 
 .mainNav {
@@ -151,6 +129,15 @@
     width: 100%;
 }
 
+.mobileToggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #333;
+}
+
 /* Logo Styling */
 .logo {
     display: flex;
@@ -159,11 +146,9 @@
 }
 
 .logoImage {
-    height: 140px;
+    height: 100px;
     width: auto;
     object-fit: contain;
-    margin-top: -15px;
-    margin-bottom: -15px;
 }
 
 /* Search bar */
@@ -239,34 +224,7 @@
     text-decoration: none;
     display: flex;
     align-items: center;
-}
-
-.actionIcons {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    color: #333;
-}
-
-.iconWrapper {
-    position: relative;
-    cursor: pointer;
-}
-
-.notifBadge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: var(--color-primary);
-    color: white;
-    font-size: 0.6rem;
-    font-weight: 700;
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    white-space: nowrap;
 }
 
 .profileMenu {
@@ -274,8 +232,8 @@
     align-items: center;
     gap: 10px;
     border: 1px solid #e5e5e5;
-    padding: 4px 8px;
-    border-radius: 12px;
+    padding: 4px 12px;
+    border-radius: 50px;
     cursor: pointer;
     background: white;
     position: relative;
@@ -294,6 +252,11 @@
     font-weight: 700;
 }
 
+.userNameLabel {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
 .dropdown {
     position: absolute;
     top: calc(100% + 12px);
@@ -301,7 +264,7 @@
     background: white;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
     border-radius: 12px;
-    min-width: 220px;
+    min-width: 240px;
     padding: 12px;
     display: flex;
     flex-direction: column;
@@ -310,35 +273,15 @@
 
 .userInfo {
     padding: 8px 12px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.userInfoItem {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: #555;
 }
 
 .userEmail {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #1a1a1a;
-    font-weight: 500;
+    font-weight: 600;
     margin: 0;
-}
-
-.clientCodeText {
-    font-size: 0.9rem;
-    color: #1a1a1a;
-    font-weight: 500;
-    margin: 0;
-}
-
-.codeHighlight {
-    color: #e53e3e;
-    font-weight: 800;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .dropdownItem {
@@ -363,56 +306,134 @@
 }
 
 .signOutBtn {
-    padding: 12px;
+    padding: 10px 12px;
     border-radius: 8px;
     color: #444;
     border: none;
     background: transparent;
     text-align: left;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
     width: 100%;
     display: flex;
     align-items: center;
     gap: 12px;
-    transition: all 0.2s;
 }
 
-.signOutBtn:hover {
-    background: #fff5f5;
-    color: #e53e3e;
+.mobileSearch {
+    display: none;
+    width: 100%;
+    margin-bottom: 1.5rem;
 }
 
-@media (max-width: 1000px) {
-    .searchContainer,
-    .topBar,
+.mobileSearch input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    font-size: 1rem;
+    outline: none;
+}
+
+@media (max-width: 1024px) {
+    .searchContainer {
+        display: none;
+    }
+
+    .navContainer {
+        grid-template-columns: auto auto auto;
+        justify-content: space-between;
+    }
+
+    .mobileToggle {
+        display: block;
+        order: 1;
+    }
+
+    .logo {
+        order: 2;
+    }
+
+    .navActions {
+        order: 3;
+    }
+
     .publishBtn {
         display: none;
     }
-}
 
-@media (max-width: 600px) {
-    .navContainer {
-        gap: 1rem;
-        padding: 0 1rem;
-    }
-
-    .logoImage {
-        height: 100px;
-    }
-
-    .actionIcons {
-        gap: 1.2rem;
+    .userNameLabel {
+        display: none;
     }
 
     .profileMenu {
         padding: 4px;
         gap: 0;
-        border-radius: 50%;
+        border: none;
     }
 
-    .profileMenu > span:not(.avatarCircle) {
+    .profileMenu .chevron {
         display: none;
+    }
+
+    /* Mobile Menu Overlay */
+    .mobileActionsOpen {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        height: calc(100vh - 70px);
+        background: white;
+        flex-direction: column;
+        padding: 2rem;
+        align-items: flex-start;
+        z-index: 999;
+        display: flex !important;
+        overflow-y: auto;
+    }
+
+    .navActions {
+        display: none;
+    }
+
+    .mobileSearch {
+        display: block;
+    }
+
+    .mobileActionsOpen .publishBtn {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 2rem;
+    }
+
+    .mobileActionsOpen .profileMenu {
+        width: 100%;
+        border: 1px solid #eee;
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .mobileActionsOpen .profileMenu .avatarCircle {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+
+    .mobileActionsOpen .userNameLabel {
+        display: block;
+        font-size: 1.1rem;
+        margin-left: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .topBar {
+        display: none;
+    }
+
+    .logoImage {
+        height: 80px;
     }
 }
