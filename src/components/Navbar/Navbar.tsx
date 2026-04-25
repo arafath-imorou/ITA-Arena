@@ -9,7 +9,7 @@ import styles from "./Navbar.module.css";
 export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, signOut, role } = useAuth();
   const { selectedCountry, setSelectedCountry, countries } = useCountry();
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -114,6 +114,14 @@ export default function Navbar() {
                             </div>
                           </div>
                           <hr className={styles.divider} />
+                          {role === 'admin' && (
+                            <>
+                              <Link href="/admin" className={styles.dropdownItem} style={{ color: '#ff5a1f', fontWeight: 'bold' }} onClick={() => setShowDropdown(false)}>
+                                🔧 Administration
+                              </Link>
+                              <hr className={styles.divider} />
+                            </>
+                          )}
                           <Link href="/organizer" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Tableau de bord</Link>
                           <Link href="/organizer" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Mes évènements</Link>
                           <Link href="/organizer/tickets" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>Mes Tickets</Link>
