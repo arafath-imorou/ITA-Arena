@@ -201,17 +201,18 @@ function CheckoutContent() {
 
                 // @ts-ignore
                 if (window.FedaPay) {
-                    // @ts-ignore
-                    const checkout = window.FedaPay.checkout(fedaConfig);
-                    checkout.open();
+                    try {
+                        // alert("Initialisation du paiement FedaPay...");
+                        // @ts-ignore
+                        const checkout = window.FedaPay.checkout(fedaConfig);
+                        checkout.open();
+                    } catch (fedaErr: any) {
+                        console.error("FedaPay Checkout Error:", fedaErr);
+                        alert("Erreur lors de l'ouverture de la fenêtre de paiement: " + fedaErr.message);
+                    }
                 } else {
-                    // Fallback to manual save for now if script not loaded
-                    console.warn("FedaPay SDK not found. Loading tickets anyway for demo.");
-                    const { data, error } = await supabase
-                        .from('tickets')
-                        .insert(ticketsToCreate)
-                        .select();
-                    if (!error) router.push(`/checkout/confirmation?session=${checkoutSessionId}&event=${eventId}`);
+                    alert("Le module de paiement n'est pas encore chargé. Veuillez patienter une seconde et réessayer.");
+                    setIsProcessing(false);
                 }
             }
         } catch (err: any) {
@@ -381,7 +382,11 @@ function CheckoutContent() {
 
     return (
         <div className="container" style={{ paddingTop: '100px', paddingBottom: '100px' }}>
-            <Script src="https://cdn.fedapay.com/checkout.js?v=1.1.7" strategy="beforeInteractive" />
+            <Script 
+                src="https://cdn.fedapay.com/checkout.js?v=1.1.7" 
+                strategy="afterInteractive"
+                onLoad={() => console.log("FedaPay SDK Loaded")}
+            />
             <h1 className={styles.pageTitleHeader}>Paiement</h1>
 
             <div className={styles.checkoutLayout}>
