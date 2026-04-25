@@ -21,7 +21,6 @@ export default function AboutPage() {
                     {/* Qui sommes-nous */}
                     <section className={styles.section}>
                         <div className={styles.headerRow}>
-                            <span className={styles.label}>🌍 MISSION</span>
                             <h2 className={styles.sectionTitle}>Qui sommes-nous ?</h2>
                         </div>
                         <div className={styles.textBlock}>
@@ -44,7 +43,6 @@ export default function AboutPage() {
                     {/* Vision */}
                     <section className={styles.section}>
                         <div className={styles.headerRow}>
-                            <span className={styles.label}>🚀 AMBITION</span>
                             <h2 className={styles.sectionTitle}>Notre vision</h2>
                         </div>
                         <div className={styles.textBlock}>
@@ -67,7 +65,6 @@ export default function AboutPage() {
                     {/* Ce que nous apportons */}
                     <section className={styles.section}>
                         <div className={styles.headerRow}>
-                            <span className={styles.label}>💡 SOLUTIONS</span>
                             <h2 className={styles.sectionTitle}>Ce que nous apportons</h2>
                         </div>
                         <div className={styles.featureGrid}>
