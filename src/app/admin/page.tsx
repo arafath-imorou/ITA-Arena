@@ -47,18 +47,18 @@ function AdminDashboardContent() {
         async function fetchAdminData() {
             setLoading(true);
             try {
-                // 1. Fetch Organizers
+                // 1. Fetch All Profiles that are organizers OR have created events
                 const { data: orgs } = await supabase
                     .schema('ita_arena')
                     .from('profiles')
                     .select('*')
-                    .eq('role', 'organizer');
+                    .or('role.eq.organizer,id.in.(select organizer_id from ita_arena.events)');
                 
                 // 2. Fetch All Items (Events + Cotisations)
                 const { data: allItems } = await supabase
                     .schema('ita_arena')
                     .from('events')
-                    .select('*, profiles(email, full_name)')
+                    .select('*, profiles!events_organizer_id_fkey(email, full_name)')
                     .order('created_at', { ascending: false });
 
                 // 3. Fetch Tickets with Event info
