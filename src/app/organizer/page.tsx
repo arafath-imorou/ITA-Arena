@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, Suspense } from "react";
 import styles from "./Organizer.module.css";
 import Link from "next/link";
