@@ -69,6 +69,7 @@
     display: flex;
     flex-direction: column;
     position: relative;
+    overflow-y: auto;
 }
 
 .backBtn {
@@ -283,3 +284,45 @@
         padding: 3rem 2rem;
     }
 }
+
+/* New Registration Styles */
+.typeSelector {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    background: #f0f0f0;
+    padding: 0.4rem;
+    border-radius: 10px;
+}
+
+.typeBtn {
+    flex: 1;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: transparent;
+    color: #666;
+}
+
+.activeType {
+    background: white;
+    color: #FF5A1F;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.inputRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 600px) {
+    .inputRow {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
