@@ -142,6 +142,19 @@ function CheckoutContent() {
                 const lastname = nameParts.length > 1 ? nameParts.pop() : nameParts[0];
                 const firstname = nameParts.length > 0 ? nameParts.join(' ') : 'Client';
 
+                // Map our payment methods to FedaPay methods
+                const fedaMethodMapping: { [key: string]: string } = {
+                    "mtn": "mtn",
+                    "moov": "moov",
+                    "orange": "orange",
+                    "wave": "wave",
+                    "celtiis": "mtn_open", // Celtiis often uses mtn_open or similar in FedaPay
+                    "free": "free",
+                    "tmoney": "tmoney",
+                    "airtel": "airtel",
+                    "card": "card"
+                };
+
                 const fedaConfig = {
                     public_key: process.env.NEXT_PUBLIC_FEDAPAY_PUBLIC_KEY,
                     transaction: {
@@ -157,6 +170,8 @@ function CheckoutContent() {
                             country: countryMapping[selectedCountryObj.code] || 'BJ'
                         }
                     },
+                    // Direct payment method selection
+                    method: fedaMethodMapping[paymentMethod] || 'mtn',
                     onComplete: async (response: any) => {
                         if (response.status === 'approved') {
                             // 3. Save to database only after approval
@@ -180,8 +195,6 @@ function CheckoutContent() {
 
                 // @ts-ignore
                 if (window.FedaPay) {
-                    // @ts-ignore
-                    window.FedaPay.init('#feda-payment-container', fedaConfig);
                     // @ts-ignore
                     const checkout = window.FedaPay.checkout(fedaConfig);
                     checkout.open();
@@ -508,6 +521,7 @@ function CheckoutContent() {
                         </div>
                     </div>
                 </div>
+                <div id="feda-payment-container"></div>
             </div>
         </div>
     );
