@@ -23,7 +23,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const fetchRole = async (userId: string) => {
         try {
             const { data } = await supabase
-                .schema('ita_arena')
                 .from('profiles')
                 .select('role')
                 .eq('id', userId)
