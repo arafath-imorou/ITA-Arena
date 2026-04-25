@@ -25,17 +25,20 @@ function AdminDashboardContent() {
 
             // 1. Fetch All Profiles
             const { data: profilesData } = await supabase
+                .schema('ita_arena')
                 .from('profiles')
                 .select('*');
             
             // 2. Fetch All Items (Events + Cotisations)
             const { data: eventsData } = await supabase
+                .schema('ita_arena')
                 .from('events')
                 .select('*')
                 .order('created_at', { ascending: false });
 
             // 3. Fetch Tickets
             const { data: ticketsData } = await supabase
+                .schema('ita_arena')
                 .from('tickets')
                 .select('*')
                 .eq('status', 'valid')
