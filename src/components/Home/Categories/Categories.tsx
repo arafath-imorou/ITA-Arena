@@ -14,7 +14,6 @@ export default function Categories() {
         async function fetchCategories() {
             setLoading(true);
             const { data, error } = await supabase
-                .schema('ita_arena')
                 .from('categories')
                 .select('*')
                 .eq('type', mode === 'events' ? 'event' : 'cotisation');
