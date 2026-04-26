@@ -15,6 +15,7 @@ export default function ScanPage() {
     const [isCameraActive, setIsCameraActive] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string>("");
     
+    const selectedEventIdRef = useRef<string>("");
     const html5QrCode = useRef<Html5Qrcode | null>(null);
 
     useEffect(() => {
@@ -22,7 +23,10 @@ export default function ScanPage() {
             const { data } = await supabase.from('events').select('id, title').order('date', { ascending: false });
             if (data) {
                 setEvents(data);
-                if (data.length > 0) setSelectedEventId(data[0].id);
+                if (data.length > 0) {
+                    setSelectedEventId(data[0].id);
+                    selectedEventIdRef.current = data[0].id;
+                }
             }
         }
         fetchEvents();
@@ -34,16 +38,22 @@ export default function ScanPage() {
         };
     }, []);
 
+    const handleEventChange = (id: string) => {
+        setSelectedEventId(id);
+        selectedEventIdRef.current = id;
+        fetchStats(id);
+    };
+
     useEffect(() => {
         if (!selectedEventId) return;
-        fetchStats();
+        fetchStats(selectedEventId);
     }, [selectedEventId]);
 
-    async function fetchStats() {
+    async function fetchStats(eventId: string) {
         const { data: tickets } = await supabase
             .from('tickets')
             .select('status')
-            .eq('event_id', selectedEventId);
+            .eq('event_id', eventId);
         
         if (tickets) {
             setStats({
@@ -61,8 +71,8 @@ export default function ScanPage() {
             }
 
             const config = { 
-                fps: 20, // Faster capture
-                qrbox: { width: 300, height: 300 }, // Larger scanning area
+                fps: 20, 
+                qrbox: { width: 300, height: 300 },
                 aspectRatio: 1.0
             };
             
@@ -70,7 +80,7 @@ export default function ScanPage() {
                 { facingMode: "environment" }, 
                 config, 
                 onScanSuccess,
-                onScanFailure // Missing 4th argument fixed
+                onScanFailure
             );
             setIsCameraActive(true);
         } catch (err: any) {
@@ -87,7 +97,9 @@ export default function ScanPage() {
     };
 
     async function onScanSuccess(decodedText: string) {
-        // Play sound if possible
+        // Use Ref value to get the CURRENTLY selected event
+        const currentEventId = selectedEventIdRef.current;
+        
         try { new Audio('/success.mp3').play(); } catch(e) {}
 
         let qrKey = decodedText;
@@ -106,7 +118,7 @@ export default function ScanPage() {
             return;
         }
 
-        if (ticket.event_id !== selectedEventId) {
+        if (ticket.event_id !== currentEventId) {
             setResult({ 
                 type: 'error', 
                 message: "Mauvais événement !", 
@@ -165,7 +177,7 @@ export default function ScanPage() {
                 <select 
                     className={styles.eventSelector}
                     value={selectedEventId}
-                    onChange={(e) => setSelectedEventId(e.target.value)}
+                    onChange={(e) => handleEventChange(e.target.value)}
                 >
                     {events.map(ev => (
                         <option key={ev.id} value={ev.id}>{ev.title}</option>
