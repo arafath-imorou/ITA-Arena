@@ -6,6 +6,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { downloadTicket } from "@/lib/ticketUtils";
 
 function AdminDashboardContent() {
     const { user } = useAuth();
@@ -16,6 +17,7 @@ function AdminDashboardContent() {
     const [rawTickets, setRawTickets] = useState<any[]>([]);
     const [isAdmin, setIsAdmin] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
+    const [activeModalTab, setActiveModalTab] = useState<'stats' | 'tickets'>('stats');
 
     // Filter states
     const [filters, setFilters] = useState({
@@ -317,9 +319,10 @@ function AdminDashboardContent() {
                                         <td><span className={`${styles.badge} ${e.is_published ? styles.badgeSuccess : styles.badgeInfo}`}>{e.is_published ? "Actif" : "Masqué"}</span></td>
                                         <td>
                                             <div style={{ display: 'flex', gap: '0.4rem' }}>
-                                                <button onClick={() => setSelectedEvent(e)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#e0f2fe', color: '#0369a1' }}>📊</button>
-                                                <button onClick={() => togglePublish(e.id, e.is_published)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#f1f5f9' }}>{e.is_published ? "⏸️" : "▶️"}</button>
-                                                <button onClick={() => deleteEvent(e.id)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#fee2e2', color: '#991b1b' }}>🗑️</button>
+                                                <button onClick={() => { setSelectedEvent(e); setActiveModalTab('stats'); }} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#e0f2fe', color: '#0369a1' }} title="Statistiques">📊</button>
+                                                <button onClick={() => { setSelectedEvent(e); setActiveModalTab('tickets'); }} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#fef3c7', color: '#92400e' }} title="Tickets">🎟️</button>
+                                                <button onClick={() => togglePublish(e.id, e.is_published)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#f1f5f9' }} title={e.is_published ? "Masquer" : "Publier"}>{e.is_published ? "⏸️" : "▶️"}</button>
+                                                <button onClick={() => deleteEvent(e.id)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#fee2e2', color: '#991b1b' }} title="Supprimer">🗑️</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -358,31 +361,126 @@ function AdminDashboardContent() {
                         <h2 style={{ marginBottom: '0.5rem', fontSize: '1.25rem' }}>{selectedEvent.title}</h2>
                         <span className={styles.badge} style={{ background: '#ff5a1f', color: 'white', marginBottom: '1.5rem', display: 'inline-block' }}>{selectedEvent.type === 'cotisation' ? 'Cotisation' : 'Événement'}</span>
                         
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Total Vendus</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.sold_count}</h3></div>
-                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Revenu</p><h3 style={{ margin: 0, fontSize: '1.2rem', color: '#059669' }}>{Number(selectedEvent.collected_amount || 0).toLocaleString()} F</h3></div>
-                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Restants</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.total_capacity - selectedEvent.sold_count}</h3></div>
-                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Taux</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.percent}%</h3></div>
+                        <div className={styles.modalTabs}>
+                            <button 
+                                className={`${styles.modalTab} ${activeModalTab === 'stats' ? styles.modalTabActive : ''}`}
+                                onClick={() => setActiveModalTab('stats')}
+                            >
+                                Performances
+                            </button>
+                            <button 
+                                className={`${styles.modalTab} ${activeModalTab === 'tickets' ? styles.modalTabActive : ''}`}
+                                onClick={() => setActiveModalTab('tickets')}
+                            >
+                                Tickets ({selectedEvent.sold_count})
+                            </button>
                         </div>
+                        
+                        {activeModalTab === 'stats' ? (
+                            <>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                                    <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Total Vendus</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.sold_count}</h3></div>
+                                    <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Revenu</p><h3 style={{ margin: 0, fontSize: '1.2rem', color: '#059669' }}>{Number(selectedEvent.collected_amount || 0).toLocaleString()} F</h3></div>
+                                    <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Restants</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.total_capacity - selectedEvent.sold_count}</h3></div>
+                                    <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Taux</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.percent}%</h3></div>
+                                </div>
 
-                        <h3>Par Catégorie</h3>
-                        <div className={styles.tableWrapper}>
-                            <table className={styles.table} style={{ fontSize: '0.75rem', minWidth: '400px' }}>
-                                <thead><tr><th>Cat</th><th>Prix</th><th>Ventes</th><th>Revenu</th><th>Taux</th></tr></thead>
-                                <tbody>
-                                    {selectedEvent.categoriesWithStats.map((cat: any, idx: number) => (
-                                        <tr key={idx}>
-                                            <td><strong>{cat.name}</strong></td>
-                                            <td>{Number(cat.price).toLocaleString()} F</td>
-                                            <td>{cat.sold} / {cat.capacity}</td>
-                                            <td>{Number(cat.revenue || 0).toLocaleString()} F</td>
-                                            <td>{cat.percent}%</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-
-                            </table>
-                        </div>
+                                <h3>Par Catégorie</h3>
+                                <div className={styles.tableWrapper}>
+                                    <table className={styles.table} style={{ fontSize: '0.75rem', minWidth: '400px' }}>
+                                        <thead><tr><th>Cat</th><th>Prix</th><th>Ventes</th><th>Revenu</th><th>Taux</th></tr></thead>
+                                        <tbody>
+                                            {selectedEvent.categoriesWithStats.map((cat: any, idx: number) => (
+                                                <tr key={idx}>
+                                                    <td><strong>{cat.name}</strong></td>
+                                                    <td>{Number(cat.price).toLocaleString()} F</td>
+                                                    <td>{cat.sold} / {cat.capacity}</td>
+                                                    <td>{Number(cat.revenue || 0).toLocaleString()} F</td>
+                                                    <td>{cat.percent}%</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </>
+                        ) : (
+                            <div className={styles.ticketsList}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                                    <h3>Liste des Tickets</h3>
+                                    <button 
+                                        onClick={async () => {
+                                            const eventTickets = rawTickets.filter(t => t.event_id === selectedEvent.id);
+                                            for (const t of eventTickets) {
+                                                await downloadTicket(t, selectedEvent);
+                                                await new Promise(r => setTimeout(r, 500));
+                                            }
+                                        }}
+                                        className={styles.badge}
+                                        style={{ background: '#ff5a1f', color: 'white', border: 'none', cursor: 'pointer' }}
+                                    >
+                                        📥 Télécharger Tout
+                                    </button>
+                                </div>
+                                <div className={styles.tableWrapper}>
+                                    <table className={styles.table} style={{ fontSize: '0.75rem' }}>
+                                        <thead>
+                                            <tr>
+                                                <th>N°</th>
+                                                <th>Client</th>
+                                                <th>Catégorie</th>
+                                                <th>Paiement</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {rawTickets.filter(t => t.event_id === selectedEvent.id).map(t => (
+                                                <tr key={t.id}>
+                                                    <td><strong>#{t.ticket_number.toString().padStart(5, '0')}</strong></td>
+                                                    <td>
+                                                        <div>{t.user_name || 'Inconnu'}</div>
+                                                        <div style={{ fontSize: '0.65rem', color: '#64748b' }}>{t.user_email}</div>
+                                                    </td>
+                                                    <td>{t.category}</td>
+                                                    <td>
+                                                        <div>{t.payment_phone || 'N/A'}</div>
+                                                        <div style={{ fontSize: '0.65rem', color: '#64748b' }}>{Number(t.amount).toLocaleString()} F</div>
+                                                    </td>
+                                                    <td>
+                                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                            <button 
+                                                                onClick={() => downloadTicket(t, selectedEvent)}
+                                                                className={styles.badge}
+                                                                style={{ background: '#f1f5f9', border: 'none', cursor: 'pointer' }}
+                                                                title="Télécharger PDF"
+                                                            >
+                                                                📥 PDF
+                                                            </button>
+                                                            <a 
+                                                                href={`https://wa.me/${(t.payment_phone || t.user_phone || '').replace(/\+/g, '').replace(/\s/g, '')}?text=Bonjour ${t.user_name || ''}, voici votre ticket pour ${selectedEvent.title}.`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className={styles.badge}
+                                                                style={{ background: '#25D366', color: 'white', border: 'none', cursor: 'pointer', textDecoration: 'none' }}
+                                                                title="Envoyer via WhatsApp"
+                                                            >
+                                                                💬
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {rawTickets.filter(t => t.event_id === selectedEvent.id).length === 0 && (
+                                                <tr>
+                                                    <td colSpan={5} style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                                                        Aucun ticket vendu pour le moment.
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
