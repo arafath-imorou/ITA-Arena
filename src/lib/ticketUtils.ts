@@ -22,53 +22,83 @@ export const generateTicketPDF = async (ticket: any, event: any) => {
     const titleLines = doc.splitTextToSize(event.title.toUpperCase(), 60);
     doc.text(titleLines, 15, 40, { angle: 90, align: "center" });
 
+    // Main Content
     doc.setTextColor(51, 51, 51);
-    doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
-    doc.text(event.title.toUpperCase(), 45, 15);
     
-    doc.setFontSize(10);
+    // Wrap Title to avoid overlap with Ticket No
+    const mainTitleLines = doc.splitTextToSize(event.title.toUpperCase(), 60);
+    doc.setFontSize(mainTitleLines.length > 2 ? 14 : 16); // Reduce size if too long
+    doc.text(mainTitleLines, 45, 12);
+    
+    doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    const dateStr = new Date(event.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    doc.text(dateStr, 45, 22);
+    
+    // Robust date parsing
+    let dateStr = "Date à préciser";
+    if (event.date) {
+        const d = new Date(event.date);
+        if (!isNaN(d.getTime())) {
+            dateStr = d.toLocaleDateString('fr-FR', { 
+                weekday: 'long', 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric' 
+            });
+        }
+    } else if (event.created_at) {
+        // Fallback to created_at if date is missing (common for cotisations)
+        const d = new Date(event.created_at);
+        dateStr = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+    
+    const titleOffset = Math.min(mainTitleLines.length * 6, 15);
+    doc.text(dateStr, 45, 12 + titleOffset);
 
+    // QR Code Section
     doc.addImage(qrDataUrl, "PNG", 110, 25, 40, 40);
     doc.setTextColor(150, 150, 150);
     doc.setFontSize(7);
     doc.text("SCANNEZ À L'ENTRÉE", 130, 68, { align: "center" });
 
+    // Category and Price
     doc.setTextColor(51, 51, 51);
     doc.setFontSize(8);
-    doc.text("CATÉGORIE", 45, 40);
-    doc.setFontSize(12);
+    doc.text("CATÉGORIE", 45, 42);
+    doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
-    doc.text(ticket.category, 45, 46);
+    doc.text(ticket.category, 45, 48);
 
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    doc.text("PRIX", 75, 40);
-    doc.setFontSize(12);
+    doc.text("PRIX", 75, 42);
+    doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
-    doc.text(`${ticket.amount.toLocaleString()} F CFA`, 75, 46);
+    doc.text(`${Number(ticket.amount).toLocaleString()} F CFA`, 75, 48);
 
+    // Buyer
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    doc.text("ACHETEUR", 45, 58);
+    doc.text("ACHETEUR", 45, 60);
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
-    doc.text(ticket.user_name || ticket.user_email, 45, 63);
+    const buyerName = (ticket.user_name || ticket.user_email || "Client").toUpperCase();
+    const buyerLines = doc.splitTextToSize(buyerName, 55);
+    doc.text(buyerLines, 45, 65);
 
+    // Dotted Separator
     doc.setDrawColor(200, 200, 200);
     doc.setLineDashPattern([1, 1], 0);
     doc.line(105, 0, 105, 80);
     
+    // Ticket Number
     doc.setTextColor(255, 90, 31);
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    doc.text("TICKET N°", 130, 15, { align: "center" });
-    doc.setFontSize(12);
+    doc.text("TICKET N°", 130, 12, { align: "center" });
+    doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
-    doc.text(`#${ticket.ticket_number.toString().padStart(5, '0')}`, 130, 22, { align: "center" });
+    doc.text(`#${String(ticket.ticket_number || 0).padStart(5, '0')}`, 130, 19, { align: "center" });
 
     doc.setTextColor(200, 200, 200);
     doc.setFontSize(8);
