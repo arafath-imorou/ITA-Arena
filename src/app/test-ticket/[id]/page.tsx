@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { use } from "react";
 import styles from "./TestTicket.module.css";
+import QRCode from "qrcode";
 
 export default function TestTicketPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
     const [ticket, setTicket] = useState<any>(null);
     const [event, setEvent] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [qrDataUrl, setQrDataUrl] = useState<string>("");
 
     useEffect(() => {
         async function fetchData() {
@@ -27,6 +29,12 @@ export default function TestTicketPage({ params }: { params: Promise<{ id: strin
                     .eq('id', ticketData.event_id)
                     .single();
                 setEvent(eventData);
+
+                // Generate real QR
+                if (ticketData.qr_code_key) {
+                    const qr = await QRCode.toDataURL(`🎫 ITA ARENA - TICKET VALIDE\n--------------------------\nÉVÉNEMENT : ${eventData?.title.toUpperCase()}\nCATÉGORIE : ${ticketData.category.toUpperCase()}\nN° TICKET : ${String(ticketData.ticket_number).padStart(5, '0')}\nACHETEUR  : ${ticketData.user_name?.toUpperCase()}\n--------------------------\nCLÉ RÉF : ${ticketData.qr_code_key}`);
+                    setQrDataUrl(qr);
+                }
             }
             setLoading(false);
         }
@@ -48,6 +56,21 @@ export default function TestTicketPage({ params }: { params: Promise<{ id: strin
 
     const colors = getColors(ticket.category);
 
+    // Robust date parsing for the test page
+    let dateStr = "Date à préciser";
+    const dateToParse = event?.date || event?.created_at;
+    if (dateToParse) {
+        const d = new Date(dateToParse);
+        if (!isNaN(d.getTime())) {
+            dateStr = d.toLocaleDateString('fr-FR', { 
+                weekday: 'long', 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric' 
+            });
+        }
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.ticket}>
@@ -58,7 +81,7 @@ export default function TestTicketPage({ params }: { params: Promise<{ id: strin
                     <div className={styles.header}>
                         <div className={styles.titleArea}>
                             <h1 style={{ color: colors.bg }}>{event.title}</h1>
-                            <p className={styles.date}>{new Date(event.date || event.created_at).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                            <p className={styles.date}>{dateStr}</p>
                         </div>
                         <div className={styles.ticketNo}>
                             <span className={styles.noLabel}>TICKET N°</span>
@@ -87,8 +110,11 @@ export default function TestTicketPage({ params }: { params: Promise<{ id: strin
                 </div>
                 <div className={styles.qrSection}>
                     <div className={styles.qrPlaceholder}>
-                        {/* Simulate QR Code visual */}
-                        <div className={styles.qrBox}></div>
+                        {qrDataUrl ? (
+                            <img src={qrDataUrl} alt="QR Code" className={styles.qrImg} />
+                        ) : (
+                            <div className={styles.qrBox}></div>
+                        )}
                         <span>SCANNEZ À L'ENTRÉE</span>
                     </div>
                 </div>
@@ -96,7 +122,10 @@ export default function TestTicketPage({ params }: { params: Promise<{ id: strin
             
             <div className={styles.instructions}>
                 <p>Ceci est une prévisualisation fidèle du ticket PDF généré.</p>
-                <button onClick={() => window.print()} className={styles.printBtn}>Imprimer le ticket</button>
+                <div className={styles.btnGroup}>
+                    <button onClick={() => window.location.href = '/'} className={styles.homeBtn}>Retour à l'accueil</button>
+                    <button onClick={() => window.print()} className={styles.printBtn}>Imprimer le ticket</button>
+                </div>
             </div>
         </div>
     );

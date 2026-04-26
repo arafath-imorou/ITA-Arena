@@ -132,6 +132,12 @@
     border-radius: 0.5rem;
 }
 
+.qrImg {
+    width: 130px;
+    height: 130px;
+    margin-bottom: 0.5rem;
+}
+
 .qrPlaceholder span {
     font-size: 0.65rem;
     color: #94a3b8;
@@ -141,6 +147,12 @@
 .instructions {
     margin-top: 2rem;
     text-align: center;
+}
+
+.btnGroup {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
 }
 
 .printBtn {
@@ -154,8 +166,14 @@
     transition: transform 0.2s;
 }
 
-.printBtn:hover {
-    transform: scale(1.05);
+.homeBtn {
+    background: white;
+    color: #1a1a1a;
+    border: 1px solid #e2e8f0;
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 @media print {
