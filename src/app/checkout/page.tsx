@@ -368,13 +368,14 @@ function CheckoutContent() {
     const operatorData: { [key: string]: { name: string; logo: string }[] } = {
         "Bénin": [
             { name: "MTN", logo: "https://upload.wikimedia.org/wikipedia/commons/9/93/New-mtn-logo.jpg" },
-            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/v/8/86/Moov_Africa_logo.png" },
-            { name: "Celtiis", logo: "https://www.celtiis.bj/wp-content/uploads/2022/10/Logo-Celtiis-Bénin.png" }
+            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/commons/a/af/Moov_Africa_logo.png" },
+            { name: "Celtiis", logo: "https://www.celtiis.bj/wp-content/uploads/2022/10/Logo-Celtiis-B%C3%A9nin.png" }
         ],
         "Côte d'Ivoire": [
             { name: "Orange", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/1024px-Orange_logo.svg.png" },
             { name: "MTN", logo: "https://upload.wikimedia.org/wikipedia/commons/9/93/New-mtn-logo.jpg" },
-            { name: "Moov", logo: "https://moov-africa.bj/wp-content/uploads/2021/01/logo-moov-africa.png" }
+            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/commons/a/af/Moov_Africa_logo.png" },
+            { name: "Wave", logo: "https://upload.wikimedia.org/wikipedia/commons/c/c2/Wave-logo.png" }
         ],
         "Sénégal": [
             { name: "Orange", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/1024px-Orange_logo.svg.png" },
@@ -387,18 +388,18 @@ function CheckoutContent() {
         ],
         "Mali": [
             { name: "Orange", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/1024px-Orange_logo.svg.png" },
-            { name: "Moov", logo: "https://moov-africa.bj/wp-content/uploads/2021/01/logo-moov-africa.png" }
+            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/commons/a/af/Moov_Africa_logo.png" }
         ],
         "Togo": [
             { name: "TMoney", logo: "https://www.togocom.tg/wp-content/uploads/2020/09/Logo-Tmoney.png" },
-            { name: "Moov", logo: "https://moov-africa.bj/wp-content/uploads/2021/01/logo-moov-africa.png" }
+            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/commons/a/af/Moov_Africa_logo.png" }
         ],
         "Burkina Faso": [
             { name: "Orange", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/1024px-Orange_logo.svg.png" },
-            { name: "Moov", logo: "https://moov-africa.bj/wp-content/uploads/2021/01/logo-moov-africa.png" }
+            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/commons/a/af/Moov_Africa_logo.png" }
         ],
         "Niger": [
-            { name: "Moov", logo: "https://moov-africa.bj/wp-content/uploads/2021/01/logo-moov-africa.png" },
+            { name: "Moov", logo: "https://upload.wikimedia.org/wikipedia/commons/a/af/Moov_Africa_logo.png" },
             { name: "Airtel", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Airtel_logo.svg/2560px-Airtel_logo.svg.png" }
         ]
     };
