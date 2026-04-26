@@ -186,8 +186,7 @@ function CheckoutContent() {
                             // 3. Save to database only after approval
                             const { data, error } = await supabase
                                 .from('tickets')
-                                .insert(ticketsToCreate)
-                                .select();
+                                .insert(ticketsToCreate);
 
                             if (error) {
                                 console.error("Supabase insert error:", error);
