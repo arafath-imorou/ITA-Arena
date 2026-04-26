@@ -95,18 +95,23 @@ function CheckoutContent() {
             const ticketsToCreate: any[] = [];
             for (const t of tickets) {
                 for (let j = 0; j < t.qty; j++) {
-                    const qrKey = typeof crypto !== 'undefined' && crypto.randomUUID 
+                    // Ensure a truly unique QR key
+                    const timestamp = Date.now().toString(36);
+                    const randomStr = Math.random().toString(36).substring(2, 10);
+                    const uniqueId = typeof crypto !== 'undefined' && crypto.randomUUID 
                         ? crypto.randomUUID() 
                         : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
                             var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
                             return v.toString(16);
                         });
+                    
+                    const qrKey = `${timestamp}-${randomStr}-${uniqueId}`;
 
                     ticketsToCreate.push({
                         event_id: eventId,
-                        user_email: email,
+                        user_email: email.trim(),
                         user_phone: phone, 
-                        user_name: fullName, 
+                        user_name: fullName.trim(), 
                         payment_phone: paymentPhone, 
                         category: t.name,
                         amount: t.price,
@@ -161,6 +166,7 @@ function CheckoutContent() {
                     "card": "card"
                 };
 
+                let insertionStarted = false;
                 const fedaConfig = {
                     public_key: process.env.NEXT_PUBLIC_FEDAPAY_PUBLIC_KEY,
                     transaction: {
@@ -183,6 +189,9 @@ function CheckoutContent() {
                         const status = (response.status || "").toLowerCase();
                         
                         if (status === 'approved' || status === 'successful' || status === 'success' || response.transaction?.status === 'approved') {
+                            if (insertionStarted) return;
+                            insertionStarted = true;
+
                             // 3. Save to database only after approval
                             const { data, error } = await supabase
                                 .from('tickets')
@@ -190,7 +199,9 @@ function CheckoutContent() {
 
                             if (error) {
                                 console.error("Supabase insert error:", error);
-                                alert("Paiement réussi, mais une erreur est survenue lors de la création de vos billets. Notez votre numéro de transaction et contactez le support (+229 0152818100).");
+                                // More detailed error for debugging
+                                const errorDetail = error.message || (typeof error === 'object' ? JSON.stringify(error) : String(error));
+                                alert(`Paiement réussi, mais une erreur est survenue lors de la création de vos billets : ${errorDetail}. Notez votre numéro de transaction et contactez le support (+229 0152818100).`);
                             } else {
                                 router.push(`/checkout/confirmation?session=${checkoutSessionId}&event=${eventId}`);
                             }
