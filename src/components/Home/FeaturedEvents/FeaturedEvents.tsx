@@ -167,10 +167,20 @@ export default function FeaturedEvents() {
                                                 <span>📍</span>
                                                 <span className={styles.locationText}>{item.location}</span>
                                             </div>
+
+                                            {item.total_capacity > 0 && item.sold_count >= item.total_capacity && (
+                                                <div style={{ marginTop: '0.5rem', background: '#fef2f2', color: '#991b1b', fontSize: '0.75rem', padding: '0.4rem', borderRadius: '0.4rem', textAlign: 'center', fontWeight: 'bold' }}>
+                                                    🚫 COMPLET
+                                                </div>
+                                            )}
                                         </div>
 
-                                        <Link href={`/events/${item.id}`} className={styles.buyBtn}>
-                                            {mode === 'events' ? "Réserver mon ticket" : "Contribuer"}
+                                        <Link 
+                                            href={`/events/${item.id}`} 
+                                            className={styles.buyBtn}
+                                            style={item.total_capacity > 0 && item.sold_count >= item.total_capacity ? { background: '#ccc', pointerEvents: 'none' } : {}}
+                                        >
+                                            {item.total_capacity > 0 && item.sold_count >= item.total_capacity ? "COMPLET" : (mode === 'events' ? "Réserver mon ticket" : "Contribuer")}
                                         </Link>
                                     </div>
                                 </div>

@@ -31,7 +31,7 @@ export default function EventDetailClient({ id }: { id: string }) {
                 .single();
 
             if (!error && data) {
-                // Fetch collected amount from tickets
+                // Fetch collected amount and sold count from tickets
                 const { data: ticketsData } = await supabase
                     .from('tickets')
                     .select('amount')
@@ -39,11 +39,20 @@ export default function EventDetailClient({ id }: { id: string }) {
                     .eq('status', 'valid');
                 
                 const collectedAmount = ticketsData?.reduce((acc, t) => acc + Number(t.amount), 0) || 0;
+                const soldCount = ticketsData?.length || 0;
+
+                // Calculate total capacity from categories
+                let totalCapacity = 0;
+                if (data.ticket_categories && Array.isArray(data.ticket_categories)) {
+                    totalCapacity = data.ticket_categories.reduce((acc: number, cat: any) => acc + Number(cat.capacity || 0), 0);
+                }
 
                 setItem({
                     ...data,
                     image: data.image_url,
                     collected_amount: collectedAmount,
+                    sold_count: soldCount,
+                    total_capacity: totalCapacity,
                     category: data.category_id?.toUpperCase() || (isCotisation ? "Solidarité" : "ÉVÉNEMENT")
                 });
             } else {
@@ -224,25 +233,36 @@ export default function EventDetailClient({ id }: { id: string }) {
                                         (item.ticket_categories || []).reduce((acc: number, cat: any) => acc + (quantities[cat.name] || 0) * parseFloat(cat.price), 0)
                                     )} F CFA</span>
                                 </div>
-
-                                <button
-                                    className={styles.ctaBtn}
-                                    disabled={(item.ticket_categories || []).reduce((acc: number, cat: any) => acc + (quantities[cat.name] || 0), 0) === 0}
-                                    onClick={() => {
-                                        const params = new URLSearchParams();
-                                        params.set("event", item.title);
-                                        item.ticket_categories.forEach((cat: any, idx: number) => {
-                                            if (quantities[cat.name] > 0) {
-                                                params.set(`q${idx+1}`, quantities[cat.name].toString());
-                                                params.set(`p${idx+1}`, cat.price.toString());
-                                                params.set(`n${idx+1}`, cat.name);
-                                            }
-                                        });
-                                        window.location.href = `/checkout?${params.toString()}`;
-                                    }}
-                                >
-                                    🎟️ ACHETER TICKETS
-                                </button>
+                                
+                                {item.total_capacity > 0 && item.sold_count >= item.total_capacity ? (
+                                    <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                                        <div style={{ background: '#fef2f2', color: '#991b1b', padding: '1rem', borderRadius: '0.75rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+                                            🚫 CET ÉVÉNEMENT EST COMPLET
+                                        </div>
+                                        <button className={styles.ctaBtn} disabled style={{ opacity: 0.5 }}>
+                                            SOLD OUT
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <button
+                                        className={styles.ctaBtn}
+                                        disabled={(item.ticket_categories || []).reduce((acc: number, cat: any) => acc + (quantities[cat.name] || 0), 0) === 0}
+                                        onClick={() => {
+                                            const params = new URLSearchParams();
+                                            params.set("event", item.title);
+                                            item.ticket_categories.forEach((cat: any, idx: number) => {
+                                                if (quantities[cat.name] > 0) {
+                                                    params.set(`q${idx+1}`, quantities[cat.name].toString());
+                                                    params.set(`p${idx+1}`, cat.price.toString());
+                                                    params.set(`n${idx+1}`, cat.name);
+                                                }
+                                            });
+                                            window.location.href = `/checkout?${params.toString()}`;
+                                        }}
+                                    >
+                                        🎟️ ACHETER TICKETS
+                                    </button>
+                                )}
                             </>
                         )}
 
