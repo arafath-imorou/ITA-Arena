@@ -21,7 +21,15 @@ function CheckoutContent() {
     const [isProcessing, setIsProcessing] = useState(false);
     const router = useRouter();
 
-    const eventId = searchParams.get("id") || "d5d140e6-921a-4c9c-b36d-dcc6c478a846"; // Default or from URL
+    const eventId = searchParams.get("id"); // No more hardcoded ID fallback
+    
+    useEffect(() => {
+        if (!eventId && step === 1) {
+            console.error("Missing event ID in checkout");
+            // alert("Une erreur est survenue : l'identifiant de l'événement est manquant.");
+            // router.push("/");
+        }
+    }, [eventId, router, step]);
 
     // Data from URL or default fallback
     const eventName = searchParams.get("event") || "Événement ITA Arena";

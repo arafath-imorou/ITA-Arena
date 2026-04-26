@@ -18,6 +18,7 @@ export default function EventDetailClient({ id }: { id: string }) {
     });
     const [item, setItem] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [donationAmount, setDonationAmount] = useState<string>('');
 
     useEffect(() => {
         async function fetchEvent() {
@@ -191,9 +192,27 @@ export default function EventDetailClient({ id }: { id: string }) {
                                 <p className={styles.actionSub}>Soutenez cette noble cause</p>
                                 <div className={styles.amountInputWrap}>
                                     <span className={styles.currencyLabel}>F CFA</span>
-                                    <input type="number" placeholder="Montant libre" className={styles.amountInput} />
+                                    <input 
+                                        type="number" 
+                                        placeholder="Montant libre" 
+                                        className={styles.amountInput} 
+                                        value={donationAmount}
+                                        onChange={(e) => setDonationAmount(e.target.value)}
+                                    />
                                 </div>
-                                <button className={styles.ctaBtn}>
+                                <button 
+                                    className={styles.ctaBtn}
+                                    disabled={!donationAmount || Number(donationAmount) <= 0}
+                                    onClick={() => {
+                                        const params = new URLSearchParams();
+                                        params.set("id", item.id);
+                                        params.set("event", item.title);
+                                        params.set("q1", "1");
+                                        params.set("p1", donationAmount);
+                                        params.set("n1", "Contribution");
+                                        window.location.href = `/checkout?${params.toString()}`;
+                                    }}
+                                >
                                     🤝 SOUTENIR LE PROJET
                                 </button>
                             </>
@@ -249,6 +268,7 @@ export default function EventDetailClient({ id }: { id: string }) {
                                         disabled={(item.ticket_categories || []).reduce((acc: number, cat: any) => acc + (quantities[cat.name] || 0), 0) === 0}
                                         onClick={() => {
                                             const params = new URLSearchParams();
+                                            params.set("id", item.id);
                                             params.set("event", item.title);
                                             item.ticket_categories.forEach((cat: any, idx: number) => {
                                                 if (quantities[cat.name] > 0) {
