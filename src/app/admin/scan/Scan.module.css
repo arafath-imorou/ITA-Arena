@@ -52,13 +52,47 @@
 }
 
 /* Customizing html5-qrcode internal UI */
-#reader__dashboard_section_csr button {
-    background: #ff5a1f !important;
-    color: white !important;
-    border: none !important;
-    padding: 0.5rem 1rem !important;
-    border-radius: 0.25rem !important;
-    cursor: pointer !important;
+.cameraPlaceholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #1e293b;
+    z-index: 5;
+}
+
+.startBtn {
+    background: #ff5a1f;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 1rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 10px 15px -3px rgba(255, 90, 31, 0.3);
+}
+
+.stopBtn {
+    margin-top: 1rem;
+    background: transparent;
+    color: #ef4444;
+    border: 1px solid #ef4444;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.errorText {
+    color: #ef4444;
+    margin-top: 1rem;
+    font-size: 0.85rem;
 }
 
 .overlay {
@@ -71,11 +105,11 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba(15, 23, 42, 0.9);
     z-index: 10;
     padding: 2rem;
     text-align: center;
     animation: fadeIn 0.3s ease;
+    backdrop-filter: blur(10px);
 }
 
 @keyframes fadeIn {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { Html5QrcodeScanner } from "html5-qrcode";
+import { Html5Qrcode } from "html5-qrcode";
 import { supabase } from "@/lib/supabase";
 import styles from "./Scan.module.css";
 import BackButton from "@/components/BackButton";
@@ -12,10 +12,12 @@ export default function ScanPage() {
     const [result, setResult] = useState<{ type: 'success' | 'error', message: string, details?: any } | null>(null);
     const [recentScans, setRecentScans] = useState<any[]>([]);
     const [stats, setStats] = useState({ total: 0, checkedIn: 0 });
-    const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+    const [isCameraActive, setIsCameraActive] = useState(false);
+    const [errorMsg, setErrorMsg] = useState<string>("");
+    
+    const html5QrCode = useRef<Html5Qrcode | null>(null);
 
     useEffect(() => {
-        // Fetch events
         async function fetchEvents() {
             const { data } = await supabase.from('events').select('id, title').order('date', { ascending: false });
             if (data) {
@@ -24,52 +26,70 @@ export default function ScanPage() {
             }
         }
         fetchEvents();
+
+        return () => {
+            if (html5QrCode.current && html5QrCode.current.isScanning) {
+                html5QrCode.current.stop();
+            }
+        };
     }, []);
 
     useEffect(() => {
         if (!selectedEventId) return;
-
-        // Fetch stats for the selected event
-        async function fetchStats() {
-            const { data: tickets } = await supabase
-                .from('tickets')
-                .select('status')
-                .eq('event_id', selectedEventId);
-            
-            if (tickets) {
-                setStats({
-                    total: tickets.length,
-                    checkedIn: tickets.filter(t => t.status === 'checked-in').length
-                });
-            }
-        }
         fetchStats();
-
-        // Initialize Scanner
-        if (!scannerRef.current) {
-            const scanner = new Html5QrcodeScanner(
-                "reader",
-                { fps: 10, qrbox: { width: 250, height: 250 } },
-                /* verbose= */ false
-            );
-
-            scanner.render(onScanSuccess, onScanFailure);
-            scannerRef.current = scanner;
-        }
-
-        return () => {
-            // Optional: Cleanup if needed, but scanner.render manages its own lifecycle usually
-        };
     }, [selectedEventId]);
 
+    async function fetchStats() {
+        const { data: tickets } = await supabase
+            .from('tickets')
+            .select('status')
+            .eq('event_id', selectedEventId);
+        
+        if (tickets) {
+            setStats({
+                total: tickets.length,
+                checkedIn: tickets.filter(t => t.status === 'checked-in').length
+            });
+        }
+    }
+
+    const startScanner = async () => {
+        setErrorMsg("");
+        try {
+            if (!html5QrCode.current) {
+                html5QrCode.current = new Html5Qrcode("reader");
+            }
+
+            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+            
+            await html5QrCode.current.start(
+                { facingMode: "environment" }, 
+                config, 
+                onScanSuccess
+            );
+            setIsCameraActive(true);
+        } catch (err: any) {
+            console.error(err);
+            setErrorMsg("Impossible d'accéder à la caméra. Vérifiez les permissions.");
+        }
+    };
+
+    const stopScanner = async () => {
+        if (html5QrCode.current && html5QrCode.current.isScanning) {
+            await html5QrCode.current.stop();
+            setIsCameraActive(false);
+        }
+    };
+
     async function onScanSuccess(decodedText: string) {
-        // Extract key if it's the rich format or just the key
+        // Play sound if possible
+        try { new Audio('/success.mp3').play(); } catch(e) {}
+
         let qrKey = decodedText;
         if (decodedText.includes('CLÉ RÉF : ')) {
             qrKey = decodedText.split('CLÉ RÉF : ')[1].trim();
         }
 
-        // 1. Find ticket
         const { data: ticket, error } = await supabase
             .from('tickets')
             .select('*, event:events(title)')
@@ -77,49 +97,44 @@ export default function ScanPage() {
             .single();
 
         if (error || !ticket) {
-            setResult({ type: 'error', message: "Ticket invalide ou introuvable." });
+            setResult({ type: 'error', message: "Ticket invalide ou inconnu." });
             return;
         }
 
-        // 2. Check event
         if (ticket.event_id !== selectedEventId) {
             setResult({ 
                 type: 'error', 
                 message: "Mauvais événement !", 
-                details: { info: `Ce ticket appartient à : ${ticket.event?.title}` } 
+                details: { info: `Appartient à : ${ticket.event?.title}` } 
             });
             return;
         }
 
-        // 3. Check status
         if (ticket.status === 'checked-in') {
             setResult({ 
                 type: 'error', 
-                message: "Ticket déjà utilisé !", 
+                message: "Déjà utilisé !", 
                 details: { info: `Scanné le: ${new Date(ticket.updated_at).toLocaleString()}` } 
             });
             return;
         }
 
-        // 4. Mark as checked-in
         const { error: updateError } = await supabase
             .from('tickets')
             .update({ status: 'checked-in', updated_at: new Date().toISOString() })
             .eq('id', ticket.id);
 
         if (updateError) {
-            setResult({ type: 'error', message: "Erreur lors de la validation." });
+            setResult({ type: 'error', message: "Erreur de validation base de données." });
             return;
         }
 
-        // 5. Success
         setResult({ 
             type: 'success', 
-            message: "Ticket Validé !", 
+            message: "Entrée Validée !", 
             details: { name: ticket.user_name, category: ticket.category } 
         });
 
-        // Update local stats and recent scans
         setStats(prev => ({ ...prev, checkedIn: prev.checkedIn + 1 }));
         setRecentScans(prev => [{
             name: ticket.user_name,
@@ -127,22 +142,16 @@ export default function ScanPage() {
             time: new Date().toLocaleTimeString()
         }, ...prev].slice(0, 5));
 
-        // Vibration for tactile feedback
-        if (navigator.vibrate) navigator.vibrate(100);
-    }
-
-    function onScanFailure(error: any) {
-        // Handle scan failure, usually silent
+        if (navigator.vibrate) navigator.vibrate(200);
     }
 
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', justifyContent: 'center' }}>
                     <BackButton />
-                    <h1>Scanner de Tickets</h1>
+                    <h1>Scanner Pro</h1>
                 </div>
-                <p>Validez les entrées en temps réel</p>
                 
                 <select 
                     className={styles.eventSelector}
@@ -156,17 +165,26 @@ export default function ScanPage() {
             </div>
 
             <div className={styles.scannerWrapper}>
-                <div id="reader"></div>
+                <div id="reader" style={{ width: '100%', height: '100%' }}></div>
+                
+                {!isCameraActive && !result && (
+                    <div className={styles.cameraPlaceholder}>
+                        <button className={styles.startBtn} onClick={startScanner}>
+                            📷 ACTIVER LA CAMÉRA
+                        </button>
+                        {errorMsg && <p className={styles.errorText}>{errorMsg}</p>}
+                    </div>
+                )}
                 
                 {result && (
-                    <div className={styles.overlay}>
+                    <div className={styles.overlay} style={{ backgroundColor: result.type === 'success' ? 'rgba(22, 101, 52, 0.95)' : 'rgba(153, 27, 27, 0.95)' }}>
                         {result.type === 'success' ? (
                             <>
                                 <div className={styles.successIcon}>✅</div>
                                 <h2 className={styles.resultTitle}>{result.message}</h2>
                                 <div className={styles.resultDetails}>
-                                    <p>Acheteur: <strong>{result.details.name}</strong></p>
-                                    <p>Catégorie: <strong>{result.details.category}</strong></p>
+                                    <p><strong>{result.details.name}</strong></p>
+                                    <p>{result.details.category}</p>
                                 </div>
                             </>
                         ) : (
@@ -181,11 +199,17 @@ export default function ScanPage() {
                             </>
                         )}
                         <button className={styles.closeBtn} onClick={() => setResult(null)}>
-                            CONTINUER LE SCAN
+                            CONTINUER
                         </button>
                     </div>
                 )}
             </div>
+
+            {isCameraActive && (
+                <button className={styles.stopBtn} onClick={stopScanner}>
+                    Arrêter la caméra
+                </button>
+            )}
 
             <div className={styles.statsGrid}>
                 <div className={styles.statCard}>
@@ -194,13 +218,13 @@ export default function ScanPage() {
                 </div>
                 <div className={styles.statCard}>
                     <span className={styles.statVal}>{stats.total}</span>
-                    <span className={styles.statLabel}>Total Vendus</span>
+                    <span className={styles.statLabel}>Total</span>
                 </div>
             </div>
 
             {recentScans.length > 0 && (
                 <div className={styles.lastScans}>
-                    <h2>Derniers scans réussis</h2>
+                    <h2>Derniers passages</h2>
                     {recentScans.map((scan, i) => (
                         <div key={i} className={styles.scanRow}>
                             <div className={styles.scanInfo}>
