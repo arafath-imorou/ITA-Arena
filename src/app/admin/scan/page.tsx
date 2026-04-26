@@ -146,6 +146,10 @@ export default function ScanPage() {
         if (navigator.vibrate) navigator.vibrate(200);
     }
 
+    function onScanFailure(error: any) {
+        // Handle scan failure, usually silent
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>
