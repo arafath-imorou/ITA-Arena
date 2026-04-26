@@ -1,0 +1,173 @@
+.container {
+    min-height: 100vh;
+    background: #f1f5f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+.ticket {
+    width: 800px;
+    height: 350px;
+    background: white;
+    display: flex;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    border-radius: 1rem;
+    overflow: hidden;
+    position: relative;
+}
+
+.leftStrip {
+    width: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.verticalTitle {
+    transform: rotate(-90deg);
+    color: white;
+    font-weight: 900;
+    text-transform: uppercase;
+    white-space: nowrap;
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+}
+
+.mainContent {
+    flex: 1;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.titleArea h1 {
+    font-size: 1.75rem;
+    font-weight: 900;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.date {
+    color: #64748b;
+    margin: 0.5rem 0 0;
+    font-size: 1rem;
+    text-transform: capitalize;
+}
+
+.ticketNo {
+    text-align: right;
+}
+
+.noLabel {
+    display: block;
+    font-size: 0.75rem;
+    color: #ff5a1f;
+    font-weight: bold;
+}
+
+.noVal {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #ff5a1f;
+}
+
+.detailsGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.detailItem label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #94a3b8;
+    margin-bottom: 0.25rem;
+}
+
+.detailItem span {
+    font-size: 1.25rem;
+    font-weight: 900;
+}
+
+.footer {
+    margin-top: auto;
+}
+
+.brand {
+    color: #cbd5e1;
+    font-weight: bold;
+}
+
+.qrSection {
+    width: 200px;
+    border-left: 2px dashed #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.qrPlaceholder {
+    text-align: center;
+}
+
+.qrBox {
+    width: 120px;
+    height: 120px;
+    background: #1a1a1a;
+    margin: 0 auto 1rem;
+    border-radius: 0.5rem;
+}
+
+.qrPlaceholder span {
+    font-size: 0.65rem;
+    color: #94a3b8;
+    font-weight: bold;
+}
+
+.instructions {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.printBtn {
+    background: #ff5a1f;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.printBtn:hover {
+    transform: scale(1.05);
+}
+
+@media print {
+    .instructions {
+        display: none;
+    }
+    .container {
+        padding: 0;
+        background: white;
+    }
+    .ticket {
+        box-shadow: none;
+        border: 1px solid #e2e8f0;
+    }
+}
