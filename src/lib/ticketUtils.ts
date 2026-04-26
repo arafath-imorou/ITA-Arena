@@ -12,18 +12,30 @@ export const generateTicketPDF = async (ticket: any, event: any) => {
         format: [160, 80]
     });
 
+    const getCategoryColor = (cat: string) => {
+        const c = cat.toLowerCase();
+        if (c.includes('vvip')) return { bg: [88, 28, 135], text: [255, 255, 255] }; // Purple
+        if (c.includes('vip')) return { bg: [180, 83, 9], text: [255, 255, 255] }; // Amber/Gold
+        if (c.includes('gratuit')) return { bg: [13, 148, 136], text: [255, 255, 255] }; // Teal
+        if (c.includes('standard') || c.includes('regulier') || c.includes('régulier') || c.includes('grand public')) 
+            return { bg: [30, 58, 138], text: [255, 255, 255] }; // Blue
+        return { bg: [26, 26, 26], text: [255, 255, 255] }; // Default Dark
+    };
+
+    const colors = getCategoryColor(ticket.category);
+
     // Background Header (Left Strip)
-    doc.setFillColor(26, 26, 26);
+    doc.setFillColor(colors.bg[0], colors.bg[1], colors.bg[2]);
     doc.rect(0, 0, 40, 80, "F");
 
-    doc.setTextColor(255, 255, 255);
+    doc.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
     const titleLines = doc.splitTextToSize(event.title.toUpperCase(), 60);
     doc.text(titleLines, 15, 40, { angle: 90, align: "center" });
 
     // Main Content
-    doc.setTextColor(51, 51, 51);
+    doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]); // Main accent color
     doc.setFont("helvetica", "bold");
     
     // Wrap Title to avoid overlap with Ticket No
@@ -33,6 +45,7 @@ export const generateTicketPDF = async (ticket: any, event: any) => {
     
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
+    doc.setTextColor(80, 80, 80); // Softer grey for date
     
     // Robust date parsing
     let dateStr = "Date à préciser";
@@ -62,24 +75,32 @@ export const generateTicketPDF = async (ticket: any, event: any) => {
     doc.text("SCANNEZ À L'ENTRÉE", 130, 68, { align: "center" });
 
     // Category and Price
-    doc.setTextColor(51, 51, 51);
+    doc.setTextColor(120, 120, 120); // Labels in grey
     doc.setFontSize(8);
     doc.text("CATÉGORIE", 45, 42);
+    
+    doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]); // Values in category color
     doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
     doc.text(ticket.category, 45, 48);
 
+    doc.setTextColor(120, 120, 120);
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
     doc.text("PRIX", 75, 42);
+    
+    doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]);
     doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
     doc.text(`${Number(ticket.amount).toLocaleString()} F CFA`, 75, 48);
 
     // Buyer
+    doc.setTextColor(120, 120, 120);
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
     doc.text("ACHETEUR", 45, 60);
+    
+    doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]);
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     const buyerName = (ticket.user_name || ticket.user_email || "Client").toUpperCase();
@@ -92,7 +113,7 @@ export const generateTicketPDF = async (ticket: any, event: any) => {
     doc.line(105, 0, 105, 80);
     
     // Ticket Number
-    doc.setTextColor(255, 90, 31);
+    doc.setTextColor(255, 90, 31); // Keep Orange for Ticket No as it's the brand color
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
     doc.text("TICKET N°", 130, 12, { align: "center" });
