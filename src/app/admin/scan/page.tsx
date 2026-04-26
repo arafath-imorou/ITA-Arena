@@ -65,7 +65,8 @@ export default function ScanPage() {
             await html5QrCode.current.start(
                 { facingMode: "environment" }, 
                 config, 
-                onScanSuccess
+                onScanSuccess,
+                onScanFailure // Missing 4th argument fixed
             );
             setIsCameraActive(true);
         } catch (err: any) {
