@@ -1,0 +1,177 @@
+.container {
+    min-height: 100vh;
+    background: #0f172a;
+    color: white;
+    padding: 2rem;
+    font-family: 'Inter', system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 600px;
+}
+
+.header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #ff5a1f, #ff8c00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.eventSelector {
+    width: 100%;
+    padding: 0.75rem;
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: white;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+}
+
+.scannerWrapper {
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 1;
+    background: #1e293b;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    position: relative;
+    border: 4px solid #334155;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+#reader {
+    width: 100% !important;
+    border: none !important;
+}
+
+/* Customizing html5-qrcode internal UI */
+#reader__dashboard_section_csr button {
+    background: #ff5a1f !important;
+    color: white !important;
+    border: none !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 0.25rem !important;
+    cursor: pointer !important;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.9);
+    z-index: 10;
+    padding: 2rem;
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.successIcon { font-size: 5rem; margin-bottom: 1rem; color: #22c55e; }
+.errorIcon { font-size: 5rem; margin-bottom: 1rem; color: #ef4444; }
+
+.resultTitle {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.resultDetails {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    width: 100%;
+}
+
+.resultDetails p {
+    margin: 0.5rem 0;
+    color: #94a3b8;
+}
+
+.resultDetails strong {
+    color: white;
+}
+
+.closeBtn {
+    margin-top: 2rem;
+    background: #ff5a1f;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 2rem;
+    width: 100%;
+    max-width: 500px;
+}
+
+.statCard {
+    background: #1e293b;
+    padding: 1rem;
+    border-radius: 1rem;
+    text-align: center;
+    border: 1px solid #334155;
+}
+
+.statVal {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ff5a1f;
+}
+
+.statLabel {
+    font-size: 0.75rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.lastScans {
+    margin-top: 3rem;
+    width: 100%;
+    max-width: 600px;
+}
+
+.lastScans h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: #94a3b8;
+}
+
+.scanRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    background: #1e293b;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-left: 4px solid #22c55e;
+}
+
+.scanInfo h4 { margin: 0; font-size: 1rem; }
+.scanInfo p { margin: 0.25rem 0 0; font-size: 0.85rem; color: #64748b; }
+.scanTime { font-size: 0.85rem; color: #64748b; }
