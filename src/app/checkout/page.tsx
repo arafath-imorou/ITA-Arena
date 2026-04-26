@@ -154,7 +154,7 @@ function CheckoutContent() {
                     "moov": "moov",
                     "orange": "orange",
                     "wave": "wave",
-                    "celtiis": "mtn_open", // Celtiis often uses mtn_open or similar in FedaPay
+                    "celtiis": "celtiis",
                     "free": "free",
                     "tmoney": "tmoney",
                     "airtel": "airtel",
@@ -202,16 +202,15 @@ function CheckoutContent() {
                 // @ts-ignore
                 if (window.FedaPay) {
                     try {
-                        // alert("Initialisation du paiement FedaPay...");
                         // @ts-ignore
-                        const checkout = window.FedaPay.checkout(fedaConfig);
+                        const checkout = window.FedaPay.init(fedaConfig);
                         checkout.open();
                     } catch (fedaErr: any) {
-                        console.error("FedaPay Checkout Error:", fedaErr);
-                        alert("Erreur lors de l'ouverture de la fenêtre de paiement: " + fedaErr.message);
+                        console.error("FedaPay Error:", fedaErr);
+                        alert("Erreur technique lors du lancement du paiement : " + (fedaErr.message || "Erreur inconnue"));
                     }
                 } else {
-                    alert("Le module de paiement n'est pas encore chargé. Veuillez patienter une seconde et réessayer.");
+                    alert("Le module de paiement n'est pas encore prêt. Veuillez patienter un instant.");
                     setIsProcessing(false);
                 }
             }
