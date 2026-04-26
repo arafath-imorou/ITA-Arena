@@ -4,7 +4,24 @@ import QRCode from "qrcode";
 export const generateTicketPDF = async (ticket: any, event: any) => {
     if (!event || !ticket) return;
 
-    const qrDataUrl = await QRCode.toDataURL(ticket.qr_code_key);
+    // Prepare rich data for the QR code (human readable if scanned with normal camera)
+    const qrContent = `🎫 ITA ARENA - TICKET VALIDE
+--------------------------
+ÉVÉNEMENT : ${event.title.toUpperCase()}
+CATÉGORIE : ${ticket.category.toUpperCase()}
+N° TICKET : ${String(ticket.ticket_number || 0).padStart(5, '0')}
+ACHETEUR  : ${(ticket.user_name || ticket.user_email || "Client").toUpperCase()}
+--------------------------
+CLÉ RÉF : ${ticket.qr_code_key}`;
+
+    const qrDataUrl = await QRCode.toDataURL(qrContent, {
+        margin: 1,
+        width: 400,
+        color: {
+            dark: '#1a1a1a',
+            light: '#ffffff'
+        }
+    });
 
     const doc = new jsPDF({
         orientation: "landscape",
