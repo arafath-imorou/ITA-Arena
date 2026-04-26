@@ -60,7 +60,11 @@ export default function ScanPage() {
                 html5QrCode.current = new Html5Qrcode("reader");
             }
 
-            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+            const config = { 
+                fps: 20, // Faster capture
+                qrbox: { width: 300, height: 300 }, // Larger scanning area
+                aspectRatio: 1.0
+            };
             
             await html5QrCode.current.start(
                 { facingMode: "environment" }, 

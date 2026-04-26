@@ -30,9 +30,9 @@ export default function TestTicketPage({ params }: { params: Promise<{ id: strin
                     .single();
                 setEvent(eventData);
 
-                // Generate real QR
+                // Generate real QR (Simplified for reliability)
                 if (ticketData.qr_code_key) {
-                    const qr = await QRCode.toDataURL(`🎫 ITA ARENA - TICKET VALIDE\n--------------------------\nÉVÉNEMENT : ${eventData?.title.toUpperCase()}\nCATÉGORIE : ${ticketData.category.toUpperCase()}\nN° TICKET : ${String(ticketData.ticket_number).padStart(5, '0')}\nACHETEUR  : ${ticketData.user_name?.toUpperCase()}\n--------------------------\nCLÉ RÉF : ${ticketData.qr_code_key}`);
+                    const qr = await QRCode.toDataURL(ticketData.qr_code_key);
                     setQrDataUrl(qr);
                 }
             }
