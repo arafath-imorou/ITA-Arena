@@ -179,7 +179,10 @@ function CheckoutContent() {
                     // Direct payment method selection
                     method: fedaMethodMapping[paymentMethod] || 'mtn',
                     onComplete: async (response: any) => {
-                        if (response.status === 'approved') {
+                        console.log("FedaPay Response:", response);
+                        const status = (response.status || "").toLowerCase();
+                        
+                        if (status === 'approved' || status === 'successful' || status === 'success' || response.transaction?.status === 'approved') {
                             // 3. Save to database only after approval
                             const { data, error } = await supabase
                                 .from('tickets')
@@ -188,12 +191,13 @@ function CheckoutContent() {
 
                             if (error) {
                                 console.error("Supabase insert error:", error);
-                                alert("Paiement réussi, mais une erreur est survenue lors de la création de vos billets. Veuillez contacter le support.");
+                                alert("Paiement réussi, mais une erreur est survenue lors de la création de vos billets. Notez votre numéro de transaction et contactez le support (+229 0152818100).");
                             } else {
                                 router.push(`/checkout/confirmation?session=${checkoutSessionId}&event=${eventId}`);
                             }
                         } else {
-                            alert("Le paiement n'a pas été approuvé.");
+                            const reason = response.reason || response.message || "Statut : " + status;
+                            alert("Le paiement n'a pas pu être validé automatiquement. " + reason + ". Si vous avez été débité, contactez le support avec votre preuve de paiement.");
                             setIsProcessing(false);
                         }
                     }
