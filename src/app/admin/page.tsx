@@ -18,6 +18,15 @@ function AdminDashboardContent() {
     const [isAdmin, setIsAdmin] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
     const [activeModalTab, setActiveModalTab] = useState<'stats' | 'tickets'>('stats');
+    const [isManualModalOpen, setIsManualModalOpen] = useState(false);
+    const [manualTicket, setManualTicket] = useState({
+        user_name: '',
+        user_email: '',
+        user_phone: '',
+        category: '',
+        amount: 0
+    });
+    const [isSavingManual, setIsSavingManual] = useState(false);
 
     // Filter states
     const [filters, setFilters] = useState({
@@ -407,19 +416,38 @@ function AdminDashboardContent() {
                             <div className={styles.ticketsList}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                                     <h3>Liste des Tickets</h3>
-                                    <button 
-                                        onClick={async () => {
-                                            const eventTickets = rawTickets.filter(t => t.event_id === selectedEvent.id);
-                                            for (const t of eventTickets) {
-                                                await downloadTicket(t, selectedEvent);
-                                                await new Promise(r => setTimeout(r, 500));
-                                            }
-                                        }}
-                                        className={styles.badge}
-                                        style={{ background: '#ff5a1f', color: 'white', border: 'none', cursor: 'pointer' }}
-                                    >
-                                        📥 Télécharger Tout
-                                    </button>
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <button 
+                                            onClick={() => {
+                                                const firstCat = selectedEvent.ticket_categories?.[0];
+                                                setManualTicket({
+                                                    user_name: '',
+                                                    user_email: '',
+                                                    user_phone: '',
+                                                    category: firstCat?.name || '',
+                                                    amount: firstCat?.price || 0
+                                                });
+                                                setIsManualModalOpen(true);
+                                            }}
+                                            className={styles.badge}
+                                            style={{ background: '#059669', color: 'white', border: 'none', cursor: 'pointer' }}
+                                        >
+                                            + Ajouter un Ticket
+                                        </button>
+                                        <button 
+                                            onClick={async () => {
+                                                const eventTickets = rawTickets.filter(t => t.event_id === selectedEvent.id);
+                                                for (const t of eventTickets) {
+                                                    await downloadTicket(t, selectedEvent);
+                                                    await new Promise(r => setTimeout(r, 500));
+                                                }
+                                            }}
+                                            className={styles.badge}
+                                            style={{ background: '#ff5a1f', color: 'white', border: 'none', cursor: 'pointer' }}
+                                        >
+                                            📥 Télécharger Tout
+                                        </button>
+                                    </div>
                                 </div>
                                 <div className={styles.tableWrapper}>
                                     <table className={styles.table} style={{ fontSize: '0.75rem' }}>
@@ -481,6 +509,115 @@ function AdminDashboardContent() {
                                 </div>
                             </div>
                         )}
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Création Manuelle */}
+            {isManualModalOpen && selectedEvent && (
+                <div className={styles.modalOverlay} onClick={() => setIsManualModalOpen(false)}>
+                    <div className={styles.modalContent} onClick={e => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+                        <h2 style={{ marginBottom: '1.5rem' }}>Ajouter un Ticket Manuellement</h2>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <div className={styles.filterItem}>
+                                <label className={styles.filterLabel}>Nom du Client</label>
+                                <input 
+                                    type="text" 
+                                    className={styles.filterInput}
+                                    value={manualTicket.user_name}
+                                    onChange={e => setManualTicket({...manualTicket, user_name: e.target.value})}
+                                    placeholder="Ex: Jean Dupont"
+                                />
+                            </div>
+                            <div className={styles.filterItem}>
+                                <label className={styles.filterLabel}>Email</label>
+                                <input 
+                                    type="email" 
+                                    className={styles.filterInput}
+                                    value={manualTicket.user_email}
+                                    onChange={e => setManualTicket({...manualTicket, user_email: e.target.value})}
+                                    placeholder="email@exemple.com"
+                                />
+                            </div>
+                            <div className={styles.filterItem}>
+                                <label className={styles.filterLabel}>Téléphone</label>
+                                <input 
+                                    type="text" 
+                                    className={styles.filterInput}
+                                    value={manualTicket.user_phone}
+                                    onChange={e => setManualTicket({...manualTicket, user_phone: e.target.value})}
+                                    placeholder="+229 ..."
+                                />
+                            </div>
+                            <div className={styles.filterItem}>
+                                <label className={styles.filterLabel}>Catégorie</label>
+                                <select 
+                                    className={styles.filterInput}
+                                    value={manualTicket.category}
+                                    onChange={e => {
+                                        const cat = selectedEvent.ticket_categories?.find((c: any) => c.name === e.target.value);
+                                        setManualTicket({
+                                            ...manualTicket, 
+                                            category: e.target.value,
+                                            amount: cat?.price || 0
+                                        });
+                                    }}
+                                >
+                                    {selectedEvent.ticket_categories?.map((cat: any, idx: number) => (
+                                        <option key={idx} value={cat.name}>{cat.name} ({Number(cat.price).toLocaleString()} F)</option>
+                                    ))}
+                                </select>
+                            </div>
+                            
+                            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                                <button 
+                                    onClick={() => setIsManualModalOpen(false)}
+                                    style={{ flex: 1, padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer' }}
+                                >
+                                    Annuler
+                                </button>
+                                <button 
+                                    disabled={isSavingManual || !manualTicket.user_name || !manualTicket.user_email}
+                                    onClick={async () => {
+                                        setIsSavingManual(true);
+                                        try {
+                                            const timestamp = Date.now().toString(36);
+                                            const randomStr = Math.random().toString(36).substring(2, 10);
+                                            const uniqueId = crypto.randomUUID?.() || Math.random().toString(36).substring(2);
+                                            const qrKey = `MAN-${timestamp}-${randomStr}-${uniqueId}`;
+                                            const sessionId = crypto.randomUUID?.() || Math.random().toString(36).substring(2);
+
+                                            const { error } = await supabase
+                                                .from('tickets')
+                                                .insert({
+                                                    event_id: selectedEvent.id,
+                                                    user_email: manualTicket.user_email.trim(),
+                                                    user_phone: manualTicket.user_phone,
+                                                    user_name: manualTicket.user_name.trim(),
+                                                    category: manualTicket.category,
+                                                    amount: manualTicket.amount,
+                                                    qr_code_key: qrKey,
+                                                    status: 'valid',
+                                                    checkout_session_id: sessionId
+                                                });
+
+                                            if (error) throw error;
+                                            
+                                            alert("Ticket ajouté avec succès !");
+                                            setIsManualModalOpen(false);
+                                            fetchAdminData(); // Refresh list
+                                        } catch (err: any) {
+                                            alert("Erreur lors de l'ajout : " + err.message);
+                                        } finally {
+                                            setIsSavingManual(false);
+                                        }
+                                    }}
+                                    style={{ flex: 1, padding: '0.75rem', borderRadius: '0.5rem', border: 'none', background: '#059669', color: 'white', cursor: 'pointer', fontWeight: 'bold' }}
+                                >
+                                    {isSavingManual ? 'Enregistrement...' : 'Enregistrer'}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
