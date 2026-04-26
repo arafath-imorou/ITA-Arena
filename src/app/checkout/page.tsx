@@ -6,6 +6,7 @@ import Script from "next/script";
 import styles from "./Payment.module.css";
 import Link from "next/link";
 import BackButton from "@/components/BackButton";
+import HomeButton from "@/components/HomeButton";
 import { supabase } from "@/lib/supabase";
 
 function CheckoutContent() {
@@ -278,7 +279,10 @@ function CheckoutContent() {
     if (step === 1) {
         return (
             <div className="container" style={{ paddingTop: '100px', paddingBottom: '100px', maxWidth: '600px' }}>
-                <BackButton variant="dark" />
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                    <BackButton variant="dark" />
+                    <HomeButton variant="dark" label="Accueil" />
+                </div>
                 <div className={styles.orderSummaryCard}>
                     <h1 className={styles.mainTitle}>Votre commande</h1>
 
@@ -403,6 +407,9 @@ function CheckoutContent() {
 
     return (
         <div className="container" style={{ paddingTop: '100px', paddingBottom: '100px' }}>
+            <div style={{ marginBottom: '20px' }}>
+                <HomeButton variant="dark" label="Retour à l'accueil" />
+            </div>
             <Script 
                 src="https://cdn.fedapay.com/checkout.js?v=1.1.7" 
                 strategy="afterInteractive"

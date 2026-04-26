@@ -4,6 +4,7 @@ import styles from "./Contact.module.css";
 import Link from "next/link";
 import { useState } from "react";
 import BackButton from "@/components/BackButton";
+import HomeButton from "@/components/HomeButton";
 
 export default function ContactPage() {
     const [formData, setFormData] = useState({
@@ -17,8 +18,9 @@ export default function ContactPage() {
 
     return (
         <div className={styles.contactWrapper}>
-            <div className="container" style={{ paddingTop: '2rem', marginBottom: '-4rem' }}>
+            <div className="container" style={{ paddingTop: '2rem', marginBottom: '-4rem', display: 'flex', gap: '10px' }}>
                 <BackButton variant="dark" />
+                <HomeButton variant="dark" />
             </div>
             {/* Header */}
             <header className={styles.header}>

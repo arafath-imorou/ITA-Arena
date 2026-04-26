@@ -3,12 +3,14 @@
 import styles from "./Pricing.module.css";
 import Link from "next/link";
 import BackButton from "@/components/BackButton";
+import HomeButton from "@/components/HomeButton";
 
 export default function PricingPage() {
     return (
         <div className={styles.pricingWrapper}>
-            <div className="container" style={{ paddingTop: '2rem', marginBottom: '-4rem' }}>
+            <div className="container" style={{ paddingTop: '2rem', marginBottom: '-4rem', display: 'flex', gap: '10px' }}>
                 <BackButton variant="dark" />
+                <HomeButton variant="dark" />
             </div>
             {/* Header Section */}
             <header className={styles.header}>

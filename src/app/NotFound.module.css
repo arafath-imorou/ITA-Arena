@@ -1,0 +1,64 @@
+.notFoundWrapper {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    background: radial-gradient(circle at center, #fff 0%, #f9f9f9 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.notFoundContent {
+    max-width: 600px;
+    width: 100%;
+    position: relative;
+    z-index: 10;
+}
+
+.errorNumber {
+    font-size: clamp(5rem, 20vw, 12rem);
+    font-weight: 900;
+    color: rgba(255, 90, 31, 0.08);
+    line-height: 1;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    user-select: none;
+}
+
+.errorIcon {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+}
+
+.errorTitle {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.errorText {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .errorTitle {
+        font-size: 1.8rem;
+    }
+    .errorText {
+        font-size: 1rem;
+    }
+}

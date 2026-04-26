@@ -1,12 +1,14 @@
 // Version 1.1 - Background Hero Update
 import styles from "./About.module.css";
 import BackButton from "@/components/BackButton";
+import HomeButton from "@/components/HomeButton";
 
 export default function AboutPage() {
     return (
         <div className={styles.aboutWrapper}>
-            <div className="container" style={{ paddingTop: '2rem', marginBottom: '-4rem' }}>
+            <div className="container" style={{ paddingTop: '2rem', marginBottom: '-4rem', display: 'flex', gap: '10px' }}>
                 <BackButton variant="dark" />
+                <HomeButton variant="dark" />
             </div>
             {/* Hero Section */}
             <section className={styles.hero}>

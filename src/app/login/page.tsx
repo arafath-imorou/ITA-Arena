@@ -6,6 +6,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import styles from "./Auth.module.css";
 import BackButton from "@/components/BackButton";
+import HomeButton from "@/components/HomeButton";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -44,7 +45,7 @@ export default function LoginPage() {
 
     return (
         <div className={styles.authWrapper}>
-            <BackButton className={styles.backBtn} />
+            <HomeButton className={styles.backBtn} variant="dark" />
             <div className={styles.authCard}>
                 {/* Left Side: Illustration */}
                 <div className={styles.illustrationSide}>
@@ -62,7 +63,7 @@ export default function LoginPage() {
 
                 {/* Right Side: Form */}
                 <div className={styles.formSide}>
-                    <Link href="/" className={styles.backBtn}>←</Link>
+                    <Link href="/" className={styles.backBtn} title="Retour à l'accueil">🏠</Link>
 
                     <div className={styles.formHeader}>
                         <h1>Connexion</h1>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import styles from "./FAQ.module.css";
 import BackButton from "@/components/BackButton";
+import HomeButton from "@/components/HomeButton";
 
 const FAQ_DATA = [
     {
@@ -63,8 +64,9 @@ export default function FAQPage() {
 
     return (
         <div className={styles.faqWrapper}>
-            <div className="container" style={{ paddingTop: '2rem', marginBottom: '-2rem' }}>
+            <div className="container" style={{ paddingTop: '2rem', marginBottom: '-2rem', display: 'flex', gap: '10px' }}>
                 <BackButton variant="dark" />
+                <HomeButton variant="dark" />
             </div>
             <div className={styles.faqContainer}>
             <h1 className={styles.title}>FAQ</h1>

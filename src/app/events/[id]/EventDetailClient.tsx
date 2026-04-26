@@ -5,6 +5,7 @@ import styles from "./EventDetail.module.css";
 import Link from "next/link";
 import { useMode } from "@/context/ModeContext";
 import BackButton from "@/components/BackButton";
+import HomeButton from "@/components/HomeButton";
 import { supabase } from "@/lib/supabase";
 
 export default function EventDetailClient({ id }: { id: string }) {
@@ -120,8 +121,9 @@ export default function EventDetailClient({ id }: { id: string }) {
 
     return (
         <div className={styles.page}>
-            <div className="container" style={{ position: 'relative', zIndex: 10, paddingTop: '2rem', marginBottom: '-4rem' }}>
+            <div className="container" style={{ position: 'relative', zIndex: 10, paddingTop: '2rem', marginBottom: '-4rem', display: 'flex', gap: '10px' }}>
                 <BackButton variant="dark" />
+                <HomeButton variant="dark" />
             </div>
 
             <div className={styles.heroSection}>
