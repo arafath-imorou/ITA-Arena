@@ -1,11 +1,33 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import styles from "./Pricing.module.css";
 import Link from "next/link";
 import BackButton from "@/components/BackButton";
 import HomeButton from "@/components/HomeButton";
+import { supabase } from "@/lib/supabase";
 
 export default function PricingPage() {
+    const [featuredEvents, setFeaturedEvents] = useState<any[]>([]);
+
+    useEffect(() => {
+        async function fetchFeatured() {
+            try {
+                const { data } = await supabase
+                    .from('events_with_stats')
+                    .select('id, title, image_url')
+                    .eq('is_published', true)
+                    .order('created_at', { ascending: false })
+                    .limit(4);
+                
+                setFeaturedEvents(data || []);
+            } catch (error) {
+                console.error("Error fetching featured events:", error);
+            }
+        }
+        fetchFeatured();
+    }, []);
+
     return (
         <div className={styles.pricingWrapper}>
             <div className="container" style={{ paddingTop: '2rem', marginBottom: '-4rem', display: 'flex', gap: '10px' }}>
@@ -91,17 +113,20 @@ export default function PricingPage() {
             </section>
 
             {/* Trust Section */}
-            <section className={styles.trustSection}>
-                <div className="container">
-                    <h2 className={styles.centerTitle}>ILS NOUS ONT FAIT CONFIANCE</h2>
-                    <div className={styles.logoGrid}>
-                        <div className={styles.eventPoster}><img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&q=80&w=300" alt="Event" /></div>
-                        <div className={styles.eventPoster}><img src="https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&q=80&w=300" alt="Event" /></div>
-                        <div className={styles.eventPoster}><img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=300" alt="Event" /></div>
-                        <div className={styles.eventPoster}><img src="https://images.unsplash.com/photo-1514525253361-bee871871771?auto=format&fit=crop&q=80&w=300" alt="Event" /></div>
+            {featuredEvents.length > 0 && (
+                <section className={styles.trustSection}>
+                    <div className="container">
+                        <h2 className={styles.centerTitle}>ILS NOUS ONT FAIT CONFIANCE</h2>
+                        <div className={styles.logoGrid}>
+                            {featuredEvents.map(event => (
+                                <Link key={event.id} href={`/events/${event.id}`} className={styles.eventPoster}>
+                                    <img src={event.image_url} alt={event.title} />
+                                </Link>
+                            ))}
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            )}
 
             {/* Steps Section */}
             <section className={styles.stepsSection}>
