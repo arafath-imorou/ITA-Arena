@@ -6,6 +6,7 @@ import styles from "../Blog.module.css";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import BackButton from "@/components/BackButton";
+import HomeButton from "@/components/HomeButton";
 
 export default function BlogDetailPage() {
     const { id } = useParams();
@@ -39,8 +40,9 @@ export default function BlogDetailPage() {
         <div className={styles.blogWrapper}>
             
             <main className="container" style={{ paddingTop: '120px' }}>
-                <div style={{ marginBottom: '2rem' }}>
+                <div style={{ marginBottom: '2rem', display: 'flex', gap: '1rem' }}>
                     <BackButton variant="dark" />
+                    <HomeButton variant="dark" label="Accueil" />
                 </div>
 
                 <article className={styles.detailWrapper}>

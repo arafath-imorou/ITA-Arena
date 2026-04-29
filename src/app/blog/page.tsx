@@ -5,6 +5,8 @@ import styles from "./Blog.module.css";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
+import HomeButton from "@/components/HomeButton";
+
 export default function BlogPage() {
     const [news, setNews] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -42,6 +44,9 @@ export default function BlogPage() {
             </header>
 
             <main className="container">
+                <div style={{ marginBottom: '2rem' }}>
+                    <HomeButton variant="dark" label="Retour à l'arène" />
+                </div>
                 {loading ? (
                     <div className={styles.loading}>
                         <div className="spinner"></div>
