@@ -174,15 +174,21 @@ function AdminDashboardContent() {
                 throw ticketsError;
             }
 
-            // Ensuite, supprimer l'événement
-            const { error } = await supabase.from('events').delete().eq('id', eventId);
+            // Ensuite, supprimer l'événement en demandant de retourner la ligne supprimée
+            const { data, error } = await supabase.from('events').delete().eq('id', eventId).select();
             if (error) {
                 console.error("Erreur suppression événement:", error);
                 throw error;
             }
 
+            // Si data est vide, cela signifie que la base de données a refusé la suppression (souvent à cause d'une politique de sécurité RLS)
+            if (!data || data.length === 0) {
+                throw new Error("La suppression a été bloquée par la base de données (Permissions insuffisantes ou événement introuvable).");
+            }
+
             setRawEvents(rawEvents.filter(e => e.id !== eventId));
             if (selectedEvent?.id === eventId) setSelectedEvent(null);
+            alert("Événement supprimé avec succès.");
         } catch (err: any) {
             console.error(err);
             alert("Erreur de suppression: " + (err.message || "Erreur inconnue"));
