@@ -52,6 +52,14 @@ export default function OrganizerLayout({
 
                 <nav className={styles.sideNav}>
                     <Link
+                        href="/"
+                        className={styles.navItem}
+                        style={{ color: '#0369a1', background: '#e0f2fe', fontWeight: 'bold' }}
+                    >
+                        <span className={styles.navIcon}>🏠</span> Retour à l'accueil
+                    </Link>
+
+                    <Link
                         href="/organizer"
                         className={`${styles.navItem} ${pathname === '/organizer' ? styles.activeNavItem : ''}`}
                     >
