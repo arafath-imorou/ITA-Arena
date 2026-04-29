@@ -5,8 +5,6 @@ import { useParams } from "next/navigation";
 import styles from "../Blog.module.css";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import Navbar from "@/components/Navbar/Navbar";
-import Footer from "@/components/Footer/Footer";
 import BackButton from "@/components/BackButton";
 
 export default function BlogDetailPage() {
@@ -39,7 +37,6 @@ export default function BlogDetailPage() {
 
     return (
         <div className={styles.blogWrapper}>
-            <Navbar />
             
             <main className="container" style={{ paddingTop: '120px' }}>
                 <div style={{ marginBottom: '2rem' }}>
@@ -69,8 +66,6 @@ export default function BlogDetailPage() {
                     />
                 </article>
             </main>
-
-            <Footer />
         </div>
     );
 }

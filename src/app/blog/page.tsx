@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 import styles from "./Blog.module.css";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import Navbar from "@/components/Navbar/Navbar";
-import Footer from "@/components/Footer/Footer";
 
 export default function BlogPage() {
     const [news, setNews] = useState<any[]>([]);
@@ -32,7 +30,6 @@ export default function BlogPage() {
 
     return (
         <div className={styles.blogWrapper}>
-            <Navbar />
             
             <header className={styles.header}>
                 <div className="container">
@@ -84,8 +81,6 @@ export default function BlogPage() {
                     </div>
                 )}
             </main>
-
-            <Footer />
         </div>
     );
 }
