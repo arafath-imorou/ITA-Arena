@@ -153,6 +153,7 @@ export default function Navbar() {
                           <Link href="/organizer" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Mes évènements</Link>
                           <Link href="/organizer/tickets" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Mes Tickets</Link>
                           <Link href="/organizer/account" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Mon Profil</Link>
+                          <Link href="/blog" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Showbizz Blog</Link>
                           <hr className={styles.divider} />
                           <Link href="/about" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Qui sommes nous?</Link>
                           <Link href="/faq" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>FAQ</Link>
@@ -168,8 +169,9 @@ export default function Navbar() {
                         <Link href="/login" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Se connecter</Link>
                         <Link href="/register" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>S'inscrire</Link>
                         <hr className={styles.divider} />
-                        <Link href="/pricing" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Tarif</Link>
-                        <hr className={styles.divider} />
+                          <Link href="/pricing" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Tarif</Link>
+                          <Link href="/blog" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Showbizz Blog</Link>
+                          <hr className={styles.divider} />
                         <Link href="/about" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Qui sommes nous?</Link>
                         <Link href="/faq" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>FAQ</Link>
                         <Link href="/contact" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Nous contacter</Link>
