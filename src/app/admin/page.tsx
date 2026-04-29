@@ -167,11 +167,27 @@ function AdminDashboardContent() {
     const deleteEvent = async (eventId: string) => {
         if (!confirm("Voulez-vous supprimer définitivement ce projet ?")) return;
         try {
-            await supabase.from('events').delete().eq('id', eventId);
+            // Supprimer d'abord les tickets liés pour éviter les erreurs de clé étrangère
+            const { error: ticketsError } = await supabase.from('tickets').delete().eq('event_id', eventId);
+            if (ticketsError) {
+                console.error("Erreur suppression tickets:", ticketsError);
+                throw ticketsError;
+            }
+
+            // Ensuite, supprimer l'événement
+            const { error } = await supabase.from('events').delete().eq('id', eventId);
+            if (error) {
+                console.error("Erreur suppression événement:", error);
+                throw error;
+            }
+
             setRawEvents(rawEvents.filter(e => e.id !== eventId));
             if (selectedEvent?.id === eventId) setSelectedEvent(null);
-        } catch (err) {
-            alert("Erreur de suppression");
+        } catch (err: any) {
+            console.error(err);
+            alert("Erreur de suppression: " + (err.message || "Erreur inconnue"));
+            // Forcer le rechargement pour restaurer l'état réel si la suppression a échoué
+            fetchAdminData();
         }
     };
 
