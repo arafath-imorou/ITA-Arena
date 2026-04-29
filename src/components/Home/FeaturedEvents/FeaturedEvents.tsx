@@ -5,21 +5,13 @@ import styles from "./FeaturedEvents.module.css";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useMode } from "@/context/ModeContext";
-
-
-
-const countries = [
-    { name: "Bénin", flag: "https://flagcdn.com/w40/bj.png" },
-    { name: "Côte d'Ivoire", flag: "https://flagcdn.com/w40/ci.png" },
-    { name: "Sénégal", flag: "https://flagcdn.com/w40/sn.png" },
-    { name: "Togo", flag: "https://flagcdn.com/w40/tg.png" },
-];
+import { useCountry } from "@/context/CountryContext";
 
 export default function FeaturedEvents() {
     const { mode, activeCategory } = useMode();
+    const { countries, selectedCountry, setSelectedCountry } = useCountry();
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedCountry, setSelectedCountry] = useState(countries[0]);
     const [likedEvents, setLikedEvents] = useState<string[]>([]);
 
 
