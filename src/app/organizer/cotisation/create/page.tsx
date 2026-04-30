@@ -99,7 +99,8 @@ export default function CreateCotisationPage() {
             image_url: formData.image_url,
             type: formData.type,
             organizer_id: formData.organizer_id,
-            target_amount: parseInt(formData.target_amount) || 0
+            target_amount: parseInt(formData.target_amount) || 0,
+            is_published: true
         };
 
         const { data, error } = await supabase

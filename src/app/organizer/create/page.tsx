@@ -141,7 +141,8 @@ export default function CreateEventPage() {
             type: formData.type,
             organizer_id: formData.organizer_id,
             ticket_categories: formData.ticket_categories,
-            country: formData.country
+            country: formData.country,
+            is_published: true
         };
 
         const { data, error } = await supabase
