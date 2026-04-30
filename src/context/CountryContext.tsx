@@ -14,6 +14,7 @@ interface CountryContextType {
 }
 
 const countries: Country[] = [
+  { name: "Tous", flag: "https://flagcdn.com/w40/un.png" },
   { name: "Bénin", flag: "https://flagcdn.com/w40/bj.png" },
   { name: "Côte d'Ivoire", flag: "https://flagcdn.com/w40/ci.png" },
   { name: "Sénégal", flag: "https://flagcdn.com/w40/sn.png" },

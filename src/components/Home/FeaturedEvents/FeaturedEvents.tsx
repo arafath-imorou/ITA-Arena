@@ -25,7 +25,7 @@ export default function FeaturedEvents() {
                     .eq('type', mode === 'events' ? 'event' : 'cotisation')
                     .eq('is_published', true);
 
-                if (selectedCountry) {
+                if (selectedCountry && selectedCountry.name !== "Tous") {
                     query = query.eq('country', selectedCountry.name);
                 }
 
