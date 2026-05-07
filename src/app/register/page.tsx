@@ -82,16 +82,22 @@ export default function RegisterPage() {
         });
 
         if (signUpError) {
+            console.error("Erreur inscription:", signUpError);
             setError(signUpError.message);
             setLoading(false);
-        } else {
-            // Even if auto-logged in, the user wants a redirect to login
+        } else if (data.session) {
+            // Compte créé ET connecté automatiquement (confirmation email désactivée)
+            // Rediriger directement vers l'espace utilisateur
+            setLoading(false);
+            router.push("/organizer");
+        } else if (data.user) {
+            // Compte créé mais email de confirmation envoyé
             setShowSuccess(true);
             setLoading(false);
-            // Optional: Sign out if auto-logged in to force login
-            if (data.session) {
-                await supabase.auth.signOut();
-            }
+        } else {
+            // Cas inattendu
+            setError("Une erreur inattendue s'est produite. Veuillez réessayer.");
+            setLoading(false);
         }
     };
 
@@ -273,9 +279,9 @@ export default function RegisterPage() {
                         <div className={styles.successIcon}>✓</div>
                         <h2>Inscription réussie !</h2>
                         <p>
-                            Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter avec vos identifiants.
+                            Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter.
                         </p>
-                        <button className={styles.modalBtn} onClick={handleClose} style={{ background: '#FF5A1F' }}>Se connecter</button>
+                        <button className={styles.modalBtn} onClick={handleClose} style={{ background: '#FF5A1F', marginTop: '16px' }}>Se connecter</button>
                     </div>
                 </div>
             )}
