@@ -134,6 +134,29 @@
     font-size: 0.9rem;
 }
 
+.copyrightArea {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.creatorText {
+    font-size: 0.8rem;
+    color: var(--color-gray-400);
+}
+
+.creatorLink {
+    color: var(--color-primary);
+    font-weight: 700;
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+
+.creatorLink:hover {
+    color: var(--color-secondary);
+    text-decoration: underline;
+}
+
 .socials {
     display: flex;
     gap: 1rem;

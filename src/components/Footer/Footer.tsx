@@ -57,7 +57,12 @@ export default function Footer() {
                 </div>
 
                 <div className={styles.footerBottom}>
-                    <p>&copy; {currentYear} ITA Arena. Tous droits réservés.</p>
+                    <div className={styles.copyrightArea}>
+                        <p>&copy; {currentYear} ITA Arena. Tous droits réservés.</p>
+                        <p className={styles.creatorText}>
+                            Une création de <a href="https://www.itainnovate.com" target="_blank" rel="noopener noreferrer" className={styles.creatorLink}>ITA INNOVATE</a>
+                        </p>
+                    </div>
                     <div className={styles.socials}>
                         {/* Social Icons would go here */}
                         <span className={styles.socialLink}>FB</span>
