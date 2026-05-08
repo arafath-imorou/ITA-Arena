@@ -83,26 +83,35 @@ function AdminDashboardContent() {
         const profileMap = rawProfiles.reduce((acc: any, p) => { acc[p.id] = p; return acc; }, {});
         const eventMap = rawEvents.reduce((acc: any, e) => { acc[e.id] = e; return acc; }, {});
 
-        // 1. Prepare Events with computed stats (now simplified because of view)
+        // 1. Prepare Events with computed stats
         let events = rawEvents.map(e => {
             const eventTickets = rawTickets.filter(t => t.event_id === e.id);
             
             // For category breakdown, we still need to filter tickets
-            let categoriesWithStats = [];
+            let categoriesWithStats: any[] = [];
+            let computedTotalCapacity = 0;
             if (Array.isArray(e.ticket_categories)) {
                 categoriesWithStats = e.ticket_categories.map((cat: any) => {
                     const catTickets = eventTickets.filter(t => t.category === cat.name);
                     const catSold = catTickets.length;
                     const catRevenue = catTickets.reduce((acc, t) => acc + Number(t.amount), 0);
-                    const catCapacity = Number(cat.capacity || 0);
+                    const catCapacity = Number(cat.stock || cat.capacity || 0);
+                    computedTotalCapacity += catCapacity;
                     return { ...cat, sold: catSold, revenue: catRevenue, capacity: catCapacity, remaining: catCapacity - catSold, percent: catCapacity > 0 ? Math.round((catSold / catCapacity) * 100) : 0 };
                 });
             }
 
+            const totalCapacity = Number(e.total_capacity || computedTotalCapacity || 0);
+            const soldCount = Number(e.sold_count || e.tickets_sold || eventTickets.length);
+            const collectedAmount = Number(e.collected_amount || e.total_revenue || categoriesWithStats.reduce((acc, c) => acc + c.revenue, 0));
+
             return {
                 ...e,
+                total_capacity: totalCapacity,
+                sold_count: soldCount,
+                collected_amount: collectedAmount,
                 profiles: profileMap[e.organizer_id] || null,
-                percent: e.total_capacity > 0 ? Math.round((e.sold_count / e.total_capacity) * 100) : 0,
+                percent: totalCapacity > 0 ? Math.round((soldCount / totalCapacity) * 100) : 0,
                 categoriesWithStats,
                 createdDate: new Date(e.created_at)
             };

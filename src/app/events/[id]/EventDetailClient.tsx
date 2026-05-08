@@ -46,7 +46,7 @@ export default function EventDetailClient({ id }: { id: string }) {
                 // Calculate total capacity from categories
                 let totalCapacity = 0;
                 if (data.ticket_categories && Array.isArray(data.ticket_categories)) {
-                    totalCapacity = data.ticket_categories.reduce((acc: number, cat: any) => acc + Number(cat.capacity || 0), 0);
+                    totalCapacity = data.ticket_categories.reduce((acc: number, cat: any) => acc + Number(cat.stock || cat.capacity || 0), 0);
                 }
 
                 setItem({
