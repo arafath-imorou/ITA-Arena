@@ -11,6 +11,7 @@ import HomeButton from "@/components/HomeButton";
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
@@ -105,13 +106,19 @@ export default function LoginPage() {
                             <label>Mot de passe *</label>
                             <div className={styles.inputWrapper}>
                                 <input 
-                                    type="password" 
+                                    type={showPassword ? "text" : "password"} 
                                     placeholder="••••••••" 
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required 
                                 />
-                                <span className={styles.eyeIcon}>👁️</span>
+                                <span 
+                                    className={styles.eyeIcon} 
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    title={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                                >
+                                    {showPassword ? "👁️‍🗨️" : "👁️"}
+                                </span>
                             </div>
                         </div>
 
