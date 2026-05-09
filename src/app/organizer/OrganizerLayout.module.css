@@ -14,6 +14,7 @@
     position: fixed;
     height: 100vh;
     z-index: 100;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebarHeader {
@@ -389,5 +390,78 @@
     .navItem, .logoutBtn {
         justify-content: center;
         padding: 1rem;
+    }
+}
+
+.menuToggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #333;
+    padding: 0.5rem;
+    line-height: 1;
+}
+
+.sidebarOverlay {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        width: 280px !important;
+        z-index: 1000;
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebarOpen {
+        transform: translateX(0) !important;
+    }
+
+    .logo,
+    .navItem span:last-child,
+    .groupLabel,
+    .sidebarFooter,
+    .chevron,
+    .logoutBtn span:last-child {
+        display: block !important;
+    }
+
+    .mainArea {
+        margin-left: 0 !important;
+    }
+
+    .menuToggle {
+        display: block;
+    }
+
+    .sidebarOverlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 999;
+    }
+
+    .sidebarOverlayOpen {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .contentPadding {
+        padding: 1.5rem 1rem !important;
+    }
+
+    .topHeader {
+        padding: 0 1rem !important;
+    }
+
+    .organizerName {
+        display: none;
     }
 }

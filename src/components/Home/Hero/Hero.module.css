@@ -72,7 +72,9 @@
         flex-direction: column;
     }
 
+    .heroActions a,
     .heroActions button {
         width: 100%;
+        justify-content: center;
     }
 }

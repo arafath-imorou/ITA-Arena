@@ -744,3 +744,86 @@
 .modalBtnSecondary:hover {
     background: #f8f9fa;
 }
+
+@media (max-width: 768px) {
+    .contentPadding {
+        padding: 1.5rem 1rem !important;
+    }
+
+    .formCard {
+        padding: 1.5rem !important;
+    }
+
+    .formRow {
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+    }
+
+    .formGrid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+
+    .inputsColumn {
+        width: 100% !important;
+    }
+
+    .uploadBox {
+        height: 180px !important;
+    }
+
+    /* Stepper Mobile Optimization */
+    .stepLabel {
+        display: none !important;
+    }
+
+    .stepCurrent .stepLabel {
+        display: block !important;
+        position: absolute;
+        top: 45px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        font-weight: 800;
+    }
+
+    .stepper {
+        margin-bottom: 3rem !important;
+    }
+
+    /* Summary Section */
+    .summaryContent {
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+    }
+
+    .summaryPoster {
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 4 / 5;
+        max-width: 320px;
+        margin: 0 auto;
+    }
+
+    .summaryRow {
+        grid-template-columns: 1fr !important;
+        gap: 0.2rem !important;
+        border-bottom: 1px solid #f9f9f9;
+        padding-bottom: 0.5rem;
+    }
+
+    .summaryLabel {
+        font-size: 0.8rem;
+    }
+
+    .summaryValue {
+        font-size: 0.95rem;
+    }
+
+    .sidebar {
+        width: 80px !important;
+    }
+
+    .mainArea {
+        margin-left: 0 !important;
+    }
+}

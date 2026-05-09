@@ -15,6 +15,7 @@ export default function OrganizerLayout({
     const router = useRouter();
     const { user, loading, signOut, role } = useAuth();
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     useEffect(() => {
         if (!loading && !user) {
@@ -38,8 +39,11 @@ export default function OrganizerLayout({
 
     return (
         <div className={styles.dashboardLayout}>
+            {/* Mobile Sidebar Overlay */}
+            <div className={`${styles.sidebarOverlay} ${isSidebarOpen ? styles.sidebarOverlayOpen : ""}`} onClick={() => setIsSidebarOpen(false)}></div>
+
             {/* Sidebar */}
-            <aside className={styles.sidebar}>
+            <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ""}`}>
                 <div className={styles.sidebarHeader}>
                     <Link href="/" className={styles.logo}>
                         <img
@@ -50,7 +54,7 @@ export default function OrganizerLayout({
                     </Link>
                 </div>
 
-                <nav className={styles.sideNav}>
+                <nav className={styles.sideNav} onClick={() => setIsSidebarOpen(false)}>
                     <Link
                         href="/"
                         className={styles.navItem}
@@ -157,6 +161,9 @@ export default function OrganizerLayout({
             <main className={styles.mainArea}>
                 {/* Top Header */}
                 <header className={styles.topHeader}>
+                    <button className={styles.menuToggle} onClick={() => setIsSidebarOpen(!isSidebarOpen)} aria-label="Menu">
+                        ☰
+                    </button>
                     <div className={styles.topTabs}>
                         <Link href="/organizer?mode=events" className={`${styles.topTab} ${(new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('mode') !== 'cotisations') ? styles.activeTab : ''}`}>📅 Événements</Link>
                         <Link href="/organizer?mode=cotisations" className={`${styles.topTab} ${(new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('mode') === 'cotisations') ? styles.activeTab : ''}`}>💰 Cotisations</Link>
