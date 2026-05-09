@@ -66,6 +66,9 @@ export const generateTicketPDF = async (ticket: any, event: any) => {
                 month: 'long', 
                 year: 'numeric' 
             });
+        } else {
+            // Use the raw date string mentioned by the advertiser
+            dateStr = event.date;
         }
     } else if (event.created_at) {
         // Fallback to created_at if date is missing (common for cotisations)

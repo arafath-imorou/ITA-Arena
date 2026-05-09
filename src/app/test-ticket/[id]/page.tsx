@@ -58,9 +58,8 @@ export default function TestTicketPage({ params }: { params: Promise<{ id: strin
 
     // Robust date parsing for the test page
     let dateStr = "Date à préciser";
-    const dateToParse = event?.date || event?.created_at;
-    if (dateToParse) {
-        const d = new Date(dateToParse);
+    if (event?.date) {
+        const d = new Date(event.date);
         if (!isNaN(d.getTime())) {
             dateStr = d.toLocaleDateString('fr-FR', { 
                 weekday: 'long', 
@@ -68,7 +67,13 @@ export default function TestTicketPage({ params }: { params: Promise<{ id: strin
                 month: 'long', 
                 year: 'numeric' 
             });
+        } else {
+            // Use the raw date string mentioned by the advertiser
+            dateStr = event.date;
         }
+    } else if (event?.created_at) {
+        const d = new Date(event.created_at);
+        dateStr = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
     }
 
     return (
