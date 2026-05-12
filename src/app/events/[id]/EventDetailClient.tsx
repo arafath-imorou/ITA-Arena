@@ -127,6 +127,7 @@ export default function EventDetailClient({ id }: { id: string }) {
             </div>
 
             <div className={styles.heroSection}>
+                <div className={styles.blurBg} style={{ backgroundImage: `url(${item.image})` }}></div>
                 <img
                     src={item.image}
                     alt={item.title}

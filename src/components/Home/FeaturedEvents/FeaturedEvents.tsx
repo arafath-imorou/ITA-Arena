@@ -86,6 +86,7 @@ export default function FeaturedEvents() {
                             return (
                                 <div key={item.id} className={styles.card}>
                                     <div className={styles.imageWrapper}>
+                                        <div className={styles.blurBg} style={{ backgroundImage: `url(${item.image_url})` }}></div>
                                         <img src={item.image_url} alt={item.title} className={styles.image} />
                                         <button 
                                             className={`${styles.favBtn} ${isLiked ? styles.activeFav : ""}`}
