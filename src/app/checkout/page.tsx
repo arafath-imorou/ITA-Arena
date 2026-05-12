@@ -14,7 +14,7 @@ function CheckoutContent() {
     const [step, setStep] = useState(1); // 1: Order Summary, 2: Payment
     const [paymentMethod, setPaymentMethod] = useState("wave");
     const [timeLeft, setTimeLeft] = useState(1799); // 29:59 (approx 30 mins)
-    const [email, setEmail] = useState("arafathimorou@gmail.com");
+    const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
     const [fullName, setFullName] = useState("");
     const [paymentPhone, setPaymentPhone] = useState("");
@@ -69,13 +69,13 @@ function CheckoutContent() {
     };
 
     const handlePayment = async () => {
-        if (!email) {
-            alert("Veuillez renseigner votre email.");
+        if (!email || !fullName.trim()) {
+            alert("Veuillez renseigner votre nom et votre email.");
             return;
         }
 
-        if (paymentMethod !== "card" && (!fullName || !paymentPhone)) {
-            alert("Veuillez renseigner votre nom et votre numéro de paiement.");
+        if (paymentMethod !== "card" && !paymentPhone) {
+            alert("Veuillez renseigner votre numéro de paiement.");
             return;
         }
 
@@ -308,6 +308,17 @@ function CheckoutContent() {
 
                     <div className={styles.contactForm}>
                         <div className={styles.inputGroup}>
+                            <label>Nom & Prénom <span style={{ color: '#FF5A1F' }}>*</span></label>
+                            <input 
+                                type="text" 
+                                placeholder="Ex: Sadath IMOROU" 
+                                className={styles.customInput} 
+                                value={fullName}
+                                onChange={(e) => setFullName(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className={styles.inputGroup}>
                             <label>Adresse e-mail <span style={{ color: '#FF5A1F' }}>*</span></label>
                             <input 
                                 type="email" 
@@ -356,7 +367,13 @@ function CheckoutContent() {
                             {isProcessing ? "Traitement..." : "Confirmer la réservation"}
                         </button>
                     ) : (
-                        <button className={styles.primaryNextBtn} onClick={() => setStep(2)}>
+                        <button className={styles.primaryNextBtn} onClick={() => {
+                            if (!email || !fullName.trim()) {
+                                alert("Veuillez renseigner votre nom et votre adresse email.");
+                                return;
+                            }
+                            setStep(2);
+                        }}>
                             Aller au paiement
                         </button>
                     )}
@@ -473,17 +490,6 @@ function CheckoutContent() {
                         {paymentMethod !== "card" && (
                             <div className={styles.paymentDetailsForm}>
                                 <div className={styles.inputGroup}>
-                                    <label>Nom & Prénom <span style={{ color: '#FF5A1F' }}>*</span></label>
-                                    <input 
-                                        type="text" 
-                                        placeholder="Ex: Sadath IMOROU" 
-                                        className={styles.customInput} 
-                                        value={fullName}
-                                        onChange={(e) => setFullName(e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <div className={styles.inputGroup}>
                                     <label>Numéro de paiement ({paymentMethod.toUpperCase()}) <span style={{ color: '#FF5A1F' }}>*</span></label>
                                     <input 
                                         type="tel" 
@@ -555,8 +561,11 @@ function CheckoutContent() {
                             <span>▴</span>
                         </div>
                         <div className={styles.accordionContentActive}>
+                            <div className={styles.buyerEmail} style={{ marginBottom: '4px', fontWeight: '600' }}>
+                                👤 {fullName || "Non renseigné"}
+                            </div>
                             <div className={styles.buyerEmail}>
-                                📧 arafathimorou@gmail.com
+                                📧 {email || "Non renseigné"}
                             </div>
                         </div>
                     </div>

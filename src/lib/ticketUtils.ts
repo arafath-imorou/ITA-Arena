@@ -1,18 +1,68 @@
 import jsPDF from "jspdf";
 import QRCode from "qrcode";
 
+const getCategoryColor = (cat: string) => {
+    const c = cat.toLowerCase();
+    if (c.includes('vvip')) return { bg: [88, 28, 135], text: [255, 255, 255] }; // Purple
+    if (c.includes('vip')) return { bg: [180, 83, 9], text: [255, 255, 255] }; // Amber/Gold
+    if (c.includes('gratuit')) return { bg: [13, 148, 136], text: [255, 255, 255] }; // Teal
+    if (c.includes('standard') || c.includes('regulier') || c.includes('régulier') || c.includes('grand public')) 
+        return { bg: [30, 58, 138], text: [255, 255, 255] }; // Blue
+    return { bg: [26, 26, 26], text: [255, 255, 255] }; // Default Dark
+};
+
+const getOverlayedImage = async (url: string, width: number, height: number, overlayColor: number[]): Promise<string | null> => {
+    if (typeof window === 'undefined') return null;
+    try {
+        return await new Promise((resolve, reject) => {
+            const img = new Image();
+            img.setAttribute("crossOrigin", "anonymous");
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext("2d");
+                if (!ctx) return reject();
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, width, height);
+                const imgRatio = img.width / img.height;
+                const targetRatio = width / height;
+                let drawW, drawH, x, y;
+                if (imgRatio > targetRatio) {
+                    drawH = height; drawW = height * imgRatio;
+                    x = (width - drawW) / 2; y = 0;
+                } else {
+                    drawW = width; drawH = width / imgRatio;
+                    x = 0; y = (height - drawH) / 2;
+                }
+                ctx.drawImage(img, x, y, drawW, drawH);
+                ctx.fillStyle = `rgba(${overlayColor[0]}, ${overlayColor[1]}, ${overlayColor[2]}, 0.85)`;
+                ctx.fillRect(0, 0, width, height);
+                resolve(canvas.toDataURL("image/jpeg", 0.8));
+            };
+            img.onerror = () => reject();
+            img.src = url;
+        });
+    } catch { return null; }
+};
+
 export const generateTicketPDF = async (ticket: any, event: any) => {
     if (!event || !ticket) return;
 
-    // Simplify QR content to only the key for maximum scan reliability
-    const qrDataUrl = await QRCode.toDataURL(ticket.qr_code_key, {
-        margin: 1,
-        width: 400,
-        color: {
-            dark: '#1a1a1a',
-            light: '#ffffff'
-        }
-    });
+    const colors = getCategoryColor(ticket.category);
+
+    // Prepare async parallel rendering tasks
+    const [qrDataUrl, stripVisualBase64] = await Promise.all([
+        QRCode.toDataURL(ticket.qr_code_key, {
+            margin: 1,
+            width: 400,
+            color: {
+                dark: '#1a1a1a',
+                light: '#ffffff'
+            }
+        }),
+        event.image_url ? getOverlayedImage(event.image_url, 400, 800, colors.bg) : Promise.resolve(null)
+    ]);
 
     const doc = new jsPDF({
         orientation: "landscape",
@@ -20,21 +70,13 @@ export const generateTicketPDF = async (ticket: any, event: any) => {
         format: [160, 80]
     });
 
-    const getCategoryColor = (cat: string) => {
-        const c = cat.toLowerCase();
-        if (c.includes('vvip')) return { bg: [88, 28, 135], text: [255, 255, 255] }; // Purple
-        if (c.includes('vip')) return { bg: [180, 83, 9], text: [255, 255, 255] }; // Amber/Gold
-        if (c.includes('gratuit')) return { bg: [13, 148, 136], text: [255, 255, 255] }; // Teal
-        if (c.includes('standard') || c.includes('regulier') || c.includes('régulier') || c.includes('grand public')) 
-            return { bg: [30, 58, 138], text: [255, 255, 255] }; // Blue
-        return { bg: [26, 26, 26], text: [255, 255, 255] }; // Default Dark
-    };
-
-    const colors = getCategoryColor(ticket.category);
-
     // Background Header (Left Strip)
-    doc.setFillColor(colors.bg[0], colors.bg[1], colors.bg[2]);
-    doc.rect(0, 0, 40, 80, "F");
+    if (stripVisualBase64) {
+        doc.addImage(stripVisualBase64, "JPEG", 0, 0, 40, 80);
+    } else {
+        doc.setFillColor(colors.bg[0], colors.bg[1], colors.bg[2]);
+        doc.rect(0, 0, 40, 80, "F");
+    }
 
     doc.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
     doc.setFontSize(12);
