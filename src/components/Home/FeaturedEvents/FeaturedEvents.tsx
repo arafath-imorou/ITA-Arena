@@ -13,6 +13,25 @@ export default function FeaturedEvents() {
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [likedEvents, setLikedEvents] = useState<string[]>([]);
+    const [failedAvatars, setFailedAvatars] = useState<Set<string>>(new Set());
+
+    const getInitials = (name: string) => {
+        if (!name) return "??";
+        return name
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase()
+            .substring(0, 2);
+    };
+
+    const handleAvatarError = (avatarUrl: string) => {
+        setFailedAvatars(prev => {
+            const newSet = new Set(prev);
+            newSet.add(avatarUrl);
+            return newSet;
+        });
+    };
 
 
     useEffect(() => {
@@ -51,10 +70,44 @@ export default function FeaturedEvents() {
     const handleLike = async (e: React.MouseEvent, id: string) => {
         e.preventDefault();
         e.stopPropagation();
-        if (likedEvents.includes(id)) {
+        
+        const currentlyLiked = likedEvents.includes(id);
+        const incrementBy = currentlyLiked ? -1 : 1;
+        
+        // 1. Optimistically update local states
+        if (currentlyLiked) {
             setLikedEvents(prev => prev.filter(item => item !== id));
         } else {
             setLikedEvents(prev => [...prev, id]);
+        }
+        
+        setData(prev => prev.map(ev => {
+            if (ev.id === id) {
+                return { ...ev, likes_count: Math.max(0, (ev.likes_count || 0) + incrementBy) };
+            }
+            return ev;
+        }));
+
+        try {
+            // 2. Sync update into remote Supabase instance via Postgres function
+            const { data: updatedCount, error } = await supabase.rpc('toggle_event_like', {
+                event_id_param: id,
+                increment_by: incrementBy
+            });
+
+            if (error) throw error;
+            
+            // 3. Hard-bind count directly with truth database response if valid
+            if (typeof updatedCount === 'number') {
+                setData(prev => prev.map(ev => {
+                    if (ev.id === id) {
+                        return { ...ev, likes_count: updatedCount };
+                    }
+                    return ev;
+                }));
+            }
+        } catch (error) {
+            console.error("Failed to sync event like status:", error);
         }
     };
 
@@ -114,11 +167,18 @@ export default function FeaturedEvents() {
                                         </div>
 
                                         <div className={styles.organizerRow}>
-                                            <img 
-                                                src={item.organizer_avatar || "/placeholder-avatar.png"} 
-                                                alt={item.organizer_name} 
-                                                className={styles.miniAvatar} 
-                                            />
+                                            {item.organizer_avatar && !failedAvatars.has(item.organizer_avatar) ? (
+                                                <img 
+                                                    src={item.organizer_avatar} 
+                                                    alt={item.organizer_name} 
+                                                    className={styles.miniAvatar} 
+                                                    onError={() => handleAvatarError(item.organizer_avatar)}
+                                                />
+                                            ) : (
+                                                <div className={styles.miniInitials}>
+                                                    {getInitials(item.organizer_name)}
+                                                </div>
+                                            )}
                                             <span className={styles.orgName}>{item.organizer_name || "Organisateur"}</span>
                                         </div>
 

@@ -74,6 +74,8 @@ export default function EventDetailClient({ id }: { id: string }) {
         }));
     };
 
+    const [avatarError, setAvatarError] = useState(false);
+
     if (loading) return (
         <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #FF5A1F', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
@@ -171,8 +173,13 @@ export default function EventDetailClient({ id }: { id: string }) {
                     <section className={styles.organizerSection}>
                         <h2 className={styles.heading}>Organisateur</h2>
                         <div className={styles.organizerCard}>
-                            {item.organizer?.avatar_url ? (
-                                <img src={item.organizer.avatar_url} alt={item.organizer.name} className={styles.orgAvatar} />
+                            {item.organizer?.avatar_url && !avatarError ? (
+                                <img 
+                                    src={item.organizer.avatar_url} 
+                                    alt={item.organizer.name} 
+                                    className={styles.orgAvatar} 
+                                    onError={() => setAvatarError(true)}
+                                />
                             ) : (
                                 <div className={styles.orgInitials}>
                                     {item.organizer?.name ? item.organizer.name.split(' ').map((n: any) => n[0]).join('').toUpperCase().substring(0, 2) : '??'}
