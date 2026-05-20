@@ -112,10 +112,16 @@ export const generateTicketPDF = async (ticket: any, event: any) => {
             // Use the raw date string mentioned by the advertiser
             dateStr = event.date;
         }
+        if (event.time) {
+            dateStr += ` à ${event.time}`;
+        }
     } else if (event.created_at) {
         // Fallback to created_at if date is missing (common for cotisations)
         const d = new Date(event.created_at);
         dateStr = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+        if (event.time) {
+            dateStr += ` à ${event.time}`;
+        }
     }
     
     const titleOffset = Math.min(mainTitleLines.length * 6, 15);
@@ -133,19 +139,25 @@ export const generateTicketPDF = async (ticket: any, event: any) => {
     doc.text("CATÉGORIE", 45, 42);
     
     doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]); // Values in category color
-    doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
-    doc.text(ticket.category, 45, 48);
+    const catName = ticket.category.toUpperCase();
+    const catLines = doc.splitTextToSize(catName, 34);
+    if (catLines.length > 1) {
+        doc.setFontSize(9);
+    } else {
+        doc.setFontSize(11);
+    }
+    doc.text(catLines, 45, 47);
 
     doc.setTextColor(120, 120, 120);
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    doc.text("PRIX", 75, 42);
+    doc.text("PRIX", 82, 42);
     
     doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]);
-    doc.setFontSize(11);
+    doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
-    doc.text(`${Number(ticket.amount).toLocaleString()} F CFA`, 75, 48);
+    doc.text(`${Number(ticket.amount).toLocaleString()} F CFA`, 82, 47);
 
     // Buyer
     doc.setTextColor(120, 120, 120);
