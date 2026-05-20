@@ -89,8 +89,10 @@ export const generateTicketPDF = async (ticket: any, event: any) => {
     doc.setFont("helvetica", "bold");
     
     // Wrap Title to avoid overlap with Ticket No
-    const mainTitleLines = doc.splitTextToSize(event.title.toUpperCase(), 60);
-    doc.setFontSize(mainTitleLines.length > 2 ? 14 : 16); // Reduce size if too long
+    const rawTitle = event.title.toUpperCase();
+    const isLongTitle = rawTitle.length > 20;
+    doc.setFontSize(isLongTitle ? 13 : 15);
+    const mainTitleLines = doc.splitTextToSize(rawTitle, 58);
     doc.text(mainTitleLines, 45, 12);
     
     doc.setFontSize(9);
@@ -136,17 +138,17 @@ export const generateTicketPDF = async (ticket: any, event: any) => {
     // Category and Price
     doc.setTextColor(120, 120, 120); // Labels in grey
     doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
     doc.text("CATÉGORIE", 45, 42);
     
     doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]); // Values in category color
     doc.setFont("helvetica", "bold");
     const catName = ticket.category.toUpperCase();
-    const catLines = doc.splitTextToSize(catName, 34);
-    if (catLines.length > 1) {
-        doc.setFontSize(9);
-    } else {
-        doc.setFontSize(11);
-    }
+    
+    // Set the font size BEFORE splitting so that jsPDF calculates using the correct metrics
+    const isLongCat = catName.length > 12;
+    doc.setFontSize(isLongCat ? 9 : 11);
+    const catLines = doc.splitTextToSize(catName, 32); // Constrained to 32mm to never overlap with Price at 82mm
     doc.text(catLines, 45, 47);
 
     doc.setTextColor(120, 120, 120);
