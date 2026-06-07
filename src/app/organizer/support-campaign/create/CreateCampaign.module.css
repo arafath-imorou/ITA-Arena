@@ -1,0 +1,329 @@
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.header h1 {
+    color: #0A2E73;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.header p {
+    color: var(--color-gray-600);
+}
+
+.stepper {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.stepper::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--color-gray-200);
+    z-index: 1;
+    transform: translateY(-50%);
+}
+
+.step {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stepIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--color-white);
+    border: 2px solid var(--color-gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: var(--color-gray-600);
+    transition: all 0.3s ease;
+}
+
+.step.active .stepIcon {
+    border-color: #F7931E;
+    background-color: #F7931E;
+    color: var(--color-white);
+    box-shadow: 0 0 0 4px rgba(247, 147, 30, 0.2);
+}
+
+.step.completed .stepIcon {
+    border-color: #0A2E73;
+    background-color: #0A2E73;
+    color: var(--color-white);
+}
+
+.stepLabel {
+    font-size: 0.85rem;
+    color: var(--color-gray-600);
+    font-weight: 500;
+}
+
+.step.active .stepLabel {
+    color: #F7931E;
+    font-weight: 700;
+}
+
+.card {
+    background-color: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    padding: 2.5rem;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.formGroup {
+    margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--color-black);
+}
+
+.formGroup input[type="text"],
+.formGroup input[type="date"],
+.formGroup select,
+.formGroup textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--border-radius-sm);
+    font-family: var(--font-main);
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.formGroup input:focus,
+.formGroup select:focus,
+.formGroup textarea:focus {
+    outline: none;
+    border-color: #0A2E73;
+    box-shadow: 0 0 0 3px rgba(10, 46, 115, 0.1);
+}
+
+.row {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.col {
+    flex: 1;
+}
+
+.uploadArea {
+    border: 2px dashed var(--color-gray-200);
+    border-radius: var(--border-radius-md);
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: var(--color-gray-50);
+}
+
+.uploadArea:hover {
+    border-color: #F7931E;
+    background-color: rgba(247, 147, 30, 0.02);
+}
+
+.uploadIcon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.uploadText {
+    font-weight: 600;
+    color: var(--color-black);
+    margin-bottom: 0.5rem;
+}
+
+.uploadHint {
+    font-size: 0.85rem;
+    color: var(--color-gray-600);
+}
+
+.previewContainer {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.previewImage {
+    max-width: 100%;
+    max-height: 400px;
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-sm);
+    background-image: linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+.checkboxGroup {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem;
+    border: 1px solid var(--color-gray-100);
+    border-radius: var(--border-radius-sm);
+    margin-bottom: 1rem;
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.checkboxGroup:hover {
+    background-color: var(--color-gray-50);
+}
+
+.checkboxGroup input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #F7931E;
+    cursor: pointer;
+}
+
+.checkboxInfo h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: #0A2E73;
+}
+
+.checkboxInfo p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-gray-600);
+}
+
+.summary {
+    background-color: var(--color-gray-50);
+    padding: 1.5rem;
+    border-radius: var(--border-radius-md);
+}
+
+.summaryItem {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.summaryItem:last-child {
+    border-bottom: none;
+}
+
+.summaryLabel {
+    color: var(--color-gray-600);
+    font-weight: 500;
+}
+
+.summaryValue {
+    font-weight: 600;
+    color: var(--color-black);
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+.btnPrimary {
+    background-color: #F7931E;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: var(--border-radius-full);
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 10px rgba(247, 147, 30, 0.3);
+}
+
+.btnPrimary:hover {
+    background-color: #e68310;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(247, 147, 30, 0.4);
+}
+
+.btnPrimary:disabled {
+    background-color: var(--color-gray-200);
+    color: var(--color-gray-600);
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.btnSecondary {
+    background-color: white;
+    color: #0A2E73;
+    padding: 0.8rem 2rem;
+    border-radius: var(--border-radius-full);
+    font-weight: bold;
+    border: 2px solid #0A2E73;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btnSecondary:hover {
+    background-color: #0A2E73;
+    color: white;
+}
+
+.error {
+    color: var(--color-error);
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+}
+
+.successMessage {
+    text-align: center;
+    padding: 3rem;
+}
+
+.successIcon {
+    font-size: 4rem;
+    color: var(--color-success);
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .row {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .stepper {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    .stepper::before {
+        display: none;
+    }
+    .step {
+        width: 45%;
+    }
+    .card {
+        padding: 1.5rem;
+    }
+}

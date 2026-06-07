@@ -13,10 +13,11 @@ export default function Categories() {
     useEffect(() => {
         async function fetchCategories() {
             setLoading(true);
+            const typeQuery = mode === 'events' ? 'event' : (mode === 'cotisations' ? 'cotisation' : 'support');
             const { data, error } = await supabase
                 .from('categories')
                 .select('*')
-                .eq('type', mode === 'events' ? 'event' : 'cotisation');
+                .eq('type', typeQuery);
 
             if (!error && data) {
                 // Ensure "Toutes" is always first

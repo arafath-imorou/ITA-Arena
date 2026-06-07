@@ -38,24 +38,47 @@ export default function FeaturedEvents() {
         async function fetchData() {
             setLoading(true);
             try {
-                let query = supabase
-                    .from('events_with_stats')
-                    .select('*')
-                    .eq('type', mode === 'events' ? 'event' : 'cotisation')
-                    .eq('is_published', true);
+                let dbData;
+                if (mode === 'support') {
+                    let query = supabase.from('support_campaigns').select('*').eq('status', 'active');
+                    if (activeCategory !== 'all') {
+                        query = query.eq('category', activeCategory);
+                    }
+                    const { data, error } = await query;
+                    if (error) throw error;
+                    dbData = (data || []).map(item => ({
+                        id: item.id,
+                        title: item.title,
+                        image_url: item.cover_image || item.frame_image || "https://placehold.co/600x400/0A2E73/FFFFFF?text=Soutien",
+                        category_id: item.category || 'Campagne',
+                        organizer_name: "Campagne de Soutien",
+                        date: new Date(item.start_date).toLocaleDateString('fr-FR'),
+                        location: "En ligne",
+                        slug: item.slug,
+                        likes_count: 0,
+                        total_capacity: 0,
+                        sold_count: 0
+                    }));
+                } else {
+                    let query = supabase
+                        .from('events_with_stats')
+                        .select('*')
+                        .eq('type', mode === 'events' ? 'event' : 'cotisation')
+                        .eq('is_published', true);
 
-                if (selectedCountry && selectedCountry.name !== "Tous") {
-                    query = query.eq('country', selectedCountry.name);
+                    if (selectedCountry && selectedCountry.name !== "Tous") {
+                        query = query.eq('country', selectedCountry.name);
+                    }
+
+                    if (activeCategory !== 'all') {
+                        query = query.eq('category_id', activeCategory);
+                    }
+
+                    const { data, error } = await query;
+                    if (error) throw error;
+                    dbData = data || [];
                 }
-
-                if (activeCategory !== 'all') {
-                    query = query.eq('category_id', activeCategory);
-                }
-
-                const { data: dbData, error } = await query;
-
-                if (error) throw error;
-                setData(dbData || []);
+                setData(dbData);
             } catch (err) {
                 console.error("Error fetching events:", err);
                 setData([]);
@@ -229,11 +252,11 @@ export default function FeaturedEvents() {
                                         </div>
 
                                         <Link 
-                                            href={`/events/${item.id}`} 
+                                            href={mode === 'support' ? `/support/${item.slug}` : `/events/${item.id}`} 
                                             className={styles.buyBtn}
                                             style={item.total_capacity > 0 && item.sold_count >= item.total_capacity ? { background: '#ccc', pointerEvents: 'none' } : {}}
                                         >
-                                            {item.total_capacity > 0 && item.sold_count >= item.total_capacity ? "COMPLET" : (mode === 'events' ? "Réserver mon ticket" : "Contribuer")}
+                                            {item.total_capacity > 0 && item.sold_count >= item.total_capacity ? "COMPLET" : (mode === 'events' ? "Réserver mon ticket" : (mode === 'support' ? "Soutenir la campagne" : "Contribuer"))}
                                         </Link>
                                     </div>
                                 </div>

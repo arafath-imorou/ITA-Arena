@@ -76,10 +76,11 @@ export default function SubNav() {
     useEffect(() => {
         async function fetchCategories() {
             setLoading(true);
+            const typeQuery = mode === 'events' ? 'event' : (mode === 'cotisations' ? 'cotisation' : 'support');
             const { data, error } = await supabase
                 .from('categories')
                 .select('*')
-                .eq('type', mode === 'events' ? 'event' : 'cotisation');
+                .eq('type', typeQuery);
 
             if (error) {
                 console.error("Error fetching categories:", error);
@@ -118,7 +119,15 @@ export default function SubNav() {
                             >
                                 Cotisations
                             </button>
-                            <span className={styles.newBadge}>Nouveau</span>
+                        </div>
+                        <div className={styles.cotisationWrapper}>
+                            <button
+                                className={`${styles.toggleBtn} ${mode === 'support' ? styles.activeToggle : ''}`}
+                                onClick={() => setMode('support')}
+                            >
+                                Soutien
+                            </button>
+                            <span className={styles.newBadge} style={{backgroundColor: '#0A2E73'}}>Nouveau</span>
                         </div>
                     </div>
                 </div>

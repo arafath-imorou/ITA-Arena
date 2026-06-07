@@ -113,6 +113,22 @@ export default function OrganizerLayout({
                     </div>
 
                     <div className={styles.navGroup}>
+                        <span className={styles.groupLabel}>Campagnes de Soutien</span>
+                        <Link
+                            href="/organizer/support-campaign/create"
+                            className={`${styles.navItem} ${pathname === '/organizer/support-campaign/create' ? styles.activeNavItem : ''}`}
+                        >
+                            <span className={styles.navIcon}>🖼️</span> Créer une campagne
+                        </Link>
+                        <Link
+                            href="/organizer/support-campaign/dashboard"
+                            className={`${styles.navItem} ${pathname === '/organizer/support-campaign/dashboard' ? styles.activeNavItem : ''}`}
+                        >
+                            <span className={styles.navIcon}>📊</span> Dashboard Campagnes
+                        </Link>
+                    </div>
+
+                    <div className={styles.navGroup}>
                         <span className={styles.groupLabel}>Tickets et Profil</span>
                         <div className={styles.collapsibleNav}>
                             <Link

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
-type Mode = 'events' | 'cotisations';
+type Mode = 'events' | 'cotisations' | 'support';
 
 interface ModeContextType {
     mode: Mode;
@@ -27,7 +27,7 @@ export function ModeProvider({ children }: { children: ReactNode }) {
         const updateModeFromURL = () => {
             const params = new URLSearchParams(window.location.search);
             const m = params.get('mode') as Mode;
-            if (m === 'events' || m === 'cotisations') {
+            if (m === 'events' || m === 'cotisations' || m === 'support') {
                 setMode(m);
             }
         };

@@ -1,0 +1,215 @@
+.container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.title {
+    color: #0A2E73;
+    font-size: 2rem;
+    margin: 0;
+}
+
+.btnNew {
+    background: linear-gradient(135deg, #F7931E 0%, #ff8c00 100%);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: var(--border-radius-full);
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btnNew:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(247, 147, 30, 0.3);
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.statCard {
+    background: var(--color-white);
+    border-radius: var(--border-radius-md);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-gray-100);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.statCard:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.statIcon {
+    font-size: 2rem;
+    background: rgba(247, 147, 30, 0.1);
+    color: #F7931E;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.statInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.statValue {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #0A2E73;
+    line-height: 1;
+}
+
+.statLabel {
+    color: var(--color-gray-600);
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+}
+
+.tableContainer {
+    background: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    border-bottom: 1px solid var(--color-gray-100);
+}
+
+.table th {
+    background-color: var(--color-gray-50);
+    color: var(--color-gray-600);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.table tbody tr:hover {
+    background-color: var(--color-gray-50);
+}
+
+.campaignInfo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.campaignThumb {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover;
+    background-color: var(--color-gray-100);
+    border: 1px solid var(--color-gray-200);
+}
+
+.campaignTitle {
+    font-weight: 600;
+    color: #0A2E73;
+    margin: 0;
+}
+
+.campaignDate {
+    font-size: 0.8rem;
+    color: var(--color-gray-600);
+    margin: 0;
+}
+
+.statusBadge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.statusActive {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.statusInactive {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btnAction {
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid var(--color-gray-200);
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--color-gray-600);
+}
+
+.btnAction:hover {
+    border-color: #0A2E73;
+    color: #0A2E73;
+    background: var(--color-gray-50);
+}
+
+.emptyState {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--color-gray-600);
+}
+
+.emptyIcon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    .tableContainer {
+        overflow-x: auto;
+    }
+}
