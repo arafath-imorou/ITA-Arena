@@ -4,6 +4,7 @@ import React, { useState, useRef } from "react";
 import styles from "./CreateCampaign.module.css";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import FrameBuilder from "@/components/FrameBuilder/FrameBuilder";
 import { useAuth } from "@/context/AuthContext";
 
 export default function CreateSupportCampaign() {
@@ -31,6 +32,7 @@ export default function CreateSupportCampaign() {
 
     const [frameFile, setFrameFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [frameMode, setFrameMode] = useState<'upload' | 'build'>('upload');
 
     const categories = [
         "Sensibilisation",
@@ -247,34 +249,77 @@ export default function CreateSupportCampaign() {
                 {/* STEP 2: CADRE GRAPHIQUE */}
                 {step === 2 && (
                     <div className="animate-in">
-                        <div className={styles.formGroup}>
-                            <label>Uploadez votre cadre (PNG transparent)</label>
-                            <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1rem' }}>
-                                Le centre de l'image doit être transparent pour laisser apparaître la photo de l'utilisateur.
-                                Taille recommandée : 1080 x 1080 pixels (Max 10 MB).
-                            </p>
-                            
-                            <input
-                                type="file"
-                                accept="image/png"
-                                ref={fileInputRef}
-                                style={{ display: 'none' }}
-                                onChange={handleFileChange}
-                            />
-                            
-                            <div className={styles.uploadArea} onClick={() => fileInputRef.current?.click()}>
-                                <div className={styles.uploadIcon}>🖼️</div>
-                                <div className={styles.uploadText}>Cliquez pour uploader ou glissez-déposez</div>
-                                <div className={styles.uploadHint}>Uniquement PNG avec transparence</div>
-                            </div>
-
-                            {previewUrl && (
-                                <div className={styles.previewContainer}>
-                                    <label>Aperçu du cadre :</label>
-                                    <img src={previewUrl} alt="Preview" className={styles.previewImage} />
-                                </div>
-                            )}
+                        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', background: '#f1f5f9', padding: '0.5rem', borderRadius: '12px' }}>
+                            <button 
+                                onClick={() => setFrameMode('upload')} 
+                                className={frameMode === 'upload' ? styles.btnPrimary : styles.btnSecondary}
+                                style={{ flex: 1, padding: '0.8rem', borderRadius: '8px' }}
+                            >
+                                Uploader mon cadre
+                            </button>
+                            <button 
+                                onClick={() => setFrameMode('build')} 
+                                className={frameMode === 'build' ? styles.btnPrimary : styles.btnSecondary}
+                                style={{ flex: 1, padding: '0.8rem', borderRadius: '8px' }}
+                            >
+                                Créer avec l'outil intégré
+                            </button>
                         </div>
+
+                        {frameMode === 'upload' ? (
+                            <div className={styles.formGroup}>
+                                <label>Uploadez votre cadre (PNG transparent)</label>
+                                <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1rem' }}>
+                                    Le centre de l'image doit être transparent pour laisser apparaître la photo de l'utilisateur.
+                                    Taille recommandée : 1080 x 1080 pixels (Max 10 MB).
+                                </p>
+                                
+                                <input
+                                    type="file"
+                                    accept="image/png"
+                                    ref={fileInputRef}
+                                    style={{ display: 'none' }}
+                                    onChange={handleFileChange}
+                                />
+                                
+                                <div className={styles.uploadArea} onClick={() => fileInputRef.current?.click()}>
+                                    <div className={styles.uploadIcon}>🖼️</div>
+                                    <div className={styles.uploadText}>Cliquez pour uploader ou glissez-déposez</div>
+                                    <div className={styles.uploadHint}>Uniquement PNG avec transparence</div>
+                                </div>
+
+                                {previewUrl && (
+                                    <div className={styles.previewContainer}>
+                                        <label>Aperçu du cadre :</label>
+                                        <img src={previewUrl} alt="Preview" className={styles.previewImage} />
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div style={{ marginTop: '1rem' }}>
+                                {previewUrl && frameFile ? (
+                                    <div className={styles.previewContainer}>
+                                        <label>Cadre généré avec succès !</label>
+                                        <img src={previewUrl} alt="Preview" className={styles.previewImage} />
+                                        <button 
+                                            onClick={() => { setFrameFile(null); setPreviewUrl(null); }}
+                                            className={styles.btnSecondary}
+                                            style={{ marginTop: '1rem' }}
+                                        >
+                                            Recommencer la création
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <FrameBuilder 
+                                        onComplete={(file, dataUrl) => {
+                                            setFrameFile(file);
+                                            setPreviewUrl(dataUrl);
+                                        }}
+                                        onCancel={() => setFrameMode('upload')}
+                                    />
+                                )}
+                            </div>
+                        )}
                     </div>
                 )}
 
