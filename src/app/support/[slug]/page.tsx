@@ -33,10 +33,13 @@ export default function SupportCampaignPage() {
                 setCampaign(data);
 
                 // Increment Views
-                await supabase.rpc('increment_campaign_views', { campaign_id: data.id }).catch(() => {
+                try {
+                    const { error: rpcError } = await supabase.rpc('increment_campaign_views', { campaign_id: data.id });
+                    if (rpcError) throw rpcError;
+                } catch (e) {
                     // Fallback if RPC doesn't exist
-                    supabase.from('support_campaigns').update({ views: data.views + 1 }).eq('id', data.id).then();
-                });
+                    await supabase.from('support_campaigns').update({ views: (data.views || 0) + 1 }).eq('id', data.id);
+                }
 
                 // Fetch Participation Count
                 const { count } = await supabase
