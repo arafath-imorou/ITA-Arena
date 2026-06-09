@@ -52,7 +52,7 @@ export default function FeaturedEvents() {
                         image_url: item.cover_image || item.frame_image || "https://placehold.co/600x400/0A2E73/FFFFFF?text=Soutien",
                         category_id: item.category || 'Campagne',
                         organizer_name: "Campagne de Soutien",
-                        date: new Date(item.start_date).toLocaleDateString('fr-FR'),
+                        date: item.start_date ? new Date(item.start_date).toLocaleDateString('fr-FR') : "Date non définie",
                         location: "En ligne",
                         slug: item.slug,
                         likes_count: 0,
