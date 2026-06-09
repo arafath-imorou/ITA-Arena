@@ -292,6 +292,13 @@ export default function CreateSupportCampaign() {
                                     <div className={styles.previewContainer}>
                                         <label>Aperçu du cadre :</label>
                                         <img src={previewUrl} alt="Preview" className={styles.previewImage} />
+                                        <button 
+                                            onClick={handleNext}
+                                            className={styles.btnPrimary}
+                                            style={{ marginTop: '1rem', width: '100%' }}
+                                        >
+                                            Étape suivante ➡️
+                                        </button>
                                     </div>
                                 )}
                             </div>
@@ -301,13 +308,22 @@ export default function CreateSupportCampaign() {
                                     <div className={styles.previewContainer}>
                                         <label>Cadre généré avec succès !</label>
                                         <img src={previewUrl} alt="Preview" className={styles.previewImage} />
-                                        <button 
-                                            onClick={() => { setFrameFile(null); setPreviewUrl(null); }}
-                                            className={styles.btnSecondary}
-                                            style={{ marginTop: '1rem' }}
-                                        >
-                                            Recommencer la création
-                                        </button>
+                                        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                                            <button 
+                                                onClick={() => { setFrameFile(null); setPreviewUrl(null); }}
+                                                className={styles.btnSecondary}
+                                                style={{ flex: 1 }}
+                                            >
+                                                Recommencer la création
+                                            </button>
+                                            <button 
+                                                onClick={handleNext}
+                                                className={styles.btnPrimary}
+                                                style={{ flex: 1 }}
+                                            >
+                                                Étape suivante ➡️
+                                            </button>
+                                        </div>
                                     </div>
                                 ) : (
                                     <FrameBuilder 
