@@ -12,6 +12,7 @@ export default function FeaturedEvents() {
     const { countries, selectedCountry, setSelectedCountry } = useCountry();
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [errorMsg, setErrorMsg] = useState<string>("");
     const [likedEvents, setLikedEvents] = useState<string[]>([]);
     const [failedAvatars, setFailedAvatars] = useState<Set<string>>(new Set());
 
@@ -57,7 +58,9 @@ export default function FeaturedEvents() {
                         slug: item.slug,
                         likes_count: 0,
                         total_capacity: 0,
-                        sold_count: 0
+                        sold_count: 0,
+                        collected_amount: 0,
+                        target_amount: 0
                     }));
                 } else {
                     let query = supabase
@@ -79,8 +82,9 @@ export default function FeaturedEvents() {
                     dbData = data || [];
                 }
                 setData(dbData);
-            } catch (err) {
+            } catch (err: any) {
                 console.error("Error fetching events:", err);
+                setErrorMsg(err?.message || "Erreur inconnue");
                 setData([]);
             } finally {
                 setLoading(false);
@@ -268,6 +272,8 @@ export default function FeaturedEvents() {
                         <div className={styles.emptyIcon}>🎭</div>
                         <h3>Aucun événement trouvé</h3>
                         <p>Essayez de changer de catégorie ou de pays.</p>
+                        {errorMsg && <p style={{color: 'red', marginTop: '1rem'}}>Erreur: {errorMsg}</p>}
+                        <p style={{marginTop: '1rem', color: '#ccc', fontSize: '0.8rem'}}>Debug: Mode={mode}, Category={activeCategory}, DataLength={data.length}</p>
                     </div>
                 )}
             </div>
