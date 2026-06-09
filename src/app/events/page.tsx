@@ -37,8 +37,11 @@ export default function EventsPage() {
                     *,
                     organizer:profiles(name:full_name, avatar_url)
                 `)
-                .eq('type', 'event')
-                .eq('country', selectedCountry.name);
+                .eq('type', 'event');
+
+            if (selectedCountry.name !== "Tous") {
+                query = query.eq('country', selectedCountry.name);
+            }
 
             if (selectedCategory !== "all") {
                 query = query.eq('category_id', selectedCategory.toLowerCase());
