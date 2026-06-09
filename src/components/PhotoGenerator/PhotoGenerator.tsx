@@ -27,6 +27,10 @@ export default function PhotoGenerator({ frameUrl, campaignId, onDownload }: Pho
 
     const CANVAS_SIZE = 1080;
 
+    // Detect if this is the polio frame to automatically apply a circular mask
+    // We check both the URL (for 'polio') and the specific campaign ID just in case
+    const isPolioCampaign = frameUrl.toLowerCase().includes('polio') || campaignId === 'dd87821d-684f-4715-8e7b-e383b2550664';
+
     // Load Frame Image
     useEffect(() => {
         const img = new Image();
@@ -59,6 +63,31 @@ export default function PhotoGenerator({ frameUrl, campaignId, onDownload }: Pho
         // Draw User Image
         if (userImage) {
             ctx.save();
+            
+            if (isPolioCampaign) {
+                ctx.beginPath();
+                // The frame's hole is a large perfect circle with a soft, smooth "bite" 
+                // taken out of the right side to avoid the text banners (the exact red shape).
+                // We draw the main circular arc from the bottom-right (1.3 rad), 
+                // clockwise around the bottom, left, and top, ending at the top-right (5.8 rad).
+                ctx.arc(480, 440, 340, 1.3, 5.8);
+                
+                // Then we close the shape with a series of smooth curves that sweep outwards 
+                // to fill the right side as much as possible, dodging the text and icons.
+                // We use three precise segments to ensure it's smooth but very close to the right edge.
+                
+                // 1. Bulge out to the right to fill the space under the dark blue arc
+                ctx.quadraticCurveTo(900, 350, 800, 450);
+                
+                // 2. Drop down past the shield text, then curve left to avoid the "PÉRIODE" banner
+                ctx.quadraticCurveTo(800, 550, 750, 580);
+                
+                // 3. Drop down past the calendar icon and merge back into the circle's start (~571, 768)
+                // We use a control point of (800, 650) to push this segment generously to the right.
+                ctx.quadraticCurveTo(800, 650, 571, 768);
+                ctx.clip();
+            }
+
             // Move to center of canvas
             ctx.translate(CANVAS_SIZE / 2 + offset.x, CANVAS_SIZE / 2 + offset.y);
             // Rotate
@@ -82,7 +111,7 @@ export default function PhotoGenerator({ frameUrl, campaignId, onDownload }: Pho
             ctx.drawImage(frameImage, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
         }
 
-    }, [userImage, frameImage, scale, rotation, offset]);
+    }, [userImage, frameImage, scale, rotation, offset, isPolioCampaign]);
 
     useEffect(() => {
         drawCanvas();
