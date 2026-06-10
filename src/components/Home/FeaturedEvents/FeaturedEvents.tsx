@@ -14,6 +14,27 @@ export default function FeaturedEvents() {
     const [loading, setLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState<string>("");
     const [likedEvents, setLikedEvents] = useState<string[]>([]);
+    const initialLoadDone = React.useRef(false);
+
+    // Restaurer les likes depuis le navigateur au chargement
+    useEffect(() => {
+        const storedLikes = localStorage.getItem('ita_liked_events');
+        if (storedLikes) {
+            try {
+                setLikedEvents(JSON.parse(storedLikes));
+            } catch (e) {
+                console.error("Error parsing liked events", e);
+            }
+        }
+        initialLoadDone.current = true;
+    }, []);
+
+    // Sauvegarder les likes dans le navigateur à chaque changement
+    useEffect(() => {
+        if (initialLoadDone.current) {
+            localStorage.setItem('ita_liked_events', JSON.stringify(likedEvents));
+        }
+    }, [likedEvents]);
     const [failedAvatars, setFailedAvatars] = useState<Set<string>>(new Set());
 
     const getInitials = (name: string) => {
