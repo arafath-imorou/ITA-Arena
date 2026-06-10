@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import styles from "./FeaturedEvents.module.css";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
@@ -14,7 +14,7 @@ export default function FeaturedEvents() {
     const [loading, setLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState<string>("");
     const [likedEvents, setLikedEvents] = useState<string[]>([]);
-    const initialLoadDone = React.useRef(false);
+    const initialLoadDone = useRef(false);
 
     // Restaurer les likes depuis le navigateur au chargement
     useEffect(() => {
