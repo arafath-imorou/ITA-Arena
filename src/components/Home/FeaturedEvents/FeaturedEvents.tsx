@@ -35,6 +35,36 @@ export default function FeaturedEvents() {
             localStorage.setItem('ita_liked_events', JSON.stringify(likedEvents));
         }
     }, [likedEvents]);
+
+    // Temps réel pour les campagnes de soutien
+    useEffect(() => {
+        const channel = supabase
+            .channel('realtime_support_campaigns')
+            .on(
+                'postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'support_campaigns' },
+                (payload) => {
+                    setData((currentData) => 
+                        currentData.map((item) => {
+                            if (item.id === payload.new.id) {
+                                return {
+                                    ...item,
+                                    downloads: payload.new.downloads,
+                                    likes_count: payload.new.likes_count
+                                };
+                            }
+                            return item;
+                        })
+                    );
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, []);
+
     const [failedAvatars, setFailedAvatars] = useState<Set<string>>(new Set());
 
     const getInitials = (name: string) => {
