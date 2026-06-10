@@ -56,11 +56,10 @@ export default function FeaturedEvents() {
                         date: item.start_date ? new Date(item.start_date).toLocaleDateString('fr-FR') : "Date non définie",
                         location: "En ligne",
                         slug: item.slug,
-                        likes_count: 0,
+                        likes_count: item.likes_count || 0,
+                        downloads: item.downloads || 0,
                         total_capacity: 0,
                         sold_count: 0,
-                        collected_amount: 0,
-                        target_amount: 0
                     }));
                 } else {
                     let query = supabase
@@ -117,10 +116,12 @@ export default function FeaturedEvents() {
 
         try {
             // 2. Sync update into remote Supabase instance via Postgres function
-            const { data: updatedCount, error } = await supabase.rpc('toggle_event_like', {
-                event_id_param: id,
-                increment_by: incrementBy
-            });
+            const rpcName = mode === 'support' ? 'toggle_support_like' : 'toggle_event_like';
+            const params = mode === 'support' 
+                ? { campaign_id_param: id, increment_by: incrementBy }
+                : { event_id_param: id, increment_by: incrementBy };
+
+            const { data: updatedCount, error } = await supabase.rpc(rpcName, params);
 
             if (error) throw error;
             
@@ -224,17 +225,11 @@ export default function FeaturedEvents() {
                                                     </span>
                                                 </div>
                                             ) : (
-                                                <div className={styles.progressBarWrapper}>
-                                                    <div className={styles.progressLabel}>
-                                                        <span>Collecté: <strong>{new Intl.NumberFormat('fr-FR').format(item.collected_amount)} F CFA</strong></span>
-                                                        <span>{percent}%</span>
-                                                    </div>
-                                                    <div className={styles.progressBg}>
-                                                        <div className={styles.progressFill} style={{ width: `${percent}%` }}></div>
-                                                    </div>
-                                                    <div className={styles.goalLine}>
-                                                        <span>Objectif: {new Intl.NumberFormat('fr-FR').format(item.target_amount)} F CFA</span>
-                                                    </div>
+                                                <div style={{ padding: '0.8rem', background: '#f5f7fa', borderRadius: '0.5rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                    <span style={{ color: '#0A2E73', fontWeight: 'bold' }}>Participants actuels</span>
+                                                    <span style={{ background: '#F7931E', color: 'white', padding: '0.2rem 0.8rem', borderRadius: '1rem', fontWeight: 'bold', fontSize: '1.1rem' }}>
+                                                        {item.downloads || 0}
+                                                    </span>
                                                 </div>
                                             )}
 
