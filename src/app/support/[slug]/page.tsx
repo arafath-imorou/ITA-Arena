@@ -76,9 +76,8 @@ export default function SupportCampaignPage() {
                 campaign_id: campaign.id
             });
             setParticipationCount(prev => prev + 1);
-            
-            // Increment downloads
-            await supabase.from('support_campaigns').update({ downloads: campaign.downloads + 1 }).eq('id', campaign.id);
+            // Note: We no longer manually update support_campaigns.downloads here.
+            // A PostgreSQL trigger automatically increments it when a participation is inserted!
         } catch (e) {
             console.error("Error recording participation", e);
         }
