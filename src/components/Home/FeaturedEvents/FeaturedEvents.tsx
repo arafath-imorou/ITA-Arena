@@ -53,7 +53,9 @@ export default function FeaturedEvents() {
                         image_url: item.cover_image || item.frame_image || "https://placehold.co/600x400/0A2E73/FFFFFF?text=Soutien",
                         category_id: item.category || 'Campagne',
                         organizer_name: "Campagne de Soutien",
-                        date: item.start_date ? new Date(item.start_date).toLocaleDateString('fr-FR') : "Date non définie",
+                        date: item.start_date && item.end_date 
+                            ? `Du ${new Date(item.start_date).getDate()} au ${new Date(item.end_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase()}`
+                            : (item.start_date ? new Date(item.start_date).toLocaleDateString('fr-FR') : "Date non définie"),
                         location: "En ligne",
                         slug: item.slug,
                         likes_count: item.likes_count || 0,
