@@ -13,6 +13,7 @@ function AdminDashboardContent() {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [rawEvents, setRawEvents] = useState<any[]>([]);
+    const [rawCampaigns, setRawCampaigns] = useState<any[]>([]);
     const [rawProfiles, setRawProfiles] = useState<any[]>([]);
     const [rawTickets, setRawTickets] = useState<any[]>([]);
     const [isAdmin, setIsAdmin] = useState(false);
@@ -44,10 +45,12 @@ function AdminDashboardContent() {
             const { data: profilesData } = await supabase.from('profiles').select('*');
             const { data: eventsData } = await supabase.from('events_with_stats').select('*').order('created_at', { ascending: false });
             const { data: ticketsData } = await supabase.from('tickets').select('*').eq('status', 'valid').order('created_at', { ascending: false });
+            const { data: campaignsData } = await supabase.from('support_campaigns').select('*').order('created_at', { ascending: false });
 
             setRawProfiles(profilesData || []);
             setRawEvents(eventsData || []);
             setRawTickets(ticketsData || []);
+            setRawCampaigns(campaignsData || []);
         } catch (err) {
             console.error("Admin Data Error:", err);
         } finally {
@@ -80,7 +83,7 @@ function AdminDashboardContent() {
     }, [user, router]);
 
     // Computed Data based on filters
-    const { filteredEvents, filteredTickets, stats, organizersList, yearsList } = useMemo(() => {
+    const { filteredEvents, filteredCampaigns, filteredTickets, stats, organizersList, yearsList } = useMemo(() => {
         const profileMap = rawProfiles.reduce((acc: any, p) => { acc[p.id] = p; return acc; }, {});
         const eventMap = rawEvents.reduce((acc: any, e) => { acc[e.id] = e; return acc; }, {});
 
@@ -147,6 +150,21 @@ function AdminDashboardContent() {
         const evtsOnly = events.filter(i => i.type === 'event' || !i.type);
         const cotisOnly = events.filter(i => i.type === 'cotisation');
 
+        let campaigns = rawCampaigns;
+        if (filters.search) {
+            const s = filters.search.toLowerCase();
+            campaigns = campaigns.filter(c => c.title.toLowerCase().includes(s));
+        }
+        if (filters.organizerId !== 'all') {
+            campaigns = campaigns.filter(c => c.created_by === filters.organizerId);
+        }
+        if (filters.year !== 'all') {
+            campaigns = campaigns.filter(c => new Date(c.created_at).getFullYear().toString() === filters.year);
+        }
+        if (filters.month !== 'all') {
+            campaigns = campaigns.filter(c => (new Date(c.created_at).getMonth() + 1).toString() === filters.month);
+        }
+
         // Lists for filters
         const organizers = rawProfiles.filter(p => p.role === 'organizer' || rawEvents.some(e => e.organizer_id === p.id));
         const organizersWithStats = organizers.map(org => {
@@ -161,21 +179,24 @@ function AdminDashboardContent() {
             };
         });
         
-        const years = Array.from(new Set(rawEvents.map(e => new Date(e.created_at).getFullYear()))).sort((a, b) => b - a);
+        const allDates = [...rawEvents.map(e => e.created_at), ...rawCampaigns.map(c => c.created_at)];
+        const years = Array.from(new Set(allDates.map(d => new Date(d).getFullYear()))).sort((a, b) => b - a);
 
         return {
             filteredEvents: events,
+            filteredCampaigns: campaigns,
             filteredTickets: tickets,
             stats: {
                 totalRevenue: totalRev,
                 totalTickets: tickets.length,
                 totalEvents: evtsOnly.length,
-                totalCotisations: cotisOnly.length
+                totalCotisations: cotisOnly.length,
+                totalCampaigns: rawCampaigns.length
             },
             organizersList: organizersWithStats,
             yearsList: years
         };
-    }, [rawEvents, rawProfiles, rawTickets, filters]);
+    }, [rawEvents, rawCampaigns, rawProfiles, rawTickets, filters]);
 
     const togglePublish = async (eventId: string, currentStatus: boolean) => {
         try {
@@ -283,6 +304,7 @@ function AdminDashboardContent() {
                             <option value="all">Tous</option>
                             <option value="event">Événements</option>
                             <option value="cotisation">Cotisations</option>
+                            <option value="support">Campagnes de Soutien</option>
                         </select>
                     </div>
                     <div className={styles.filterItem}>
@@ -363,11 +385,19 @@ function AdminDashboardContent() {
                     </div>
                     <div className={styles.statIcon}>🤝</div>
                 </div>
+                <div className={styles.statCard}>
+                    <div className={styles.statInfo}>
+                        <span>Soutiens</span>
+                        <h2>{stats.totalCampaigns}</h2>
+                    </div>
+                    <div className={styles.statIcon}>🖼️</div>
+                </div>
             </div>
 
             <div className={styles.dashboardContent}>
-                <div className={styles.section}>
-                    <h3>Performances ({filteredEvents.length})</h3>
+                {(filters.type === 'all' || filters.type === 'event' || filters.type === 'cotisation') && (
+                    <div className={styles.section}>
+                        <h3>Performances ({filteredEvents.length})</h3>
                     <div className={styles.tableWrapper}>
                         <table className={styles.table}>
                             <thead>
@@ -413,6 +443,47 @@ function AdminDashboardContent() {
                         </table>
                     </div>
                 </div>
+                )}
+
+                {(filters.type === 'all' || filters.type === 'support') && (
+                    <div className={styles.section} style={{ marginTop: '2rem' }}>
+                        <h3>Campagnes de Soutien ({filteredCampaigns.length})</h3>
+                        <div className={styles.tableWrapper}>
+                            <table className={styles.table}>
+                                <thead>
+                                    <tr>
+                                        <th>Campagne</th>
+                                        <th>Date</th>
+                                        <th>Statut</th>
+                                        <th>Téléchargements</th>
+                                        <th>Vues</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredCampaigns.map(c => (
+                                        <tr key={c.id}>
+                                            <td>
+                                                <strong>{c.title}</strong>
+                                                <p style={{ margin: 0, fontSize: '0.7rem', color: '#64748b' }}>{c.category || 'Non classé'}</p>
+                                            </td>
+                                            <td>{new Date(c.created_at).toLocaleDateString('fr-FR')}</td>
+                                            <td><span className={`${styles.badge} ${c.status === 'active' ? styles.badgeSuccess : styles.badgeInfo}`}>{c.status === 'active' ? 'En ligne' : 'Brouillon'}</span></td>
+                                            <td>{c.downloads || 0}</td>
+                                            <td>{c.views || 0}</td>
+                                            <td>
+                                                <div style={{ display: 'flex', gap: '0.4rem' }}>
+                                                    <a href={`/support/${c.slug}`} target="_blank" rel="noreferrer" className={styles.badge} style={{ textDecoration: 'none', background: '#e0f2fe', color: '#0369a1' }} title="Voir la page publique">👁️</a>
+                                                    <Link href={`/organizer/support-campaign/create?edit=${c.id}`} className={styles.badge} style={{ display: 'inline-block', textDecoration: 'none', background: '#fef9c3', color: '#854d0e', textAlign: 'center' }} title="Modifier">✏️</Link>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
 
                 <div className={styles.section}>
                     <h3>Activité Récente</h3>
