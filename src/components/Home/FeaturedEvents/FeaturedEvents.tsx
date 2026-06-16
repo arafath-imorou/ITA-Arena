@@ -16,6 +16,18 @@ export default function FeaturedEvents() {
     const [likedEvents, setLikedEvents] = useState<string[]>([]);
     const initialLoadDone = useRef(false);
 
+    const checkIsPastEvent = (dateStr: string) => {
+        if (!dateStr) return false;
+        const match = dateStr.match(/\d{4}-\d{2}-\d{2}/);
+        if (match) {
+            const d = new Date(match[0]);
+            if (!isNaN(d.getTime())) {
+                return d < new Date(new Date().setHours(0, 0, 0, 0));
+            }
+        }
+        return false;
+    };
+
     // Restaurer les likes depuis le navigateur au chargement
     useEffect(() => {
         const storedLikes = localStorage.getItem('ita_liked_events');
@@ -217,6 +229,8 @@ export default function FeaturedEvents() {
                         {data.map((item: any) => {
                             const percent = item.total_capacity > 0 ? Math.round((item.collected_amount / item.total_capacity) * 100) : 0;
                             const isLiked = likedEvents.includes(item.id);
+                            const isPast = checkIsPastEvent(item.date);
+                            const isSoldOut = item.total_capacity > 0 && item.sold_count >= item.total_capacity;
                             return (
                                 <div key={item.id} className={styles.card}>
                                     <div className={styles.imageWrapper}>
@@ -296,19 +310,30 @@ export default function FeaturedEvents() {
                                                 <span className={styles.locationText}>{item.location}</span>
                                             </div>
 
-                                            {item.total_capacity > 0 && item.sold_count >= item.total_capacity && (
+                                            {isSoldOut && !isPast && (
                                                 <div style={{ marginTop: '0.5rem', background: '#fef2f2', color: '#991b1b', fontSize: '0.75rem', padding: '0.4rem', borderRadius: '0.4rem', textAlign: 'center', fontWeight: 'bold' }}>
                                                     🚫 COMPLET
+                                                </div>
+                                            )}
+                                            {isPast && (
+                                                <div style={{ marginTop: '0.5rem', background: '#f8fafc', color: '#334155', fontSize: '0.75rem', padding: '0.4rem', borderRadius: '0.4rem', textAlign: 'center', fontWeight: 'bold', border: '1px solid #e2e8f0' }}>
+                                                    TERMINÉ
                                                 </div>
                                             )}
                                         </div>
 
                                         <Link 
-                                            href={mode === 'support' ? `/support/${item.slug}` : `/events/${item.id}`} 
+                                            href={isPast ? "#" : (mode === 'support' ? `/support/${item.slug}` : `/events/${item.id}`)} 
                                             className={styles.buyBtn}
-                                            style={item.total_capacity > 0 && item.sold_count >= item.total_capacity ? { background: '#ccc', pointerEvents: 'none' } : {}}
+                                            style={(isSoldOut || isPast) ? { background: '#ccc', pointerEvents: 'none' } : {}}
+                                            onClick={(e) => {
+                                                if (isPast) {
+                                                    e.preventDefault();
+                                                    alert("Cet événement est déjà terminé. Nous espérons vous revoir très bientôt pour de nouvelles aventures ! ✨");
+                                                }
+                                            }}
                                         >
-                                            {item.total_capacity > 0 && item.sold_count >= item.total_capacity ? "COMPLET" : (mode === 'events' ? "Réserver mon ticket" : (mode === 'support' ? "Soutenir la campagne" : "Contribuer"))}
+                                            {isPast ? "Événement terminé" : (isSoldOut ? "COMPLET" : (mode === 'events' ? "Réserver mon ticket" : (mode === 'support' ? "Soutenir la campagne" : "Contribuer")))}
                                         </Link>
                                     </div>
                                 </div>

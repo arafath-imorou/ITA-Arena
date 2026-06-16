@@ -22,6 +22,18 @@ export default function EventDetailClient({ id }: { id: string }) {
     const [donationAmount, setDonationAmount] = useState<string>('');
     const [showPastEventMessage, setShowPastEventMessage] = useState(false);
 
+    const checkIsPastEvent = (dateStr: string) => {
+        if (!dateStr) return false;
+        const match = dateStr.match(/\d{4}-\d{2}-\d{2}/);
+        if (match) {
+            const d = new Date(match[0]);
+            if (!isNaN(d.getTime())) {
+                return d < new Date(new Date().setHours(0, 0, 0, 0));
+            }
+        }
+        return false;
+    };
+
     useEffect(() => {
         async function fetchEvent() {
             setLoading(true);
@@ -215,7 +227,7 @@ export default function EventDetailClient({ id }: { id: string }) {
                                     className={styles.ctaBtn}
                                     disabled={!donationAmount || Number(donationAmount) <= 0}
                                     onClick={() => {
-                                        const isPast = new Date(item.date) < new Date(new Date().setHours(0, 0, 0, 0));
+                                        const isPast = checkIsPastEvent(item.date);
                                         if (isPast) {
                                             setShowPastEventMessage(true);
                                             return;
@@ -288,7 +300,7 @@ export default function EventDetailClient({ id }: { id: string }) {
                                         className={styles.ctaBtn}
                                         disabled={(item.ticket_categories || []).reduce((acc: number, cat: any) => acc + (quantities[cat.name] || 0), 0) === 0}
                                         onClick={() => {
-                                            const isPast = new Date(item.date) < new Date(new Date().setHours(0, 0, 0, 0));
+                                            const isPast = checkIsPastEvent(item.date);
                                             if (isPast) {
                                                 setShowPastEventMessage(true);
                                                 return;
