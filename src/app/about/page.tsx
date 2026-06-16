@@ -164,9 +164,9 @@ export default function AboutPage() {
 
                     {/* Final Call */}
                     <div className={styles.finalCta}>
-                        <h3>Rejoignez l'arène 📞</h3>
+                        <h3>Rejoignez l'arène</h3>
                         <p>Que vous soyez organisateur ou participant, ITA Arena vous ouvre les portes des plus grands événements.</p>
-                        <div className={styles.finalSlogan}>🎟️ Entrez dans l’arène. 🎉 Vivez l’expérience.</div>
+                        <div className={styles.finalSlogan}>Entrez dans l’arène. Vivez l’expérience.</div>
                     </div>
                 </div>
             </div>

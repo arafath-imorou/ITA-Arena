@@ -290,7 +290,7 @@ export default function EventDetailClient({ id }: { id: string }) {
                                             window.location.href = `/checkout?${params.toString()}`;
                                         }}
                                     >
-                                        🎟️ ACHETER TICKETS
+                                        ACHETER TICKETS
                                     </button>
                                 )}
                             </>
