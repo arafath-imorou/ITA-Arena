@@ -145,6 +145,15 @@ export default function FeaturedEvents() {
                     if (error) throw error;
                     dbData = data || [];
                 }
+                if (dbData) {
+                    dbData.sort((a: any, b: any) => {
+                        const aPast = checkIsPastEvent(a.date);
+                        const bPast = checkIsPastEvent(b.date);
+                        if (aPast && !bPast) return 1;
+                        if (!aPast && bPast) return -1;
+                        return 0;
+                    });
+                }
                 setData(dbData);
             } catch (err: any) {
                 console.error("Error fetching events:", err);
