@@ -432,6 +432,7 @@ function AdminDashboardContent() {
                         ))}
                     </div>
                 </div>
+            </div>
             </>
             ) : (
                 <div className={styles.section}>
