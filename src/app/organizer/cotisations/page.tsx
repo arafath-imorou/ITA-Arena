@@ -57,7 +57,7 @@ function CotisationsListContent() {
                                 </div>
                             </div>
                             <div className={styles.eventActions}>
-                                <button className={styles.editBtn}>Gérer</button>
+                                <Link href={`/organizer/cotisation/create?edit=${item.id}`} className={styles.editBtn}>Modifier</Link>
                                 <button className={styles.editBtn} style={{ color: '#e53e3e', borderColor: '#fed7d7' }}>Supprimer</button>
                             </div>
                         </div>

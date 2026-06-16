@@ -169,6 +169,13 @@ export default function SupportCampaignDashboard() {
                                     <td>{camp.views || 0}</td>
                                     <td>
                                         <div className={styles.actions}>
+                                            <Link 
+                                                href={`/organizer/support-campaign/create?edit=${camp.id}`} 
+                                                className={styles.btnAction}
+                                                title="Modifier la campagne"
+                                            >
+                                                ✏️
+                                            </Link>
                                             <a 
                                                 href={`/support/${camp.slug}`} 
                                                 target="_blank" 

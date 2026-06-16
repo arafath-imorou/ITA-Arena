@@ -57,7 +57,7 @@ function EventsListContent() {
                                 </div>
                             </div>
                             <div className={styles.eventActions}>
-                                <button className={styles.editBtn}>Modifier</button>
+                                <Link href={`/organizer/create?edit=${event.id}`} className={styles.editBtn}>Modifier</Link>
                                 <button className={styles.editBtn} style={{ color: '#e53e3e', borderColor: '#fed7d7' }}>Supprimer</button>
                             </div>
                         </div>

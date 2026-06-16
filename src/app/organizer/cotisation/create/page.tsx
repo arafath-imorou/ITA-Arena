@@ -12,6 +12,7 @@ export default function CreateCotisationPage() {
     const router = useRouter();
     const { user } = useAuth();
     const [step, setStep] = useState(1);
+    const [editId, setEditId] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
@@ -34,6 +35,34 @@ export default function CreateCotisationPage() {
             setFormData(prev => ({ ...prev, organizer_id: user.id }));
         }
     }, [user]);
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const editIdParam = urlParams.get('edit');
+        if (editIdParam) {
+            setEditId(editIdParam);
+            fetchCotisationToEdit(editIdParam);
+        }
+    }, []);
+
+    const fetchCotisationToEdit = async (id: string) => {
+        setLoading(true);
+        const { data, error } = await supabase.from('events').select('*').eq('id', id).single();
+        if (data && !error) {
+            setFormData(prev => ({
+                ...prev,
+                title: data.title || "",
+                category_id: data.category_id || "",
+                description: data.description || "",
+                target_amount: data.target_amount ? data.target_amount.toString() : "",
+                end_date: data.date ? data.date.replace("Jusqu'au ", "") : "",
+                image_url: data.image_url || "",
+                type: data.type || "cotisation",
+                organizer_id: data.organizer_id || prev.organizer_id
+            }));
+        }
+        setLoading(false);
+    };
 
     useEffect(() => {
         async function fetchCategories() {
@@ -103,15 +132,22 @@ export default function CreateCotisationPage() {
             is_published: true
         };
 
-        const { data, error } = await supabase
-            .from('events')
-            .insert([submissionData]);
-
-        if (error) {
-            console.error('Error creating cotisation:', error);
-            alert("Erreur lors de la création : " + error.message);
+        if (editId) {
+            const { error } = await supabase.from('events').update(submissionData).eq('id', editId);
+            if (error) {
+                console.error('Error updating cotisation:', error);
+                alert("Erreur lors de la modification : " + error.message);
+            } else {
+                setShowSuccess(true);
+            }
         } else {
-            setShowSuccess(true);
+            const { error } = await supabase.from('events').insert([submissionData]);
+            if (error) {
+                console.error('Error creating cotisation:', error);
+                alert("Erreur lors de la création : " + error.message);
+            } else {
+                setShowSuccess(true);
+            }
         }
         setLoading(false);
     };
@@ -120,10 +156,10 @@ export default function CreateCotisationPage() {
         <div>
             <BackButton variant="dark" />
             <h1 className={styles.pageTitle}>
-                {step === 3 ? "Résumé de la cotisation" : "Créer une cotisation"}
+                {step === 3 ? "Résumé de la cotisation" : (editId ? "Modifier la cotisation" : "Créer une cotisation")}
             </h1>
             <div className={styles.breadcrumb}>
-                <Link href="/organizer?mode=cotisations">Dashboard</Link> &gt; <span>{step === 3 ? "Résumé" : "Nouvelle cotisation"}</span>
+                <Link href="/organizer?mode=cotisations">Dashboard</Link> &gt; <span>{step === 3 ? "Résumé" : (editId ? "Modifier" : "Nouvelle cotisation")}</span>
             </div>
 
             <div className={styles.stepper}>
@@ -251,7 +287,7 @@ export default function CreateCotisationPage() {
                                 onClick={handleFinish}
                                 disabled={loading}
                             >
-                                {loading ? 'Création...' : 'Lancer la cotisation 🚀'}
+                                {loading ? 'Enregistrement...' : (editId ? 'Mettre à jour 🚀' : 'Lancer la cotisation 🚀')}
                             </button>
                         </div>
                     </div>
@@ -262,8 +298,8 @@ export default function CreateCotisationPage() {
                 <div className={styles.modalOverlay}>
                     <div className={styles.modalContent}>
                         <div className={styles.successIcon}>✓</div>
-                        <h2>Cotisation lancée !</h2>
-                        <p>Votre collecte est maintenant active.</p>
+                        <h2>{editId ? "Cotisation mise à jour !" : "Cotisation lancée !"}</h2>
+                        <p>Votre collecte est maintenant {editId ? "à jour" : "active"}.</p>
                         <button className={styles.modalBtn} onClick={() => router.push('/organizer?mode=cotisations')}>
                             Retour au Dashboard
                         </button>

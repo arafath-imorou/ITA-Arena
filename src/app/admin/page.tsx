@@ -403,6 +403,7 @@ function AdminDashboardContent() {
                                                 <button onClick={() => { setSelectedEvent(e); setActiveModalTab('stats'); }} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#e0f2fe', color: '#0369a1' }} title="Statistiques">📊</button>
                                                 <button onClick={() => { setSelectedEvent(e); setActiveModalTab('tickets'); }} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#fef3c7', color: '#92400e' }} title="Tickets">🎟️</button>
                                                 <button onClick={() => togglePublish(e.id, e.is_published)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#f1f5f9' }} title={e.is_published ? "Masquer" : "Publier"}>{e.is_published ? "⏸️" : "▶️"}</button>
+                                                <Link href={e.type === 'cotisation' ? `/organizer/cotisation/create?edit=${e.id}` : `/organizer/create?edit=${e.id}`} className={styles.badge} style={{ display: 'inline-block', textDecoration: 'none', background: '#fef9c3', color: '#854d0e', textAlign: 'center' }} title="Modifier">✏️</Link>
                                                 <button onClick={() => deleteEvent(e.id)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#fee2e2', color: '#991b1b' }} title="Supprimer">🗑️</button>
                                             </div>
                                         </td>

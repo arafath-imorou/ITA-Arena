@@ -14,6 +14,7 @@ export default function CreateEventPage() {
     const router = useRouter();
     const { user } = useAuth();
     const [step, setStep] = useState(1);
+    const [editId, setEditId] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
@@ -53,6 +54,52 @@ export default function CreateEventPage() {
             setFormData(prev => ({ ...prev, organizer_id: user.id }));
         }
     }, [user]);
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const editIdParam = urlParams.get('edit');
+        if (editIdParam) {
+            setEditId(editIdParam);
+            fetchEventToEdit(editIdParam);
+        }
+    }, []);
+
+    const fetchEventToEdit = async (id: string) => {
+        setLoading(true);
+        const { data, error } = await supabase.from('events').select('*').eq('id', id).single();
+        if (data && !error) {
+            let sDate = "";
+            let eDate = "";
+            if (data.date) {
+                const parts = data.date.split(" au ");
+                sDate = parts[0] || "";
+                eDate = parts[1] || sDate;
+            }
+            
+            setFormData(prev => ({
+                ...prev,
+                title: data.title || "",
+                category_id: data.category_id || "",
+                description: data.description || "",
+                is_online: data.location === "En ligne",
+                country: data.country || "Côte d'Ivoire",
+                city: data.location && data.location !== "En ligne" ? (data.location.split(', ')[1] || "") : "",
+                address: data.location && data.location !== "En ligne" ? (data.location.split(', ')[0] || "") : "",
+                location: data.location || "",
+                start_date: sDate,
+                end_date: eDate,
+                start_time: data.time || "",
+                end_time: data.time || "",
+                is_free: data.price === "Gratuit",
+                price: data.price || "0",
+                ticket_categories: data.ticket_categories || [{ id: 1, name: "", price: "", stock: "", description: "", instructions: "" }],
+                image_url: data.image_url || "",
+                type: data.type || "event",
+                organizer_id: data.organizer_id || prev.organizer_id
+            }));
+        }
+        setLoading(false);
+    };
 
     useEffect(() => {
         async function fetchCategories() {
@@ -145,17 +192,22 @@ export default function CreateEventPage() {
             is_published: true
         };
 
-        const { data, error } = await supabase
-            .from('events')
-            .insert([submissionData]);
-
-        if (error) {
-            console.error('Error creating event:', error);
-            alert("Erreur lors de la création de l'évènement : " + error.message);
-            setLoading(false);
-            return;
+        if (editId) {
+            const { error } = await supabase.from('events').update(submissionData).eq('id', editId);
+            if (error) {
+                console.error('Error updating event:', error);
+                alert("Erreur lors de la modification de l'évènement : " + error.message);
+            } else {
+                setShowSuccess(true);
+            }
         } else {
-            setShowSuccess(true);
+            const { error } = await supabase.from('events').insert([submissionData]);
+            if (error) {
+                console.error('Error creating event:', error);
+                alert("Erreur lors de la création de l'évènement : " + error.message);
+            } else {
+                setShowSuccess(true);
+            }
         }
         setLoading(false);
     };
@@ -164,10 +216,10 @@ export default function CreateEventPage() {
         <div>
             <BackButton variant="dark" />
             <h1 className={styles.pageTitle}>
-                {step === 5 ? "Résumé de l'évènement" : "Créer un évènement"}
+                {step === 5 ? "Résumé de l'évènement" : (editId ? "Modifier l'évènement" : "Créer un évènement")}
             </h1>
             <div className={styles.breadcrumb}>
-                <Link href="/organizer">Dashboard</Link> &gt; <span>{step === 5 ? "Résumé" : "Créer un évènement"}</span>
+                <Link href="/organizer">Dashboard</Link> &gt; <span>{step === 5 ? "Résumé" : (editId ? "Modifier" : "Créer un évènement")}</span>
             </div>
 
             {/* Stepper */}
@@ -217,8 +269,8 @@ export default function CreateEventPage() {
                 <div className={styles.modalOverlay}>
                     <div className={styles.modalContent}>
                         <div className={styles.successIcon}>✓</div>
-                        <h2>Évènement publié !</h2>
-                        <p>Votre évènement "<strong>{formData.title}</strong>" est maintenant en ligne et visible par tous.</p>
+                        <h2>{editId ? "Évènement mis à jour !" : "Évènement publié !"}</h2>
+                        <p>Votre évènement "<strong>{formData.title}</strong>" est maintenant {editId ? "à jour" : "en ligne et visible par tous"}.</p>
                         <div className={styles.modalActions}>
                             <button className={styles.modalBtn} onClick={() => router.push('/organizer')}>
                                 Retour au Dashboard
@@ -615,7 +667,7 @@ function Step5_Summary({ onPrev, onFinish, loading, formData, categories }: { on
                     onClick={onFinish}
                     disabled={loading}
                 >
-                    {loading ? 'Publication...' : 'Publier l\'évènement 🚀'}
+                    {loading ? 'Enregistrement...' : (window.location.search.includes('edit=') ? 'Mettre à jour l\'évènement 🚀' : 'Publier l\'évènement 🚀')}
                 </button>
             </div>
         </div>

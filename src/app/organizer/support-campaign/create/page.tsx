@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styles from "./CreateCampaign.module.css";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
@@ -11,6 +11,8 @@ export default function CreateSupportCampaign() {
     const router = useRouter();
     const { user } = useAuth();
     const [step, setStep] = useState(1);
+    const [editId, setEditId] = useState<string | null>(null);
+    const [existingSlug, setExistingSlug] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [successUrl, setSuccessUrl] = useState<string | null>(null);
@@ -33,6 +35,36 @@ export default function CreateSupportCampaign() {
     const [frameFile, setFrameFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [frameMode, setFrameMode] = useState<'upload' | 'build'>('upload');
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const editIdParam = urlParams.get('edit');
+        if (editIdParam) {
+            setEditId(editIdParam);
+            fetchCampaignToEdit(editIdParam);
+        }
+    }, []);
+
+    const fetchCampaignToEdit = async (id: string) => {
+        setIsLoading(true);
+        const { data, error } = await supabase.from('support_campaigns').select('*').eq('id', id).single();
+        if (data && !error) {
+            setFormData({
+                title: data.title || "",
+                description: data.description || "",
+                category: data.category || "Sensibilisation",
+                startDate: data.start_date || "",
+                endDate: data.end_date || "",
+                allowDownload: data.allow_download ?? true,
+                allowShare: data.allow_share ?? true,
+                showCounter: data.show_counter ?? true,
+                showLogo: data.show_logo ?? true,
+            });
+            setPreviewUrl(data.frame_image);
+            setExistingSlug(data.slug);
+        }
+        setIsLoading(false);
+    };
 
     const categories = [
         "Sensibilisation",
@@ -110,45 +142,60 @@ export default function CreateSupportCampaign() {
         setError(null);
 
         try {
-            // 1. Upload File
-            const fileExt = frameFile!.name.split('.').pop();
-            const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+            let frameImageUrl = previewUrl;
+            let slug = existingSlug || generateSlug(formData.title);
 
-            const { data: uploadData, error: uploadError } = await supabase.storage
-                .from('campaign_frames')
-                .upload(fileName, frameFile!);
+            // 1. Upload File if new one selected
+            if (frameFile) {
+                const fileExt = frameFile.name.split('.').pop();
+                const fileName = `${user.id}/${Date.now()}.${fileExt}`;
 
-            if (uploadError) throw uploadError;
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from('campaign_frames')
+                    .upload(fileName, frameFile);
 
-            const { data: publicUrlData } = supabase.storage
-                .from('campaign_frames')
-                .getPublicUrl(fileName);
+                if (uploadError) throw uploadError;
 
-            const frameImageUrl = publicUrlData.publicUrl;
-            const slug = generateSlug(formData.title);
+                const { data: publicUrlData } = supabase.storage
+                    .from('campaign_frames')
+                    .getPublicUrl(fileName);
 
-            // 2. Insert into Database
-            const { data: campaignData, error: insertError } = await supabase
-                .from('support_campaigns')
-                .insert({
-                    title: formData.title,
-                    slug: slug,
-                    description: formData.description,
-                    category: formData.category,
-                    frame_image: frameImageUrl,
-                    start_date: formData.startDate || null,
-                    end_date: formData.endDate || null,
-                    allow_download: formData.allowDownload,
-                    allow_share: formData.allowShare,
-                    show_counter: formData.showCounter,
-                    show_logo: formData.showLogo,
-                    created_by: user.id,
-                    status: 'active'
-                })
-                .select()
-                .single();
+                frameImageUrl = publicUrlData.publicUrl;
+            }
 
-            if (insertError) throw insertError;
+            const payload = {
+                title: formData.title,
+                description: formData.description,
+                category: formData.category,
+                frame_image: frameImageUrl,
+                start_date: formData.startDate || null,
+                end_date: formData.endDate || null,
+                allow_download: formData.allowDownload,
+                allow_share: formData.allowShare,
+                show_counter: formData.showCounter,
+                show_logo: formData.showLogo,
+            };
+
+            // 2. Insert or Update Database
+            if (editId) {
+                const { error: updateError } = await supabase
+                    .from('support_campaigns')
+                    .update(payload)
+                    .eq('id', editId);
+                
+                if (updateError) throw updateError;
+            } else {
+                const { error: insertError } = await supabase
+                    .from('support_campaigns')
+                    .insert({
+                        ...payload,
+                        slug: slug,
+                        created_by: user.id,
+                        status: 'active'
+                    });
+
+                if (insertError) throw insertError;
+            }
 
             // Success
             setSuccessUrl(`${window.location.origin}/support/${slug}`);
@@ -171,7 +218,7 @@ export default function CreateSupportCampaign() {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1>Créer une Campagne de Soutien</h1>
+                <h1>{editId ? "Modifier la Campagne" : "Créer une Campagne de Soutien"}</h1>
                 <p>Configurez un cadre visuel pour permettre à votre communauté de vous soutenir.</p>
             </div>
 
@@ -410,9 +457,9 @@ export default function CreateSupportCampaign() {
                 {step === 5 && (
                     <div className={`${styles.successMessage} animate-in`}>
                         <div className={styles.successIcon}>🎉</div>
-                        <h2 style={{ color: '#0A2E73', marginBottom: '1rem' }}>Campagne publiée avec succès !</h2>
+                        <h2 style={{ color: '#0A2E73', marginBottom: '1rem' }}>Campagne {editId ? "mise à jour" : "publiée"} avec succès !</h2>
                         <p style={{ marginBottom: '2rem', color: '#666' }}>
-                            Votre campagne est maintenant en ligne. Partagez ce lien avec votre communauté :
+                            Votre campagne est maintenant {editId ? "à jour" : "en ligne"}. Partagez ce lien avec votre communauté :
                         </p>
                         
                         <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem' }}>
@@ -448,7 +495,7 @@ export default function CreateSupportCampaign() {
                             </button>
                         ) : (
                             <button onClick={handleSubmit} className={styles.btnPrimary} disabled={isLoading}>
-                                {isLoading ? "Publication..." : "Publier la campagne"}
+                                {isLoading ? "Enregistrement..." : (editId ? "Mettre à jour" : "Publier la campagne")}
                             </button>
                         )}
                     </div>
