@@ -18,6 +18,7 @@ function AdminDashboardContent() {
     const [isAdmin, setIsAdmin] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
     const [activeModalTab, setActiveModalTab] = useState<'stats' | 'tickets'>('stats');
+    const [mainTab, setMainTab] = useState<'overview' | 'organizers'>('overview');
     const [isManualModalOpen, setIsManualModalOpen] = useState(false);
     const [manualTicket, setManualTicket] = useState({
         user_name: '',
@@ -148,6 +149,18 @@ function AdminDashboardContent() {
 
         // Lists for filters
         const organizers = rawProfiles.filter(p => p.role === 'organizer' || rawEvents.some(e => e.organizer_id === p.id));
+        const organizersWithStats = organizers.map(org => {
+            const orgEvents = events.filter(e => e.organizer_id === org.id);
+            const totalRevenue = orgEvents.reduce((acc, e) => acc + (e.collected_amount || 0), 0);
+            const totalTickets = orgEvents.reduce((acc, e) => acc + (e.sold_count || 0), 0);
+            return {
+                ...org,
+                eventCount: orgEvents.length,
+                totalRevenue,
+                totalTickets
+            };
+        });
+        
         const years = Array.from(new Set(rawEvents.map(e => new Date(e.created_at).getFullYear()))).sort((a, b) => b - a);
 
         return {
@@ -159,7 +172,7 @@ function AdminDashboardContent() {
                 totalEvents: evtsOnly.length,
                 totalCotisations: cotisOnly.length
             },
-            organizersList: organizers,
+            organizersList: organizersWithStats,
             yearsList: years
         };
     }, [rawEvents, rawProfiles, rawTickets, filters]);
@@ -219,7 +232,35 @@ function AdminDashboardContent() {
                 <Link href="/" className={styles.badgeInfo}>Retour au site</Link>
             </div>
 
-            {/* Filter Bar */}
+            {/* Main Tabs */}
+            <div className={styles.section} style={{ marginBottom: '2rem', display: 'flex', gap: '1rem', borderBottom: '2px solid #e2e8f0', paddingBottom: '0' }}>
+                <button 
+                    onClick={() => setMainTab('overview')} 
+                    style={{ 
+                        background: 'none', border: 'none', padding: '1rem 2rem', fontSize: '1.1rem', fontWeight: 'bold', cursor: 'pointer',
+                        color: mainTab === 'overview' ? '#0a2e73' : '#64748b',
+                        borderBottom: mainTab === 'overview' ? '3px solid #ff5a1f' : '3px solid transparent',
+                        marginBottom: '-2px'
+                    }}
+                >
+                    Vue d'ensemble
+                </button>
+                <button 
+                    onClick={() => setMainTab('organizers')} 
+                    style={{ 
+                        background: 'none', border: 'none', padding: '1rem 2rem', fontSize: '1.1rem', fontWeight: 'bold', cursor: 'pointer',
+                        color: mainTab === 'organizers' ? '#0a2e73' : '#64748b',
+                        borderBottom: mainTab === 'organizers' ? '3px solid #ff5a1f' : '3px solid transparent',
+                        marginBottom: '-2px'
+                    }}
+                >
+                    Organisateurs
+                </button>
+            </div>
+
+            {mainTab === 'overview' ? (
+                <>
+                    {/* Filter Bar */}
             <div className={styles.section} style={{ marginBottom: '2rem' }}>
                 <div className={styles.filterGrid}>
                     <div className={styles.filterItem}>
@@ -391,7 +432,59 @@ function AdminDashboardContent() {
                         ))}
                     </div>
                 </div>
-            </div>
+            </>
+            ) : (
+                <div className={styles.section}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                        <h3>Liste des Organisateurs ({organizersList.length})</h3>
+                    </div>
+                    <div className={styles.tableWrapper}>
+                        <table className={styles.table}>
+                            <thead>
+                                <tr>
+                                    <th>Organisateur / Entreprise</th>
+                                    <th>Contact</th>
+                                    <th>Type</th>
+                                    <th>Projets</th>
+                                    <th>Tickets Vendus</th>
+                                    <th>Revenu Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {organizersList.map(org => (
+                                    <tr key={org.id}>
+                                        <td>
+                                            <strong>{org.company_name || org.full_name || 'Inconnu'}</strong>
+                                            {(org.company_name && org.full_name) && (
+                                                <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{org.full_name}</div>
+                                            )}
+                                        </td>
+                                        <td>
+                                            <div style={{ fontSize: '0.85rem' }}>📧 {org.email}</div>
+                                            {org.phone && <div style={{ fontSize: '0.85rem' }}>📱 {org.phone}</div>}
+                                        </td>
+                                        <td>
+                                            <span className={styles.badge} style={{ background: '#e0f2fe', color: '#0369a1' }}>
+                                                {org.user_type === 'entreprise' ? 'Entreprise' : 'Particulier'}
+                                            </span>
+                                        </td>
+                                        <td><strong>{org.eventCount}</strong></td>
+                                        <td>{org.totalTickets}</td>
+                                        <td style={{ fontWeight: 'bold', color: '#059669' }}>{org.totalRevenue.toLocaleString()} F</td>
+                                    </tr>
+                                ))}
+                                {organizersList.length === 0 && (
+                                    <tr>
+                                        <td colSpan={6} style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                                            Aucun organisateur trouvé.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
 
             {/* Détails Modal Overlay */}
             {selectedEvent && (
