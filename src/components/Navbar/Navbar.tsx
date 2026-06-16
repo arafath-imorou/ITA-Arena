@@ -34,9 +34,19 @@ export default function Navbar() {
         <div className={`container ${styles.topBarContainer}`}>
           <div className={styles.leftTop}>
           </div>
-          <div className={styles.rightTop}>
-            <span className={styles.topContact}>Support: <a href="tel:+2290152818100" style={{ color: 'inherit', textDecoration: 'none' }}>+229 01 52 81 81 00</a></span>
-
+          <div className={styles.marqueeContainer}>
+            <div className={styles.marqueeContent}>
+              <span className={styles.topContact}>Support: <a href="tel:+2290152818100" style={{ color: 'inherit', textDecoration: 'none' }}>+229 01 52 81 81 00</a></span>
+              <span className={styles.topContact} style={{ marginLeft: '2rem' }}>Email: <a href="mailto:groupita25@gmail.com" style={{ color: 'inherit', textDecoration: 'none' }}>groupita25@gmail.com</a></span>
+            </div>
+            <div className={styles.marqueeContent}>
+              <span className={styles.topContact}>Support: <a href="tel:+2290152818100" style={{ color: 'inherit', textDecoration: 'none' }}>+229 01 52 81 81 00</a></span>
+              <span className={styles.topContact} style={{ marginLeft: '2rem' }}>Email: <a href="mailto:groupita25@gmail.com" style={{ color: 'inherit', textDecoration: 'none' }}>groupita25@gmail.com</a></span>
+            </div>
+            <div className={styles.marqueeContent}>
+              <span className={styles.topContact}>Support: <a href="tel:+2290152818100" style={{ color: 'inherit', textDecoration: 'none' }}>+229 01 52 81 81 00</a></span>
+              <span className={styles.topContact} style={{ marginLeft: '2rem' }}>Email: <a href="mailto:groupita25@gmail.com" style={{ color: 'inherit', textDecoration: 'none' }}>groupita25@gmail.com</a></span>
+            </div>
           </div>
         </div>
       </div>

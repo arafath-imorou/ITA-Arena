@@ -113,6 +113,28 @@
     opacity: 0.7;
 }
 
+.marqueeContainer {
+    display: flex;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.marqueeContent {
+    display: flex;
+    animation: marquee 15s linear infinite;
+    padding-right: 2rem;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
 .mainNav {
     height: 70px;
     display: flex;
