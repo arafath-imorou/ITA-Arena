@@ -70,78 +70,7 @@ export default function LoginPage() {
                         <h1>Connexion</h1>
                     </div>
 
-                    {/* Test Accounts Credentials Banner */}
-                    <div style={{
-                        backgroundColor: '#f0f7ff',
-                        border: '1px solid #c2e0ff',
-                        borderRadius: '10px',
-                        padding: '12px 14px',
-                        marginBottom: '20px',
-                        fontSize: '13px',
-                        color: '#0A2E73'
-                    }}>
-                        <div style={{ fontWeight: 'bold', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span>💡</span>
-                            <span>Comptes de test disponibles :</span>
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#ffffff', padding: '6px 10px', borderRadius: '6px', border: '1px solid rgba(10, 46, 115, 0.1)' }}>
-                                <div>
-                                    <strong style={{ color: '#F7931E' }}>Organisateur :</strong>
-                                    <div style={{ fontSize: '11px', color: '#555', marginTop: '2px' }}>
-                                        <code>sadathimorou@gmail.com</code> / <code>sadath2026!</code>
-                                    </div>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setEmail("sadathimorou@gmail.com");
-                                        setPassword("sadath2026!");
-                                    }}
-                                    style={{
-                                        backgroundColor: '#0A2E73',
-                                        color: '#ffffff',
-                                        border: 'none',
-                                        padding: '4px 8px',
-                                        borderRadius: '4px',
-                                        fontSize: '11px',
-                                        fontWeight: '600',
-                                        cursor: 'pointer'
-                                    }}
-                                >
-                                    Remplir
-                                </button>
-                            </div>
 
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#ffffff', padding: '6px 10px', borderRadius: '6px', border: '1px solid rgba(10, 46, 115, 0.1)' }}>
-                                <div>
-                                    <strong style={{ color: '#F7931E' }}>Administrateur :</strong>
-                                    <div style={{ fontSize: '11px', color: '#555', marginTop: '2px' }}>
-                                        <code>groupita25@gmail.com</code> / <code>groupita2026!</code>
-                                    </div>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setEmail("groupita25@gmail.com");
-                                        setPassword("groupita2026!");
-                                    }}
-                                    style={{
-                                        backgroundColor: '#0A2E73',
-                                        color: '#ffffff',
-                                        border: 'none',
-                                        padding: '4px 8px',
-                                        borderRadius: '4px',
-                                        fontSize: '11px',
-                                        fontWeight: '600',
-                                        cursor: 'pointer'
-                                    }}
-                                >
-                                    Remplir
-                                </button>
-                            </div>
-                        </div>
-                    </div>
 
                     {error && (
                         <div style={{ 
