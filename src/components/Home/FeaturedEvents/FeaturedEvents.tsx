@@ -197,7 +197,23 @@ export default function FeaturedEvents() {
 
             const { data: updatedCount, error } = await supabase.rpc(rpcName, params);
 
-            if (error) throw error;
+            if (error) {
+                // Fallback for missing RPC function
+                const tableName = mode === 'support' ? 'support_campaigns' : 'events';
+                const { data: currentData } = await supabase.from(tableName).select('likes_count').eq('id', id).single();
+                
+                if (currentData) {
+                    const newCount = Math.max(0, (currentData.likes_count || 0) + incrementBy);
+                    await supabase.from(tableName).update({ likes_count: newCount }).eq('id', id);
+                    setData(prev => prev.map(ev => {
+                        if (ev.id === id) {
+                            return { ...ev, likes_count: newCount };
+                        }
+                        return ev;
+                    }));
+                }
+                return;
+            }
             
             // 3. Hard-bind count directly with truth database response if valid
             if (typeof updatedCount === 'number') {
