@@ -20,6 +20,7 @@ export default function EventDetailClient({ id }: { id: string }) {
     const [item, setItem] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [donationAmount, setDonationAmount] = useState<string>('');
+    const [showPastEventMessage, setShowPastEventMessage] = useState(false);
 
     useEffect(() => {
         async function fetchEvent() {
@@ -214,6 +215,11 @@ export default function EventDetailClient({ id }: { id: string }) {
                                     className={styles.ctaBtn}
                                     disabled={!donationAmount || Number(donationAmount) <= 0}
                                     onClick={() => {
+                                        const isPast = new Date(item.date) < new Date(new Date().setHours(0, 0, 0, 0));
+                                        if (isPast) {
+                                            setShowPastEventMessage(true);
+                                            return;
+                                        }
                                         const params = new URLSearchParams();
                                         params.set("id", item.id);
                                         params.set("event", item.title);
@@ -225,6 +231,11 @@ export default function EventDetailClient({ id }: { id: string }) {
                                 >
                                     🤝 SOUTENIR LE PROJET
                                 </button>
+                                {showPastEventMessage && (
+                                    <div style={{ marginTop: '1rem', background: '#f8fafc', color: '#334155', padding: '1rem', borderRadius: '0.75rem', fontSize: '0.9rem', textAlign: 'center', border: '1px solid #e2e8f0' }}>
+                                        Cet événement est déjà terminé. Nous espérons vous revoir très bientôt pour de nouvelles aventures !
+                                    </div>
+                                )}
                             </>
                         ) : (
                             <>
@@ -277,6 +288,11 @@ export default function EventDetailClient({ id }: { id: string }) {
                                         className={styles.ctaBtn}
                                         disabled={(item.ticket_categories || []).reduce((acc: number, cat: any) => acc + (quantities[cat.name] || 0), 0) === 0}
                                         onClick={() => {
+                                            const isPast = new Date(item.date) < new Date(new Date().setHours(0, 0, 0, 0));
+                                            if (isPast) {
+                                                setShowPastEventMessage(true);
+                                                return;
+                                            }
                                             const params = new URLSearchParams();
                                             params.set("id", item.id);
                                             params.set("event", item.title);
@@ -292,6 +308,11 @@ export default function EventDetailClient({ id }: { id: string }) {
                                     >
                                         ACHETER TICKETS
                                     </button>
+                                )}
+                                {showPastEventMessage && (
+                                    <div style={{ marginTop: '1rem', background: '#f8fafc', color: '#334155', padding: '1rem', borderRadius: '0.75rem', fontSize: '0.9rem', textAlign: 'center', border: '1px solid #e2e8f0' }}>
+                                        Cet événement est déjà terminé. Nous espérons vous revoir très bientôt pour de nouvelles aventures !
+                                    </div>
                                 )}
                             </>
                         )}
