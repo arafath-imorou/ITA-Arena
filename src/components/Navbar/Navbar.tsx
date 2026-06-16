@@ -3,15 +3,13 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useCountry } from "@/context/CountryContext";
+
 import styles from "./Navbar.module.css";
 
 export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
-  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, signOut, role } = useAuth();
-  const { selectedCountry, setSelectedCountry, countries } = useCountry();
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSignOut = async () => {
@@ -35,39 +33,6 @@ export default function Navbar() {
       <div className={styles.topBar}>
         <div className={`container ${styles.topBarContainer}`}>
           <div className={styles.leftTop}>
-            <div className={styles.topSelector} onClick={() => setShowCountryDropdown(!showCountryDropdown)}>
-              <img src={selectedCountry.flag} alt={selectedCountry.name} className={styles.tinyFlag} />
-              <span>{selectedCountry.name}</span>
-              <span className={styles.chevron}>▾</span>
-
-              {showCountryDropdown && (
-                <div className={styles.countryDropdown} onClick={(e) => e.stopPropagation()}>
-                  <div className={styles.countrySearch}>
-                    <input
-                      type="text"
-                      placeholder="Rechercher..."
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                  </div>
-                  <div className={styles.countryList}>
-                    {countries.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase())).map(country => (
-                      <div key={country.name} className={styles.countryOption} onClick={() => {
-                        setSelectedCountry(country);
-                        setShowCountryDropdown(false);
-                      }}>
-                        <img src={country.flag} alt="" className={styles.tinyFlag} />
-                        <span>{country.name}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-            <div className={styles.topSelector}>
-              <span>🌐</span>
-              <span>FR</span>
-              <span className={styles.chevron}>▾</span>
-            </div>
           </div>
           <div className={styles.rightTop}>
             <span className={styles.topContact}>Support: <a href="tel:+2290152818100" style={{ color: 'inherit', textDecoration: 'none' }}>+229 01 52 81 81 00</a></span>
