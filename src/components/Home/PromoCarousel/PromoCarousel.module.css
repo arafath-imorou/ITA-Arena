@@ -1,0 +1,84 @@
+.carouselContainer {
+    width: 100%;
+    overflow: hidden;
+    padding: 2rem 0 4rem;
+    background: transparent;
+    position: relative;
+}
+
+/* Gradient masks for smooth fading at the edges */
+.carouselContainer::before,
+.carouselContainer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 150px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.carouselContainer::before {
+    left: 0;
+    background: linear-gradient(to right, rgba(249, 250, 251, 1) 0%, rgba(249, 250, 251, 0) 100%);
+}
+
+.carouselContainer::after {
+    right: 0;
+    background: linear-gradient(to left, rgba(249, 250, 251, 1) 0%, rgba(249, 250, 251, 0) 100%);
+}
+
+.carouselTrack {
+    display: flex;
+    gap: 2rem;
+    width: max-content;
+    animation: scroll 30s linear infinite;
+}
+
+.carouselTrack:hover {
+    animation-play-state: paused;
+}
+
+.carouselItem {
+    width: 400px; /* Adjust size based on preference */
+    height: auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+
+.carouselItem:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.promoImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        /* Translate left by half the width of the total track (since we duplicated the images) */
+        /* To make it exact, we translate by minus 100% of half the content, but with flex and gap, it's easier to use a percentage of the parent or exact calc */
+        /* Each set is 6 items * (400px + 2rem gap). 6 * 400 = 2400. 6 * 2rem = 12rem = 192px. Total = 2592px. */
+        transform: translateX(calc(-50% - 1rem));
+    }
+}
+
+@media (max-width: 768px) {
+    .carouselItem {
+        width: 280px;
+    }
+    .carouselContainer::before,
+    .carouselContainer::after {
+        width: 50px;
+    }
+}

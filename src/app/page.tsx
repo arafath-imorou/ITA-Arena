@@ -1,6 +1,7 @@
 import Hero from "@/components/Home/Hero/Hero";
 import SubNav from "@/components/Home/SubNav/SubNav";
 import FeaturedEvents from "@/components/Home/FeaturedEvents/FeaturedEvents";
+import PromoCarousel from "@/components/Home/PromoCarousel/PromoCarousel";
 
 export default function Home() {
   return (
@@ -47,6 +48,10 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Endless Promo Images Carousel */}
+        <PromoCarousel />
+
       </main>
     </div>
   );
