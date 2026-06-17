@@ -273,12 +273,6 @@ function AdminDashboardContent() {
     const deleteForm = async (formId: string) => {
         if (!confirm("Voulez-vous vraiment supprimer ce formulaire ? Toutes les réponses seront perdues.")) return;
         try {
-            const { error: responsesError } = await supabase.from('form_responses').delete().eq('form_id', formId);
-            if (responsesError) throw responsesError;
-            
-            const { error: fieldsError } = await supabase.from('form_fields').delete().eq('form_id', formId);
-            if (fieldsError) throw fieldsError;
-
             const { data, error } = await supabase.from('forms').delete().eq('id', formId).select();
             if (error) throw error;
             if (!data || data.length === 0) throw new Error("Permission refusée.");
