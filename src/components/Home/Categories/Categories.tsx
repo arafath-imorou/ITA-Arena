@@ -13,7 +13,14 @@ export default function Categories() {
     useEffect(() => {
         async function fetchCategories() {
             setLoading(true);
-            const typeQuery = mode === 'events' ? 'event' : (mode === 'cotisations' ? 'cotisation' : 'support');
+            const typeQuery = mode === 'events' ? 'event' : (mode === 'cotisations' ? 'cotisation' : (mode === 'forms' ? 'form' : 'support'));
+            
+            if (mode === 'forms') {
+                setCategories([{ id: 'all', label: 'Toutes', icon: '🔍', type: 'forms' }]);
+                setLoading(false);
+                return;
+            }
+
             const { data, error } = await supabase
                 .from('categories')
                 .select('*')

@@ -127,6 +127,14 @@ export default function SubNav() {
                             >
                                 Soutien
                             </button>
+                        </div>
+                        <div className={styles.cotisationWrapper}>
+                            <button
+                                className={`${styles.toggleBtn} ${mode === 'forms' ? styles.activeToggle : ''}`}
+                                onClick={() => setMode('forms')}
+                            >
+                                ITA Forms
+                            </button>
                             <span className={styles.newBadge} style={{backgroundColor: '#0A2E73'}}>Nouveau</span>
                         </div>
                     </div>
