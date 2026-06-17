@@ -16,6 +16,7 @@ function AdminDashboardContent() {
     const [rawCampaigns, setRawCampaigns] = useState<any[]>([]);
     const [rawProfiles, setRawProfiles] = useState<any[]>([]);
     const [rawTickets, setRawTickets] = useState<any[]>([]);
+    const [rawForms, setRawForms] = useState<any[]>([]);
     const [isAdmin, setIsAdmin] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
     const [activeModalTab, setActiveModalTab] = useState<'stats' | 'tickets'>('stats');
@@ -46,11 +47,13 @@ function AdminDashboardContent() {
             const { data: eventsData } = await supabase.from('events_with_stats').select('*').order('created_at', { ascending: false });
             const { data: ticketsData } = await supabase.from('tickets').select('*').eq('status', 'valid').order('created_at', { ascending: false });
             const { data: campaignsData } = await supabase.from('support_campaigns').select('*').order('created_at', { ascending: false });
+            const { data: formsData } = await supabase.from('forms').select('*').order('created_at', { ascending: false });
 
             setRawProfiles(profilesData || []);
             setRawEvents(eventsData || []);
             setRawTickets(ticketsData || []);
             setRawCampaigns(campaignsData || []);
+            setRawForms(formsData || []);
         } catch (err) {
             console.error("Admin Data Error:", err);
         } finally {
@@ -191,12 +194,13 @@ function AdminDashboardContent() {
                 totalTickets: tickets.length,
                 totalEvents: evtsOnly.length,
                 totalCotisations: cotisOnly.length,
-                totalCampaigns: rawCampaigns.length
+                totalCampaigns: rawCampaigns.length,
+                totalForms: rawForms.length
             },
             organizersList: organizersWithStats,
             yearsList: years
         };
-    }, [rawEvents, rawCampaigns, rawProfiles, rawTickets, filters]);
+    }, [rawEvents, rawCampaigns, rawProfiles, rawTickets, rawForms, filters]);
 
     const togglePublish = async (eventId: string, currentStatus: boolean) => {
         try {
@@ -391,6 +395,13 @@ function AdminDashboardContent() {
                         <h2>{stats.totalCampaigns}</h2>
                     </div>
                     <div className={styles.statIcon}>🖼️</div>
+                </div>
+                <div className={styles.statCard}>
+                    <div className={styles.statInfo}>
+                        <span>ITA Forms</span>
+                        <h2>{stats.totalForms}</h2>
+                    </div>
+                    <div className={styles.statIcon}>📝</div>
                 </div>
             </div>
 
