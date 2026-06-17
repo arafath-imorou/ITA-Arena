@@ -212,6 +212,9 @@ export default function CreateFormPage() {
     const [maxParticipants, setMaxParticipants] = useState<number | "">("");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
+    const [coverImage, setCoverImage] = useState<string>("");
+    const [uploading, setUploading] = useState(false);
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
 
     // Form Fields
     const [fields, setFields] = useState<FormField[]>([]);
@@ -274,6 +277,7 @@ export default function CreateFormPage() {
                     max_participants: maxParticipants || null,
                     start_date: startDate ? new Date(startDate).toISOString() : null,
                     end_date: endDate ? new Date(endDate).toISOString() : null,
+                    cover_image: coverImage || null,
                     status: 'active'
                 })
                 .select()
@@ -374,6 +378,67 @@ export default function CreateFormPage() {
                     <div style={{ backgroundColor: "#fff", padding: "2rem", borderRadius: "12px", border: "1px solid #e5e7eb", marginBottom: "2rem" }}>
                         <h3 style={{ margin: "0 0 1.5rem 0", borderBottom: "1px solid #eee", paddingBottom: "0.5rem" }}>Paramètres Généraux</h3>
                         
+                        <div style={{ marginBottom: "1.5rem" }}>
+                            <label style={{ display: "block", fontWeight: "bold", marginBottom: "0.5rem" }}>Affiche de l'événement / Formation</label>
+                            <input 
+                                type="file" 
+                                accept="image/*" 
+                                ref={fileInputRef} 
+                                style={{ display: 'none' }} 
+                                onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (!file) return;
+                                    
+                                    try {
+                                        setUploading(true);
+                                        const fileExt = file.name.split('.').pop();
+                                        const fileName = `${uuidv4()}.${fileExt}`;
+                                        const filePath = `forms/${fileName}`;
+
+                                        const { error: uploadError } = await supabase.storage
+                                            .from('events')
+                                            .upload(filePath, file);
+
+                                        if (uploadError) throw uploadError;
+
+                                        const { data: { publicUrl } } = supabase.storage
+                                            .from('events')
+                                            .getPublicUrl(filePath);
+
+                                        setCoverImage(publicUrl);
+                                    } catch (err) {
+                                        console.error('Upload error:', err);
+                                        alert("Erreur lors du téléchargement de l'image");
+                                    } finally {
+                                        setUploading(false);
+                                    }
+                                }}
+                            />
+                            <div 
+                                onClick={() => fileInputRef.current?.click()}
+                                style={{
+                                    width: "100%",
+                                    height: "150px",
+                                    border: "2px dashed #ccc",
+                                    borderRadius: "8px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    cursor: "pointer",
+                                    background: coverImage ? `url(${coverImage}) center/cover` : "#f9fafb",
+                                    overflow: "hidden",
+                                    position: "relative"
+                                }}
+                            >
+                                {!coverImage && (
+                                    <span style={{ color: "#666" }}>{uploading ? "Envoi en cours..." : "🖼️ Cliquez pour ajouter une affiche"}</span>
+                                )}
+                                {coverImage && (
+                                    <div style={{ position: "absolute", bottom: 0, width: "100%", background: "rgba(0,0,0,0.5)", color: "white", textAlign: "center", padding: "0.5rem", fontSize: "0.85rem" }}>Modifier l'image</div>
+                                )}
+                            </div>
+                        </div>
+
                         <div style={{ marginBottom: "1.5rem" }}>
                             <label style={{ display: "block", fontWeight: "bold", marginBottom: "0.5rem" }}>Titre du formulaire *</label>
                             <input 
