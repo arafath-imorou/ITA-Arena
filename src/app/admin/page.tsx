@@ -17,6 +17,7 @@ function AdminDashboardContent() {
     const [rawProfiles, setRawProfiles] = useState<any[]>([]);
     const [rawTickets, setRawTickets] = useState<any[]>([]);
     const [rawForms, setRawForms] = useState<any[]>([]);
+    const [rawVotes, setRawVotes] = useState<any[]>([]);
     const [isAdmin, setIsAdmin] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
     const [activeModalTab, setActiveModalTab] = useState<'stats' | 'tickets'>('stats');
@@ -48,12 +49,14 @@ function AdminDashboardContent() {
             const { data: ticketsData } = await supabase.from('tickets').select('*').eq('status', 'valid').order('created_at', { ascending: false });
             const { data: campaignsData } = await supabase.from('support_campaigns').select('*').order('created_at', { ascending: false });
             const { data: formsData } = await supabase.from('forms').select('*').order('created_at', { ascending: false });
+            const { data: votesData } = await supabase.from('votes_campaigns').select('*').order('created_at', { ascending: false });
 
             setRawProfiles(profilesData || []);
             setRawEvents(eventsData || []);
             setRawTickets(ticketsData || []);
             setRawCampaigns(campaignsData || []);
             setRawForms(formsData || []);
+            setRawVotes(votesData || []);
         } catch (err) {
             console.error("Admin Data Error:", err);
         } finally {
@@ -211,12 +214,13 @@ function AdminDashboardContent() {
                 totalEvents: evtsOnly.length,
                 totalCotisations: cotisOnly.length,
                 totalCampaigns: rawCampaigns.length,
-                totalForms: rawForms.length
+                totalForms: rawForms.length,
+                totalVotes: rawVotes.length
             },
             organizersList: organizersWithStats,
             yearsList: years
         };
-    }, [rawEvents, rawCampaigns, rawProfiles, rawTickets, rawForms, filters]);
+    }, [rawEvents, rawCampaigns, rawProfiles, rawTickets, rawForms, rawVotes, filters]);
 
     const togglePublish = async (eventId: string, currentStatus: boolean) => {
         try {
@@ -443,6 +447,13 @@ function AdminDashboardContent() {
                         <h2>{stats.totalForms}</h2>
                     </div>
                     <div className={styles.statIcon}>📝</div>
+                </div>
+                <div className={styles.statCard}>
+                    <div className={styles.statInfo}>
+                        <span>Votes & Sondages</span>
+                        <h2>{stats.totalVotes}</h2>
+                    </div>
+                    <div className={styles.statIcon}>🗳️</div>
                 </div>
             </div>
 

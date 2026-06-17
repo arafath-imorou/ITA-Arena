@@ -13,10 +13,24 @@ export default function Categories() {
     useEffect(() => {
         async function fetchCategories() {
             setLoading(true);
-            const typeQuery = mode === 'events' ? 'event' : (mode === 'cotisations' ? 'cotisation' : (mode === 'forms' ? 'form' : 'support'));
+            const typeQuery = mode === 'events' ? 'event' : (mode === 'cotisations' ? 'cotisation' : (mode === 'forms' ? 'form' : (mode === 'votes' ? 'vote' : 'support')));
             
             if (mode === 'forms') {
                 setCategories([{ id: 'all', label: 'Toutes', icon: '🔍', type: 'forms' }]);
+                setLoading(false);
+                return;
+            }
+
+            if (mode === 'votes') {
+                setCategories([
+                    { id: 'all', label: 'Toutes', icon: '🔍', type: 'votes' },
+                    { id: 'Miss', label: 'Miss', icon: '👑', type: 'votes' },
+                    { id: 'Concours artistique', label: 'Art & Talents', icon: '🎨', type: 'votes' },
+                    { id: 'Élection', label: 'Élections', icon: '🗳️', type: 'votes' },
+                    { id: 'Prix & distinctions', label: 'Awards', icon: '🏆', type: 'votes' },
+                    { id: 'Association', label: 'Associations', icon: '🤝', type: 'votes' },
+                    { id: 'École & Université', label: 'Écoles', icon: '🎓', type: 'votes' }
+                ]);
                 setLoading(false);
                 return;
             }

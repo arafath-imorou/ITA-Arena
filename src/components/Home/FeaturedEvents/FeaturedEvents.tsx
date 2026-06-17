@@ -104,10 +104,11 @@ export default function FeaturedEvents() {
             try {
                 let dbData;
                 if (mode === 'votes') {
-                    const { data, error } = await supabase
-                        .from('votes_campaigns')
-                        .select('*, profiles(email)')
-                        .eq('status', 'active');
+                    let query = supabase.from('votes_campaigns').select('*, profiles(email)').eq('status', 'active');
+                    if (activeCategory !== 'all') {
+                        query = query.eq('category', activeCategory);
+                    }
+                    const { data, error } = await query;
                         
                     if (error) throw error;
                     dbData = (data || []).map(item => ({
