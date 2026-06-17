@@ -86,7 +86,7 @@ function AdminDashboardContent() {
     }, [user, router]);
 
     // Computed Data based on filters
-    const { filteredEvents, filteredCampaigns, filteredTickets, stats, organizersList, yearsList } = useMemo(() => {
+    const { filteredEvents, filteredCampaigns, filteredTickets, filteredForms, stats, organizersList, yearsList } = useMemo(() => {
         const profileMap = rawProfiles.reduce((acc: any, p) => { acc[p.id] = p; return acc; }, {});
         const eventMap = rawEvents.reduce((acc: any, e) => { acc[e.id] = e; return acc; }, {});
 
