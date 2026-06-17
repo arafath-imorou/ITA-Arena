@@ -207,13 +207,16 @@ export default function CreateFormPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const editId = searchParams.get('edit');
+    const formTypeQuery = searchParams.get('type') || 'form';
+    const isPoll = formTypeQuery === 'poll';
     const [loading, setLoading] = useState(false);
     const [initialFetchDone, setInitialFetchDone] = useState(false);
 
     // Form settings
-    const [title, setTitle] = useState("Mon Nouveau Formulaire");
+    const [title, setTitle] = useState(isPoll ? "Mon Nouveau Sondage" : "Mon Nouveau Formulaire");
     const [description, setDescription] = useState("");
     const [maxParticipants, setMaxParticipants] = useState<number | "">("");
+    const [showPublicResults, setShowPublicResults] = useState(false);
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [coverImage, setCoverImage] = useState<string>("");
@@ -246,6 +249,9 @@ export default function CreateFormPage() {
                 setStartDate(formData.start_date ? formData.start_date.slice(0, 16) : "");
                 setEndDate(formData.end_date ? formData.end_date.slice(0, 16) : "");
                 setCoverImage(formData.cover_image || "");
+                if (formData.form_type === 'poll') {
+                    setShowPublicResults(formData.show_public_results || false);
+                }
 
                 const { data: fieldsData, error: fieldsError } = await supabase
                     .from('form_fields')
@@ -333,6 +339,8 @@ export default function CreateFormPage() {
                 start_date: startDate ? new Date(startDate).toISOString() : null,
                 end_date: endDate ? new Date(endDate).toISOString() : null,
                 cover_image: coverImage || null,
+                form_type: isPoll ? 'poll' : 'form',
+                show_public_results: isPoll ? showPublicResults : false,
                 status: 'active'
             };
 
@@ -392,8 +400,8 @@ export default function CreateFormPage() {
         <div style={{ padding: "2rem", maxWidth: "1200px", margin: "0 auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
                 <div>
-                    <h1 style={{ fontSize: "2rem", color: "#0A2E73", margin: 0 }}>{editId ? "Modifier le Formulaire" : "Créer un Formulaire"}</h1>
-                    <p style={{ color: "#666", marginTop: "0.5rem" }}>Construisez votre formulaire sur-mesure</p>
+                    <h1 style={{ fontSize: "2rem", color: "#0A2E73", margin: 0 }}>{editId ? (isPoll ? "Modifier le Sondage" : "Modifier le Formulaire") : (isPoll ? "Créer un Sondage" : "Créer un Formulaire")}</h1>
+                    <p style={{ color: "#666", marginTop: "0.5rem" }}>Construisez votre {isPoll ? "sondage" : "formulaire"} sur-mesure</p>
                 </div>
                 <button 
                     onClick={handleSave} 
@@ -568,6 +576,23 @@ export default function CreateFormPage() {
                                 />
                             </div>
                         </div>
+
+                        {isPoll && (
+                            <div style={{ marginTop: "1.5rem", padding: "1rem", backgroundColor: "#f9fafb", borderRadius: "8px", border: "1px dashed #d1d5db" }}>
+                                <label style={{ display: "flex", alignItems: "center", gap: "0.8rem", cursor: "pointer", fontWeight: "bold", color: "#374151" }}>
+                                    <input 
+                                        type="checkbox" 
+                                        checked={showPublicResults} 
+                                        onChange={e => setShowPublicResults(e.target.checked)} 
+                                        style={{ width: "1.2rem", height: "1.2rem", accentColor: "#F7931E" }}
+                                    />
+                                    Afficher les résultats de ce sondage publiquement
+                                </label>
+                                <p style={{ margin: "0.5rem 0 0 2rem", fontSize: "0.85rem", color: "#6b7280" }}>
+                                    Si activé, les participants pourront voir les statistiques (diagrammes) après avoir répondu.
+                                </p>
+                            </div>
+                        )}
                     </div>
 
                     {/* Draggable Fields */}

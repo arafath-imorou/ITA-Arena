@@ -145,6 +145,28 @@ export default function OrganizerLayout({
                     </div>
 
                     <div className={styles.navGroup}>
+                        <span className={styles.groupLabel}>Votes & Sondages</span>
+                        <Link
+                            href="/organizer/votes"
+                            className={`${styles.navItem} ${pathname === '/organizer/votes' ? styles.activeNavItem : ''}`}
+                        >
+                            <span className={styles.navIcon}>🗳️</span> Mes Campagnes
+                        </Link>
+                        <Link
+                            href="/organizer/votes/create"
+                            className={`${styles.navItem} ${pathname === '/organizer/votes/create' ? styles.activeNavItem : ''}`}
+                        >
+                            <span className={styles.navIcon}>🏆</span> Créer un vote
+                        </Link>
+                        <Link
+                            href="/organizer/forms/create?type=poll"
+                            className={`${styles.navItem} ${pathname === '/organizer/forms/create' && new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('type') === 'poll' ? styles.activeNavItem : ''}`}
+                        >
+                            <span className={styles.navIcon}>📊</span> Créer un sondage
+                        </Link>
+                    </div>
+
+                    <div className={styles.navGroup}>
                         <span className={styles.groupLabel}>Tickets et Profil</span>
                         <div className={styles.collapsibleNav}>
                             <Link

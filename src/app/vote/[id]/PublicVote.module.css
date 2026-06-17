@@ -1,0 +1,291 @@
+.page {
+    min-height: 100vh;
+    background-color: #f3f4f6;
+    padding-bottom: 4rem;
+}
+
+.hero {
+    height: 350px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+}
+
+.heroOverlay {
+    width: 100%;
+    padding: 3rem 2rem 2rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    color: white;
+}
+
+.heroOverlay h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2.5rem;
+}
+
+.noCoverHeader {
+    padding: 2rem 0;
+    text-align: center;
+}
+
+.noCoverHeader h1 {
+    color: #0A2E73;
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem 0;
+}
+
+.badge {
+    background: #F7931E;
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 9999px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.description {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    color: #4b5563;
+    line-height: 1.6;
+    font-size: 1.1rem;
+    white-space: pre-wrap;
+}
+
+.candidatesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.candCard {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s;
+}
+
+.candCard:hover {
+    transform: translateY(-5px);
+}
+
+.candPhoto {
+    height: 250px;
+    background-size: cover;
+    background-position: center;
+    background-color: #e5e7eb;
+}
+
+.candInfo {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.candInfo h3 {
+    margin: 0 0 0.5rem 0;
+    color: #111827;
+    font-size: 1.3rem;
+}
+
+.candInfo h3 span {
+    color: #9ca3af;
+    font-size: 1rem;
+}
+
+.candDesc {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin: 0 0 1.5rem 0;
+    flex: 1;
+}
+
+.candScore {
+    text-align: center;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background: #f3f4f6;
+    border-radius: 8px;
+    color: #374151;
+}
+
+.candScore strong {
+    font-size: 1.2rem;
+    color: #0A2E73;
+}
+
+.voteBtn {
+    width: 100%;
+    background: #F7931E;
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.voteBtn:hover {
+    background: #e58212;
+}
+
+/* MODAL */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: white;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+}
+
+.modalContent h2 {
+    margin: 0 0 1.5rem 0;
+    color: #0A2E73;
+}
+
+.voteForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.voteForm label {
+    font-weight: bold;
+    color: #374151;
+    margin-bottom: -0.8rem;
+}
+
+.input {
+    padding: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.voteCountSelector {
+    background: #f9fafb;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px dashed #d1d5db;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.counter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.counter button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #d1d5db;
+    background: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.counter button:hover {
+    background: #f3f4f6;
+}
+
+.counter input {
+    width: 80px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border: none;
+    background: transparent;
+    border-bottom: 2px solid #0A2E73;
+    padding: 0.5rem;
+}
+
+.priceSummary {
+    font-size: 1.1rem;
+    color: #4b5563;
+}
+
+.priceSummary strong {
+    color: #F7931E;
+    font-size: 1.3rem;
+}
+
+.modalActions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.cancelBtn, .submitBtn {
+    flex: 1;
+    padding: 1rem;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+}
+
+.cancelBtn {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.cancelBtn:hover {
+    background: #e5e7eb;
+}
+
+.submitBtn {
+    background: #F7931E;
+    color: white;
+}
+
+.submitBtn:hover {
+    background: #e58212;
+}
+
+.submitBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}

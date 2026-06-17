@@ -135,7 +135,15 @@ export default function SubNav() {
                             >
                                 ITA Forms
                             </button>
-                            <span className={styles.newBadge} style={{backgroundColor: '#0A2E73'}}>Nouveau</span>
+                        </div>
+                        <div className={styles.cotisationWrapper}>
+                            <button
+                                className={`${styles.toggleBtn} ${mode === 'votes' ? styles.activeToggle : ''}`}
+                                onClick={() => setMode('votes')}
+                            >
+                                Votes & Sondages
+                            </button>
+                            <span className={styles.newBadge} style={{backgroundColor: '#F7931E'}}>Nouveau</span>
                         </div>
                     </div>
                 </div>

@@ -1,0 +1,245 @@
+.container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+}
+
+.backLink {
+    color: #6b7280;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+}
+
+.backLink:hover {
+    color: #374151;
+    text-decoration: underline;
+}
+
+.title {
+    color: #0A2E73;
+    font-size: 2rem;
+    margin: 0;
+}
+
+.subtitle {
+    color: #666;
+    margin-top: 0.5rem;
+}
+
+.headerActions {
+    display: flex;
+    gap: 1rem;
+}
+
+.exportBtn {
+    background: white;
+    border: 1px solid #d1d5db;
+    color: #374151;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.exportBtn:hover {
+    background: #f9fafb;
+}
+
+.publicBtn {
+    background: #F7931E;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.publicBtn:hover {
+    background: #e58212;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.statCard {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
+.statCard h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-weight: normal;
+}
+
+.statNumber {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #111827;
+}
+
+.statRevenue {
+    color: #0A2E73;
+}
+
+.sectionTitle {
+    color: #0A2E73;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.rankingList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.rankingCard {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    gap: 1.5rem;
+    transition: transform 0.2s;
+}
+
+.rankingCard:hover {
+    transform: translateX(5px);
+}
+
+.rankBadge {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.rankBadge[data-rank="1"] {
+    background: #fef08a;
+    color: #854d0e;
+    transform: scale(1.1);
+}
+
+.rankBadge[data-rank="2"] {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.rankBadge[data-rank="3"] {
+    background: #fed7aa;
+    color: #9a3412;
+}
+
+.candPhoto {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: #e5e7eb;
+}
+
+.candInfo {
+    flex: 1;
+    min-width: 150px;
+}
+
+.candInfo h3 {
+    margin: 0;
+    color: #111827;
+    font-size: 1.1rem;
+}
+
+.candNumber {
+    color: #9ca3af;
+    font-size: 0.9rem;
+    margin-left: 0.5rem;
+}
+
+.candInfo p {
+    margin: 0.2rem 0 0 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.progressContainer {
+    flex: 2;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.progressBar {
+    flex: 1;
+    height: 12px;
+    background: #f3f4f6;
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: #F7931E;
+    border-radius: 9999px;
+    transition: width 1s ease-in-out;
+}
+
+.percentage {
+    color: #6b7280;
+    font-size: 0.9rem;
+    font-weight: bold;
+    min-width: 40px;
+}
+
+.candScore {
+    text-align: right;
+    min-width: 100px;
+}
+
+.scoreNumber {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #0A2E73;
+}
+
+.scoreLabel {
+    color: #6b7280;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 4rem;
+    background: white;
+    border-radius: 12px;
+    color: #6b7280;
+}

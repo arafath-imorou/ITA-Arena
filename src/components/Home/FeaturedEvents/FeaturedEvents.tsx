@@ -103,7 +103,28 @@ export default function FeaturedEvents() {
             setLoading(true);
             try {
                 let dbData;
-                if (mode === 'forms') {
+                if (mode === 'votes') {
+                    const { data, error } = await supabase
+                        .from('votes_campaigns')
+                        .select('*, profiles(email)')
+                        .eq('status', 'active');
+                        
+                    if (error) throw error;
+                    dbData = (data || []).map(item => ({
+                        id: item.id,
+                        title: item.title,
+                        image_url: item.cover_image || "https://placehold.co/600x400/F7931E/FFFFFF?text=Vote",
+                        category_id: item.category || "Vote",
+                        organizer_name: item.profiles?.email?.split('@')[0] || "Organisateur",
+                        date: item.end_date ? `Fermeture le ${new Date(item.end_date).toLocaleDateString('fr-FR')}` : "En cours",
+                        location: "En ligne",
+                        slug: item.id, // Using ID since votes don't have slugs
+                        likes_count: 0,
+                        downloads: 0,
+                        total_capacity: 0,
+                        sold_count: 0,
+                    }));
+                } else if (mode === 'forms') {
                     const { data, error } = await supabase
                         .from('forms')
                         .select('*, profiles(email)')
@@ -369,7 +390,7 @@ export default function FeaturedEvents() {
                                         </div>
 
                                         <Link 
-                                            href={isPast ? "#" : (mode === 'support' ? `/support/${item.slug}` : (mode === 'forms' ? `/f/${item.slug}` : `/events/${item.id}`))} 
+                                            href={isPast ? "#" : (mode === 'support' ? `/support/${item.slug}` : (mode === 'forms' ? `/f/${item.slug}` : (mode === 'votes' ? `/vote/${item.slug}` : `/events/${item.id}`)))} 
                                             className={styles.buyBtn}
                                             style={(isSoldOut || isPast) ? { background: '#ccc', pointerEvents: 'none' } : {}}
                                             onClick={(e) => {
@@ -379,7 +400,7 @@ export default function FeaturedEvents() {
                                                 }
                                             }}
                                         >
-                                            {isSoldOut ? "ÉPUISÉ" : (mode === 'support' ? "Soutenir" : (mode === 'forms' ? "S'inscrire" : (mode === 'cotisations' ? "Cotiser" : "Réserver")))}
+                                            {isSoldOut ? "ÉPUISÉ" : (mode === 'support' ? "Soutenir" : (mode === 'forms' ? "S'inscrire" : (mode === 'votes' ? "Voter" : (mode === 'cotisations' ? "Cotiser" : "Réserver"))))}
                                         </Link>
                                     </div>
                                 </div>
