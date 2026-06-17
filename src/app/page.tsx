@@ -1,5 +1,6 @@
 import Hero from "@/components/Home/Hero/Hero";
 import SubNav from "@/components/Home/SubNav/SubNav";
+import Solutions from "@/components/Home/Solutions/Solutions";
 import FeaturedEvents from "@/components/Home/FeaturedEvents/FeaturedEvents";
 import PromoCarousel from "@/components/Home/PromoCarousel/PromoCarousel";
 
@@ -8,6 +9,7 @@ export default function Home() {
     <div style={{ backgroundColor: '#fff', minHeight: '100vh' }}>
       <main className="animate-in">
         <Hero />
+        <Solutions />
         <SubNav />
         <FeaturedEvents />
 
