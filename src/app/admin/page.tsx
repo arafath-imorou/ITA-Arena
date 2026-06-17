@@ -289,6 +289,31 @@ function AdminDashboardContent() {
         }
     };
 
+    const toggleVoteStatus = async (voteId: string, currentStatus: string) => {
+        try {
+            const newStatus = currentStatus === 'active' ? 'closed' : 'active';
+            await supabase.from('votes_campaigns').update({ status: newStatus }).eq('id', voteId);
+            setRawVotes(rawVotes.map(v => v.id === voteId ? { ...v, status: newStatus } : v));
+        } catch (err) {
+            alert("Erreur");
+        }
+    };
+
+    const deleteVote = async (voteId: string) => {
+        if (!confirm("Voulez-vous vraiment supprimer cette campagne de vote ? Tous les candidats et les paiements associés pourraient être affectés.")) return;
+        try {
+            const { data, error } = await supabase.from('votes_campaigns').delete().eq('id', voteId).select();
+            if (error) throw error;
+            if (!data || data.length === 0) throw new Error("Permission refusée.");
+
+            setRawVotes(rawVotes.filter(v => v.id !== voteId));
+            alert("Campagne de vote supprimée avec succès.");
+        } catch (err: any) {
+            console.error(err);
+            alert("Erreur de suppression: " + (err.message || "Erreur inconnue"));
+        }
+    };
+
     if (loading) return <div className={styles.loadingContainer}><div className={styles.spinner}></div><p>Optimisation responsive...</p></div>;
     if (!isAdmin) return null;
 
@@ -350,10 +375,12 @@ function AdminDashboardContent() {
                             value={filters.type}
                             onChange={e => setFilters({...filters, type: e.target.value})}
                         >
-                            <option value="all">Tous</option>
+                            <option value="all">Tous les types</option>
                             <option value="event">Événements</option>
                             <option value="cotisation">Cotisations</option>
                             <option value="support">Campagnes de Soutien</option>
+                            <option value="forms">Formulaires & Sondages</option>
+                            <option value="votes">Votes & Élections</option>
                         </select>
                     </div>
                     <div className={styles.filterItem}>
@@ -566,7 +593,10 @@ function AdminDashboardContent() {
                                     {filteredForms.map((f: any) => (
                                         <tr key={f.id}>
                                             <td>
-                                                <strong>{f.title}</strong>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                    <strong>{f.title}</strong>
+                                                    {f.form_type === 'poll' && <span className={styles.badge} style={{ background: '#fce7f3', color: '#be185d', padding: '2px 6px', fontSize: '0.65rem' }}>Sondage</span>}
+                                                </div>
                                                 <p style={{ margin: 0, fontSize: '0.7rem', color: '#64748b' }}>{f.organizer_id}</p>
                                             </td>
                                             <td>{new Date(f.created_at).toLocaleDateString('fr-FR')}</td>
@@ -578,6 +608,51 @@ function AdminDashboardContent() {
                                                     <button onClick={() => toggleFormStatus(f.id, f.status)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#f1f5f9' }} title={f.status === 'active' ? "Désactiver" : "Activer"}>{f.status === 'active' ? "⏸️" : "▶️"}</button>
                                                     <Link href={`/organizer/forms/create?edit=${f.id}`} className={styles.badge} style={{ display: 'inline-block', textDecoration: 'none', background: '#fef9c3', color: '#854d0e', textAlign: 'center' }} title="Modifier">✏️</Link>
                                                     <button onClick={() => deleteForm(f.id)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#fee2e2', color: '#991b1b' }} title="Supprimer">🗑️</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+
+                {(filters.type === 'all' || filters.type === 'votes') && (
+                    <div className={styles.section} style={{ marginTop: '2rem' }}>
+                        <h3>Campagnes de Votes ({rawVotes.length})</h3>
+                        <div className={styles.tableWrapper}>
+                            <table className={styles.table}>
+                                <thead>
+                                    <tr>
+                                        <th>Élection</th>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {rawVotes.filter(v => 
+                                        (filters.organizerId === 'all' || v.organizer_id === filters.organizerId) &&
+                                        (filters.year === 'all' || new Date(v.created_at).getFullYear().toString() === filters.year) &&
+                                        (filters.month === 'all' || (new Date(v.created_at).getMonth() + 1).toString() === filters.month) &&
+                                        (filters.search === '' || v.title.toLowerCase().includes(filters.search.toLowerCase()))
+                                    ).map((v: any) => (
+                                        <tr key={v.id}>
+                                            <td>
+                                                <strong>{v.title}</strong>
+                                                <p style={{ margin: 0, fontSize: '0.7rem', color: '#64748b' }}>{v.category || 'Non classé'}</p>
+                                            </td>
+                                            <td>{new Date(v.created_at).toLocaleDateString('fr-FR')}</td>
+                                            <td><span className={styles.badge} style={{ background: v.is_paid ? '#fef3c7' : '#e0f2fe', color: v.is_paid ? '#92400e' : '#0369a1' }}>{v.is_paid ? `Payant (${v.price_per_vote} F)` : 'Gratuit'}</span></td>
+                                            <td><span className={`${styles.badge} ${v.status === 'active' ? styles.badgeSuccess : styles.badgeInfo}`}>{v.status === 'active' ? 'En ligne' : 'Terminé'}</span></td>
+                                            <td>
+                                                <div style={{ display: 'flex', gap: '0.4rem' }}>
+                                                    <a href={`/vote/${v.id}`} target="_blank" rel="noreferrer" className={styles.badge} style={{ textDecoration: 'none', background: '#e0f2fe', color: '#0369a1' }} title="Voir la page publique">👁️</a>
+                                                    <button onClick={() => toggleVoteStatus(v.id, v.status)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#f1f5f9' }} title={v.status === 'active' ? "Terminer" : "Activer"}>{v.status === 'active' ? "⏸️" : "▶️"}</button>
+                                                    <Link href={`/organizer/votes/create?edit=${v.id}`} className={styles.badge} style={{ display: 'inline-block', textDecoration: 'none', background: '#fef9c3', color: '#854d0e', textAlign: 'center' }} title="Modifier">✏️</Link>
+                                                    <button onClick={() => deleteVote(v.id)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#fee2e2', color: '#991b1b' }} title="Supprimer">🗑️</button>
                                                 </div>
                                             </td>
                                         </tr>
