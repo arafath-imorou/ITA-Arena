@@ -129,6 +129,22 @@ export default function OrganizerLayout({
                     </div>
 
                     <div className={styles.navGroup}>
+                        <span className={styles.groupLabel}>Formulaires</span>
+                        <Link
+                            href="/organizer/forms/create"
+                            className={`${styles.navItem} ${pathname === '/organizer/forms/create' ? styles.activeNavItem : ''}`}
+                        >
+                            <span className={styles.navIcon}>📝</span> Créer un formulaire
+                        </Link>
+                        <Link
+                            href="/organizer/forms"
+                            className={`${styles.navItem} ${pathname === '/organizer/forms' ? styles.activeNavItem : ''}`}
+                        >
+                            <span className={styles.navIcon}>📋</span> Dashboard Formulaires
+                        </Link>
+                    </div>
+
+                    <div className={styles.navGroup}>
                         <span className={styles.groupLabel}>Tickets et Profil</span>
                         <div className={styles.collapsibleNav}>
                             <Link
