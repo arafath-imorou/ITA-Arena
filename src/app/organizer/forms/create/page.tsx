@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { v4 as uuidv4 } from "uuid";
+import { useEffect } from "react";
 import {
     DndContext,
     closestCenter,
@@ -204,7 +205,10 @@ function SortableFieldItem({
 export default function CreateFormPage() {
     const { user } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const editId = searchParams.get('edit');
     const [loading, setLoading] = useState(false);
+    const [initialFetchDone, setInitialFetchDone] = useState(false);
 
     // Form settings
     const [title, setTitle] = useState("Mon Nouveau Formulaire");
@@ -218,6 +222,59 @@ export default function CreateFormPage() {
 
     // Form Fields
     const [fields, setFields] = useState<FormField[]>([]);
+
+    useEffect(() => {
+        if (!editId) {
+            setInitialFetchDone(true);
+            return;
+        }
+
+        async function fetchForm() {
+            try {
+                setLoading(true);
+                const { data: formData, error: formError } = await supabase
+                    .from('forms')
+                    .select('*')
+                    .eq('id', editId)
+                    .single();
+                
+                if (formError) throw formError;
+
+                setTitle(formData.title || "");
+                setDescription(formData.description || "");
+                setMaxParticipants(formData.max_participants || "");
+                setStartDate(formData.start_date ? formData.start_date.slice(0, 16) : "");
+                setEndDate(formData.end_date ? formData.end_date.slice(0, 16) : "");
+                setCoverImage(formData.cover_image || "");
+
+                const { data: fieldsData, error: fieldsError } = await supabase
+                    .from('form_fields')
+                    .select('*')
+                    .eq('form_id', editId)
+                    .order('order_index', { ascending: true });
+
+                if (fieldsError) throw fieldsError;
+
+                if (fieldsData) {
+                    setFields(fieldsData.map((f: any) => ({
+                        id: f.id, // Using DB ID, or could generate new
+                        type: f.type,
+                        label: f.label,
+                        required: f.required,
+                        options: f.options || []
+                    })));
+                }
+            } catch (err) {
+                console.error("Error fetching form:", err);
+                alert("Erreur lors du chargement du formulaire.");
+            } finally {
+                setLoading(false);
+                setInitialFetchDone(true);
+            }
+        }
+
+        fetchForm();
+    }, [editId]);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -267,28 +324,48 @@ export default function CreateFormPage() {
         try {
             setLoading(true);
 
-            // 1. Insert Form
-            const { data: formData, error: formError } = await supabase
-                .from("forms")
-                .insert({
-                    organizer_id: user.id,
-                    title,
-                    description,
-                    max_participants: maxParticipants || null,
-                    start_date: startDate ? new Date(startDate).toISOString() : null,
-                    end_date: endDate ? new Date(endDate).toISOString() : null,
-                    cover_image: coverImage || null,
-                    status: 'active'
-                })
-                .select()
-                .single();
+            let formId = editId;
 
-            if (formError) throw formError;
+            const formPayload = {
+                title,
+                description,
+                max_participants: maxParticipants || null,
+                start_date: startDate ? new Date(startDate).toISOString() : null,
+                end_date: endDate ? new Date(endDate).toISOString() : null,
+                cover_image: coverImage || null,
+                status: 'active'
+            };
+
+            if (editId) {
+                // Update Form
+                const { error: updateError } = await supabase
+                    .from("forms")
+                    .update(formPayload)
+                    .eq('id', editId);
+                
+                if (updateError) throw updateError;
+                
+                // Delete old fields
+                await supabase.from("form_fields").delete().eq('form_id', editId);
+            } else {
+                // Insert Form
+                const { data: formData, error: formError } = await supabase
+                    .from("forms")
+                    .insert({
+                        ...formPayload,
+                        organizer_id: user.id
+                    })
+                    .select()
+                    .single();
+
+                if (formError) throw formError;
+                formId = formData.id;
+            }
 
             // 2. Insert Fields
             if (fields.length > 0) {
                 const fieldsToInsert = fields.map((f, index) => ({
-                    form_id: formData.id,
+                    form_id: formId,
                     type: f.type,
                     label: f.label,
                     required: f.required,
@@ -300,12 +377,12 @@ export default function CreateFormPage() {
                 if (fieldsError) throw fieldsError;
             }
 
-            alert("Formulaire créé avec succès !");
-            router.push("/organizer/forms");
+            alert(editId ? "Formulaire modifié avec succès !" : "Formulaire créé avec succès !");
+            router.push(user.id ? "/organizer/forms" : "/admin");
 
         } catch (err: any) {
-            console.error("Error creating form:", err);
-            alert("Erreur lors de la création du formulaire : " + err.message);
+            console.error("Error saving form:", err);
+            alert("Erreur lors de l'enregistrement du formulaire : " + err.message);
         } finally {
             setLoading(false);
         }
@@ -315,7 +392,7 @@ export default function CreateFormPage() {
         <div style={{ padding: "2rem", maxWidth: "1200px", margin: "0 auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
                 <div>
-                    <h1 style={{ fontSize: "2rem", color: "#0A2E73", margin: 0 }}>Créer un Formulaire</h1>
+                    <h1 style={{ fontSize: "2rem", color: "#0A2E73", margin: 0 }}>{editId ? "Modifier le Formulaire" : "Créer un Formulaire"}</h1>
                     <p style={{ color: "#666", marginTop: "0.5rem" }}>Construisez votre formulaire sur-mesure</p>
                 </div>
                 <button 

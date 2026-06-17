@@ -168,6 +168,21 @@ function AdminDashboardContent() {
             campaigns = campaigns.filter(c => (new Date(c.created_at).getMonth() + 1).toString() === filters.month);
         }
 
+        let forms = rawForms;
+        if (filters.search) {
+            const s = filters.search.toLowerCase();
+            forms = forms.filter(f => f.title.toLowerCase().includes(s));
+        }
+        if (filters.organizerId !== 'all') {
+            forms = forms.filter(f => f.organizer_id === filters.organizerId);
+        }
+        if (filters.year !== 'all') {
+            forms = forms.filter(f => new Date(f.created_at).getFullYear().toString() === filters.year);
+        }
+        if (filters.month !== 'all') {
+            forms = forms.filter(f => (new Date(f.created_at).getMonth() + 1).toString() === filters.month);
+        }
+
         // Lists for filters
         const organizers = rawProfiles.filter(p => p.role === 'organizer' || rawEvents.some(e => e.organizer_id === p.id));
         const organizersWithStats = organizers.map(org => {
@@ -189,6 +204,7 @@ function AdminDashboardContent() {
             filteredEvents: events,
             filteredCampaigns: campaigns,
             filteredTickets: tickets,
+            filteredForms: forms,
             stats: {
                 totalRevenue: totalRev,
                 totalTickets: tickets.length,
@@ -241,6 +257,37 @@ function AdminDashboardContent() {
             alert("Erreur de suppression: " + (err.message || "Erreur inconnue"));
             // Forcer le rechargement pour restaurer l'état réel si la suppression a échoué
             fetchAdminData();
+        }
+    };
+
+    const toggleFormStatus = async (formId: string, currentStatus: string) => {
+        try {
+            const newStatus = currentStatus === 'active' ? 'draft' : 'active';
+            await supabase.from('forms').update({ status: newStatus }).eq('id', formId);
+            setRawForms(rawForms.map(f => f.id === formId ? { ...f, status: newStatus } : f));
+        } catch (err) {
+            alert("Erreur");
+        }
+    };
+
+    const deleteForm = async (formId: string) => {
+        if (!confirm("Voulez-vous vraiment supprimer ce formulaire ? Toutes les réponses seront perdues.")) return;
+        try {
+            const { error: responsesError } = await supabase.from('form_responses').delete().eq('form_id', formId);
+            if (responsesError) throw responsesError;
+            
+            const { error: fieldsError } = await supabase.from('form_fields').delete().eq('form_id', formId);
+            if (fieldsError) throw fieldsError;
+
+            const { data, error } = await supabase.from('forms').delete().eq('id', formId).select();
+            if (error) throw error;
+            if (!data || data.length === 0) throw new Error("Permission refusée.");
+
+            setRawForms(rawForms.filter(f => f.id !== formId));
+            alert("Formulaire supprimé avec succès.");
+        } catch (err: any) {
+            console.error(err);
+            alert("Erreur de suppression: " + (err.message || "Erreur inconnue"));
         }
     };
 
@@ -486,6 +533,46 @@ function AdminDashboardContent() {
                                                 <div style={{ display: 'flex', gap: '0.4rem' }}>
                                                     <a href={`/support/${c.slug}`} target="_blank" rel="noreferrer" className={styles.badge} style={{ textDecoration: 'none', background: '#e0f2fe', color: '#0369a1' }} title="Voir la page publique">👁️</a>
                                                     <Link href={`/organizer/support-campaign/create?edit=${c.id}`} className={styles.badge} style={{ display: 'inline-block', textDecoration: 'none', background: '#fef9c3', color: '#854d0e', textAlign: 'center' }} title="Modifier">✏️</Link>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+
+                {(filters.type === 'all' || filters.type === 'forms') && (
+                    <div className={styles.section} style={{ marginTop: '2rem' }}>
+                        <h3>Formulaires ({filteredForms.length})</h3>
+                        <div className={styles.tableWrapper}>
+                            <table className={styles.table}>
+                                <thead>
+                                    <tr>
+                                        <th>Formulaire</th>
+                                        <th>Date de création</th>
+                                        <th>Statut</th>
+                                        <th>Places max</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredForms.map((f: any) => (
+                                        <tr key={f.id}>
+                                            <td>
+                                                <strong>{f.title}</strong>
+                                                <p style={{ margin: 0, fontSize: '0.7rem', color: '#64748b' }}>{f.organizer_id}</p>
+                                            </td>
+                                            <td>{new Date(f.created_at).toLocaleDateString('fr-FR')}</td>
+                                            <td><span className={`${styles.badge} ${f.status === 'active' ? styles.badgeSuccess : styles.badgeInfo}`}>{f.status === 'active' ? 'Actif' : 'Désactivé'}</span></td>
+                                            <td>{f.max_participants ? f.max_participants : 'Illimité'}</td>
+                                            <td>
+                                                <div style={{ display: 'flex', gap: '0.4rem' }}>
+                                                    <a href={`/f/${f.id}`} target="_blank" rel="noreferrer" className={styles.badge} style={{ textDecoration: 'none', background: '#e0f2fe', color: '#0369a1' }} title="Voir la page publique">👁️</a>
+                                                    <button onClick={() => toggleFormStatus(f.id, f.status)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#f1f5f9' }} title={f.status === 'active' ? "Désactiver" : "Activer"}>{f.status === 'active' ? "⏸️" : "▶️"}</button>
+                                                    <Link href={`/organizer/forms/create?edit=${f.id}`} className={styles.badge} style={{ display: 'inline-block', textDecoration: 'none', background: '#fef9c3', color: '#854d0e', textAlign: 'center' }} title="Modifier">✏️</Link>
+                                                    <button onClick={() => deleteForm(f.id)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#fee2e2', color: '#991b1b' }} title="Supprimer">🗑️</button>
                                                 </div>
                                             </td>
                                         </tr>
