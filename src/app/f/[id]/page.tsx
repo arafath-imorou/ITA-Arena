@@ -127,17 +127,17 @@ export default function PublicFormPage() {
 
         try {
             setSubmitting(true);
+            const submissionId = uuidv4();
             const qrCodeValue = `ITA-FORM-${uuidv4().split('-')[0].toUpperCase()}`;
 
             // 1. Create Submission
-            const { data: submissionData, error: subError } = await supabase
+            const { error: subError } = await supabase
                 .from("form_submissions")
                 .insert({
+                    id: submissionId,
                     form_id: formId,
                     qr_code: qrCodeValue
-                })
-                .select()
-                .single();
+                });
 
             if (subError) throw subError;
 
@@ -146,7 +146,7 @@ export default function PublicFormPage() {
                 const value = responses[fieldId];
                 const isComplex = Array.isArray(value) || typeof value === "object";
                 return {
-                    submission_id: submissionData.id,
+                    submission_id: submissionId,
                     field_id: fieldId,
                     value: isComplex ? null : value,
                     value_json: isComplex ? value : null
@@ -159,7 +159,7 @@ export default function PublicFormPage() {
             }
 
             // Redirect to success
-            router.push(`/f/${formId}/success?sub=${submissionData.id}`);
+            router.push(`/f/${formId}/success?sub=${submissionId}`);
 
         } catch (err: any) {
             console.error(err);
