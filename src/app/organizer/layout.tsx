@@ -197,8 +197,10 @@ export default function OrganizerLayout({
                         ☰
                     </button>
                     <div className={styles.topTabs}>
-                        <Link href="/organizer?mode=events" className={`${styles.topTab} ${(new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('mode') !== 'cotisations') ? styles.activeTab : ''}`}>📅 Événements</Link>
-                        <Link href="/organizer?mode=cotisations" className={`${styles.topTab} ${(new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('mode') === 'cotisations') ? styles.activeTab : ''}`}>💰 Cotisations</Link>
+                        <Link href="/organizer?mode=events" className={`${styles.topTab} ${(pathname === '/organizer' && new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('mode') !== 'cotisations') ? styles.activeTab : ''}`}>📅 Événements</Link>
+                        <Link href="/organizer?mode=cotisations" className={`${styles.topTab} ${(pathname === '/organizer' && new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('mode') === 'cotisations') ? styles.activeTab : ''}`}>💰 Cotisations</Link>
+                        <Link href="/organizer/support-campaign/dashboard" className={`${styles.topTab} ${pathname?.includes('/support-campaign') ? styles.activeTab : ''}`}>🖼️ Soutien</Link>
+                        <Link href="/organizer/forms" className={`${styles.topTab} ${pathname?.includes('/forms') ? styles.activeTab : ''}`}>📝 ITA Forms</Link>
                     </div>
                     <div className={styles.topIcons}>
                         <div className={styles.notifIcon}>🔔 <span className={styles.dot}></span></div>
