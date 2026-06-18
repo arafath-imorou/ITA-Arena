@@ -105,6 +105,7 @@ export default function SubNav() {
             <div className="container">
                 <div className={styles.headerRow}>
                     <h2 className={styles.sectionTitle}>Nos évènements en cours</h2>
+                    <p className={styles.sectionSubtitle}>Découvrez et participez aux événements, collectes et initiatives qui animent notre communauté en ce moment.</p>
                 </div>
                 {/* Mode Toggle as Cards */}
                 <div className={styles.typeCardsContainer}>
