@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import styles from "../login/Auth.module.css";
 import BackButton from "@/components/BackButton";
@@ -17,6 +17,8 @@ export default function RegisterPage() {
     const [error, setError] = useState<string | null>(null);
     const [showSuccess, setShowSuccess] = useState(false);
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectTo = searchParams.get("redirect") || "/organizer";
 
     // Form states
     const [formData, setFormData] = useState({
@@ -89,7 +91,7 @@ export default function RegisterPage() {
             // Compte créé ET connecté automatiquement (confirmation email désactivée)
             // Rediriger directement vers l'espace utilisateur
             setLoading(false);
-            router.push("/organizer");
+            router.push(redirectTo);
         } else if (data.user) {
             // Compte créé mais email de confirmation envoyé
             setShowSuccess(true);
@@ -103,7 +105,7 @@ export default function RegisterPage() {
 
     const handleClose = () => {
         setShowSuccess(false);
-        router.push("/login");
+        router.push(`/login${searchParams.get("redirect") ? `?redirect=${searchParams.get("redirect")}` : ""}`);
     };
 
     return (
@@ -266,7 +268,7 @@ export default function RegisterPage() {
                         </button>
 
                         <div className={styles.switchAuth}>
-                            Vous avez déjà un compte ? <Link href="/login">Connectez-vous</Link>
+                            Vous avez déjà un compte ? <Link href={`/login${searchParams.get("redirect") ? `?redirect=${searchParams.get("redirect")}` : ""}`}>Connectez-vous</Link>
                         </div>
                     </form>
                 </div>

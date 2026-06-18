@@ -57,6 +57,9 @@ export default function Solutions() {
                             </div>
                             <h3 className={styles.cardTitle}>{s.title}</h3>
                             <p className={styles.cardDescription}>{s.description}</p>
+                            <a href="/organizer/create-hub" className={styles.createLink}>
+                                Créer maintenant <span className={styles.arrow}>➔</span>
+                            </a>
                         </div>
                     ))}
                 </div>

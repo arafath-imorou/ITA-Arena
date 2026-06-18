@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import styles from "./Auth.module.css";
@@ -15,6 +15,8 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectTo = searchParams.get("redirect") || "/organizer";
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -29,7 +31,7 @@ export default function LoginPage() {
         if (error) {
             setError(error.message);
         } else if (data.session) {
-            router.push("/organizer");
+            router.push(redirectTo);
         }
         setLoading(false);
     };
@@ -85,7 +87,7 @@ export default function LoginPage() {
                         }}>
                             <strong>Email ou mot de passe incorrect.</strong>
                             <div style={{ marginTop: '8px' }}>
-                                Vous n'avez pas encore de compte ? <Link href="/register" style={{ color: '#FF5A1F', fontWeight: 'bold', textDecoration: 'underline' }}>Inscrivez-vous ici</Link>
+                                Vous n'avez pas encore de compte ? <Link href={`/register${searchParams.get("redirect") ? `?redirect=${searchParams.get("redirect")}` : ""}`} style={{ color: '#FF5A1F', fontWeight: 'bold', textDecoration: 'underline' }}>Inscrivez-vous ici</Link>
                             </div>
                         </div>
                     )}
@@ -135,7 +137,7 @@ export default function LoginPage() {
                         </button>
 
                         <div className={styles.switchAuth}>
-                            Vous n'avez pas de compte ? <Link href="/register">Inscrivez-vous</Link>
+                            Vous n'avez pas encore de compte ? <Link href={`/register${searchParams.get("redirect") ? `?redirect=${searchParams.get("redirect")}` : ""}`}>Inscrivez-vous</Link>
                         </div>
                     </form>
                 </div>

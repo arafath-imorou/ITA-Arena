@@ -81,6 +81,33 @@
     font-size: 0.95rem;
     line-height: 1.6;
     margin: 0;
+    flex-grow: 1;
+}
+
+.createLink {
+    margin-top: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #F7931E;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    opacity: 0.8;
+}
+
+.card:hover .createLink {
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(247, 147, 30, 0.5);
+}
+
+.arrow {
+    transition: transform 0.3s ease;
+}
+
+.card:hover .arrow {
+    transform: translateX(5px);
 }
 
 @media (max-width: 768px) {
