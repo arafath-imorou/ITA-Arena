@@ -13,7 +13,7 @@ export default function Hero() {
                         <span>une expérience événementielle</span>
                     </h1>
                     <p className={styles.heroSubTitle}>
-                        Réservez vos billets en ligne et vivez vos événements sans stress avec ITA Arena.
+                        La plateforme tout-en-un des événements et communautés.
                     </p>
                     <div className={styles.heroActions} style={{ display: 'flex', flexWrap: 'wrap', gap: '0.8rem', justifyContent: 'center' }}>
                         <Link href="#events-grid" className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
