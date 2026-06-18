@@ -42,7 +42,7 @@ export default function Solutions() {
     ];
 
     return (
-        <section className={styles.solutionsSection}>
+        <section id="solutions" className={styles.solutionsSection}>
             <div className="container">
                 <div className={styles.header}>
                     <h2 className={styles.title}>Nos Solutions</h2>

@@ -101,7 +101,7 @@ export default function SubNav() {
     }, [mode, activeCategory, setActiveCategory]);
 
     return (
-        <section className={styles.section}>
+        <section id="explore" className={styles.section}>
             <div className="container">
                 {/* Mode Toggle */}
                 <div className={styles.toggleContainer}>
