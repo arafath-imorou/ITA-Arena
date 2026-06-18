@@ -103,6 +103,9 @@ export default function SubNav() {
     return (
         <section id="explore" className={styles.section}>
             <div className="container">
+                <div className={styles.headerRow}>
+                    <h2 className={styles.sectionTitle}>Nos évènements en cours</h2>
+                </div>
                 {/* Mode Toggle as Cards */}
                 <div className={styles.typeCardsContainer}>
                     <button
