@@ -425,6 +425,8 @@
         width: 280px !important;
         z-index: 1000;
         box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1);
+        overflow-y: auto;
+        height: 100dvh;
     }
 
     .sidebarOpen {
