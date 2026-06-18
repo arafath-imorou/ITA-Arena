@@ -2,7 +2,7 @@
 // Version 1.2 - Extended Onboarding (Individual/Enterprise)
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import styles from "../login/Auth.module.css";
@@ -11,7 +11,7 @@ import HomeButton from "@/components/HomeButton";
 
 type UserType = "particulier" | "entreprise";
 
-export default function RegisterPage() {
+function RegisterContent() {
     const [userType, setUserType] = useState<UserType>("particulier");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -288,5 +288,13 @@ export default function RegisterPage() {
                 </div>
             )}
         </div>
+    );
+}
+
+export default function RegisterPage() {
+    return (
+        <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Chargement...</div>}>
+            <RegisterContent />
+        </Suspense>
     );
 }
