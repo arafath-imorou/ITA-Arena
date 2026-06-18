@@ -94,6 +94,13 @@ export default function Navbar() {
                <input type="text" placeholder="Rechercher un événement..." />
             </div>
 
+            {/* Mobile specific links requested by user */}
+            <div className={styles.mobileLinks}>
+                <Link href="/about" className={styles.mobileLinkItem} onClick={() => setIsMobileMenuOpen(false)}>Qui sommes nous ?</Link>
+                <Link href="/#solutions" className={styles.mobileLinkItem} onClick={() => setIsMobileMenuOpen(false)}>Nos solutions</Link>
+                <Link href="/#explore" className={styles.mobileLinkItem} onClick={() => setIsMobileMenuOpen(false)}>Nos évènements en cours</Link>
+            </div>
+
             <Link href={user ? "/organizer/create" : "/signin"} className={styles.publishBtn} onClick={() => setIsMobileMenuOpen(false)}>
               Publier un événement
             </Link>

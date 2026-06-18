@@ -358,6 +358,23 @@
     outline: none;
 }
 
+.mobileLinks {
+    display: none;
+    width: 100%;
+    margin-bottom: 2rem;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.mobileLinkItem {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    text-decoration: none;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
 @media (max-width: 1024px) {
     .searchContainer {
         display: none;
@@ -421,6 +438,10 @@
 
     .mobileSearch {
         display: block;
+    }
+
+    .mobileLinks {
+        display: flex;
     }
 
     .mobileActionsOpen .publishBtn {
