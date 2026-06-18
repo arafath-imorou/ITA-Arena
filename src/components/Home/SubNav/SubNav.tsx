@@ -103,49 +103,50 @@ export default function SubNav() {
     return (
         <section id="explore" className={styles.section}>
             <div className="container">
-                {/* Mode Toggle */}
-                <div className={styles.toggleContainer}>
-                    <div className={styles.toggleWrapper}>
-                        <button
-                            className={`${styles.toggleBtn} ${mode === 'events' ? styles.activeToggle : ''}`}
-                            onClick={() => setMode('events')}
-                        >
-                            Événements
-                        </button>
-                        <div className={styles.cotisationWrapper}>
-                            <button
-                                className={`${styles.toggleBtn} ${mode === 'cotisations' ? styles.activeToggle : ''}`}
-                                onClick={() => setMode('cotisations')}
-                            >
-                                Cotisations
-                            </button>
-                        </div>
-                        <div className={styles.cotisationWrapper}>
-                            <button
-                                className={`${styles.toggleBtn} ${mode === 'support' ? styles.activeToggle : ''}`}
-                                onClick={() => setMode('support')}
-                            >
-                                Soutien
-                            </button>
-                        </div>
-                        <div className={styles.cotisationWrapper}>
-                            <button
-                                className={`${styles.toggleBtn} ${mode === 'forms' ? styles.activeToggle : ''}`}
-                                onClick={() => setMode('forms')}
-                            >
-                                ITA Forms
-                            </button>
-                        </div>
-                        <div className={styles.cotisationWrapper}>
-                            <button
-                                className={`${styles.toggleBtn} ${mode === 'votes' ? styles.activeToggle : ''}`}
-                                onClick={() => setMode('votes')}
-                            >
-                                Votes & Sondages
-                            </button>
-                            <span className={styles.newBadge} style={{backgroundColor: '#F7931E'}}>Nouveau</span>
-                        </div>
-                    </div>
+                {/* Mode Toggle as Cards */}
+                <div className={styles.typeCardsContainer}>
+                    <button
+                        className={`${styles.typeCard} ${mode === 'events' ? styles.typeCardActive : ''}`}
+                        onClick={() => setMode('events')}
+                    >
+                        <div className={styles.typeCardIcon}>🎟️</div>
+                        <h3 className={styles.typeCardTitle}>Événements</h3>
+                        <div className={styles.typeCardArrow}>Voir ➔</div>
+                    </button>
+                    <button
+                        className={`${styles.typeCard} ${mode === 'cotisations' ? styles.typeCardActive : ''}`}
+                        onClick={() => setMode('cotisations')}
+                    >
+                        <div className={styles.typeCardIcon}>💰</div>
+                        <h3 className={styles.typeCardTitle}>Cotisations</h3>
+                        <div className={styles.typeCardArrow}>Voir ➔</div>
+                    </button>
+                    <button
+                        className={`${styles.typeCard} ${mode === 'support' ? styles.typeCardActive : ''}`}
+                        onClick={() => setMode('support')}
+                    >
+                        <div className={styles.typeCardIcon}>❤️</div>
+                        <h3 className={styles.typeCardTitle}>Soutien</h3>
+                        <div className={styles.typeCardArrow}>Voir ➔</div>
+                    </button>
+                    <button
+                        className={`${styles.typeCard} ${mode === 'forms' ? styles.typeCardActive : ''}`}
+                        onClick={() => setMode('forms')}
+                    >
+                        <div className={styles.typeCardIcon}>📝</div>
+                        <h3 className={styles.typeCardTitle}>ITA Forms</h3>
+                        <div className={styles.typeCardArrow}>Voir ➔</div>
+                    </button>
+                    <button
+                        className={`${styles.typeCard} ${mode === 'votes' ? styles.typeCardActive : ''}`}
+                        onClick={() => setMode('votes')}
+                        style={{ position: 'relative' }}
+                    >
+                        <span className={styles.newBadge}>Nouveau</span>
+                        <div className={styles.typeCardIcon}>🗳️</div>
+                        <h3 className={styles.typeCardTitle}>Votes & Sondages</h3>
+                        <div className={styles.typeCardArrow}>Voir ➔</div>
+                    </button>
                 </div>
 
                 {/* Categories List */}

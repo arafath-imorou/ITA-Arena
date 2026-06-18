@@ -3,57 +3,83 @@
     background-color: white;
 }
 
-.toggleContainer {
+.typeCardsContainer {
     display: flex;
     justify-content: center;
-    margin-bottom: 2.5rem;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
 }
 
-.toggleWrapper {
-    background: #f8f8f8;
+.typeCard {
+    background: #ffffff;
     border: 1px solid #eeeeee;
-    padding: 4px;
-    border-radius: 50px;
+    border-radius: 16px;
+    padding: 1.5rem 1rem 1rem;
     display: flex;
-    gap: 4px;
-    position: relative;
-}
-
-.toggleBtn {
-    border: none;
-    background: transparent;
-    padding: 10px 30px;
-    border-radius: 50px;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #666;
+    flex-direction: column;
+    align-items: center;
     cursor: pointer;
     transition: all 0.3s ease;
+    min-width: 160px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
 }
 
-.activeToggle {
-    background: white;
+.typeCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    border-color: #ffedd5;
+}
+
+.typeCardActive {
+    border-color: var(--color-primary);
+    background-color: #fffaf5;
+    box-shadow: 0 8px 24px rgba(255, 90, 31, 0.1);
+}
+
+.typeCardIcon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.typeCardTitle {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 1rem 0;
+}
+
+.typeCardActive .typeCardTitle {
     color: var(--color-primary);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.cotisationWrapper {
-    position: relative;
+.typeCardArrow {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #888;
     display: flex;
     align-items: center;
+    gap: 5px;
+    transition: color 0.3s ease;
+}
+
+.typeCard:hover .typeCardArrow,
+.typeCardActive .typeCardArrow {
+    color: var(--color-primary);
 }
 
 .newBadge {
     position: absolute;
     top: -12px;
     right: -10px;
-    background-color: #6fbba1;
+    background-color: #F7931E;
     color: white;
     font-size: 0.65rem;
     font-weight: 800;
-    padding: 2px 8px;
-    border-radius: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
     text-transform: uppercase;
+    box-shadow: 0 4px 8px rgba(247, 147, 30, 0.3);
 }
 
 /* Categories Styles */
@@ -168,26 +194,36 @@
         padding: 1.5rem 0 0.5rem;
     }
 
-    .toggleContainer {
-        margin-bottom: 1.5rem;
+    .typeCardsContainer {
         justify-content: flex-start;
+        flex-wrap: nowrap;
         overflow-x: auto;
-        padding-bottom: 10px;
+        padding-bottom: 15px;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
+        gap: 1rem;
+        margin-left: -1rem; /* To allow scrolling beyond container padding if needed */
+        margin-right: -1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 
-    .toggleContainer::-webkit-scrollbar {
+    .typeCardsContainer::-webkit-scrollbar {
         display: none;
     }
 
-    .toggleWrapper {
-        min-width: max-content;
+    .typeCard {
+        min-width: 140px;
+        flex-shrink: 0;
+        padding: 1rem 0.8rem 0.8rem;
     }
 
-    .toggleBtn {
-        padding: 8px 20px;
-        font-size: 0.9rem;
+    .typeCardIcon {
+        font-size: 2rem;
+    }
+
+    .typeCardTitle {
+        font-size: 1rem;
     }
 
     .categoryCard {
