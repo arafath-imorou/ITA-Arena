@@ -27,16 +27,20 @@ export default function AboutPage() {
                         </div>
                         <div className={styles.textBlock}>
                             <p>
-                                <strong>ITA Arena</strong> est une plateforme digitale de billetterie nouvelle génération conçue pour moderniser l’organisation et l’accès aux événements en Afrique.
+                                <strong>ITA ARENA</strong> est une plateforme digitale tout-en-un dédiée à la gestion d'événements, de communautés et de campagnes d'engagement.
                             </p>
                             <p>
-                                Nous permettons aux organisateurs de vendre leurs billets en ligne simplement et au public de réserver leurs places en quelques clics, de manière rapide, sécurisée et intuitive.
+                                Nous aidons les organisateurs, associations, entreprises, écoles et institutions à créer, gérer et développer leurs initiatives grâce à des outils modernes : billetterie, inscriptions, votes, collectes, campagnes de soutien et gestion des participants.
                             </p>
                             <div className={styles.missionBox}>
-                                <p>Faciliter l’accès aux événements grâce à une expérience digitale moderne, fiable et professionnelle.</p>
+                                <p>Notre mission est de simplifier l'organisation, renforcer l'engagement des communautés et offrir une expérience digitale fluide à chaque utilisateur.</p>
                             </div>
+                            <h3>Notre engagement</h3>
                             <p>
-                                ITA Arena ne se limite pas à la vente de billets — nous créons une véritable passerelle numérique entre les organisateurs et leur public.
+                                Créer un écosystème numérique complet permettant de mobiliser, connecter et gérer efficacement des communautés autour d'événements, projets et causes.
+                            </p>
+                            <p>
+                                ITA ARENA est bien plus qu'une plateforme : c'est un partenaire technologique au service de vos ambitions.
                             </p>
                         </div>
                     </section>
@@ -48,17 +52,17 @@ export default function AboutPage() {
                         </div>
                         <div className={styles.textBlock}>
                             <p>
-                                Chez ITA Arena, nous croyons que chaque événement mérite une organisation à la hauteur de son ambition.
+                                Chez ITA ARENA, nous croyons que chaque événement, chaque communauté et chaque projet mérite des outils simples, performants et accessibles.
                             </p>
                             <p>Nous aspirons à devenir :</p>
                             <ul className={styles.visionList}>
-                                <li><span>—</span> La plateforme de référence de la billetterie digitale en Afrique</li>
-                                <li><span>—</span> Un pont technologique entre créateurs d’événements et participants</li>
-                                <li><span>—</span> Une solution innovante adaptée aux réalités locales</li>
-                                <li><span>—</span> Un standard moderne pour l’événementiel culturel, professionnel et grand public</li>
+                                <li><span>—</span> La plateforme de référence pour la gestion d'événements et de communautés en Afrique</li>
+                                <li><span>—</span> Un écosystème numérique réunissant billetterie, inscriptions, votes, collectes et engagement communautaire</li>
+                                <li><span>—</span> Une solution innovante adaptée aux réalités africaines</li>
+                                <li><span>—</span> Un moteur de transformation digitale pour les organisateurs, associations, institutions et entreprises</li>
                             </ul>
                             <p>
-                                Notre vision est de contribuer activement à la transformation digitale du secteur événementiel africain.
+                                Notre vision est de contribuer activement à la modernisation de l'événementiel et de l'engagement citoyen à travers l'Afrique.
                             </p>
                         </div>
                     </section>
@@ -70,28 +74,28 @@ export default function AboutPage() {
                         </div>
                         <div className={styles.featureGrid}>
                             <div className={styles.featureCard}>
-                                <h3>Billetterie simplifiée</h3>
-                                <p>Réservez vos billets en ligne sans files d’attente ni déplacements inutiles.</p>
+                                <h3>🎟️ Gestion d'événements simplifiée</h3>
+                                <p>Créez, publiez et gérez vos événements en toute simplicité grâce à une plateforme intuitive et professionnelle.</p>
                             </div>
                             <div className={styles.featureCard}>
-                                <h3>Paiements sécurisés</h3>
-                                <p>Profitez de transactions fiables grâce à l’intégration des solutions Mobile Money et des paiements par carte bancaire.</p>
+                                <h3>📝 Inscriptions intelligentes</h3>
+                                <p>Créez des formulaires personnalisés, collectez les informations des participants et exportez vos données en quelques clics.</p>
                             </div>
                             <div className={styles.featureCard}>
-                                <h3>Billets intelligents</h3>
-                                <p>Chaque billet inclut un QR Code unique permettant un accès rapide et sécurisé aux événements.</p>
+                                <h3>🗳️ Votes & Sondages</h3>
+                                <p>Organisez des consultations, concours, élections et sondages avec des résultats fiables et accessibles en temps réel.</p>
                             </div>
                             <div className={styles.featureCard}>
-                                <h3>Outils professionnels</h3>
-                                <p>Suivi des ventes en temps réel, statistiques détaillées, gestion des participants et contrôle d'accès.</p>
+                                <h3>❤️ Collectes & Campagnes de soutien</h3>
+                                <p>Mobilisez votre communauté grâce aux collectes de fonds et aux badges de soutien personnalisés.</p>
                             </div>
                             <div className={styles.featureCard}>
-                                <h3>Adapté au marché</h3>
-                                <p>Interface optimisée pour mobile et paiements locaux intégrés aux réalités du continent.</p>
+                                <h3>📊 Outils de pilotage avancés</h3>
+                                <p>Suivez vos performances, gérez vos participants, analysez vos statistiques et prenez de meilleures décisions.</p>
                             </div>
                             <div className={styles.featureCard}>
-                                <h3>Support dédié</h3>
-                                <p>Une équipe réactive à votre écoute pour vous accompagner dans la réussite de tous vos projets événementiels.</p>
+                                <h3>🔒 Sécurité & Fiabilité</h3>
+                                <p>Paiements sécurisés, protection des données, contrôle des accès et outils conçus pour inspirer confiance.</p>
                             </div>
                         </div>
                     </section>
