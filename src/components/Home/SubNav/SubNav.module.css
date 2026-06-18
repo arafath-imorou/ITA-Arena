@@ -170,6 +170,19 @@
 
     .toggleContainer {
         margin-bottom: 1.5rem;
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 10px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .toggleContainer::-webkit-scrollbar {
+        display: none;
+    }
+
+    .toggleWrapper {
+        min-width: max-content;
     }
 
     .toggleBtn {
