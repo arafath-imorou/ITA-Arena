@@ -16,17 +16,14 @@ export default function Hero() {
                         La plateforme tout-en-un des événements et communautés.
                     </p>
                     <div className={styles.heroActions} style={{ display: 'flex', flexWrap: 'wrap', gap: '0.8rem', justifyContent: 'center' }}>
+                        <Link href="#about" className="btn btn-outline" style={{ borderColor: 'white', color: 'white', padding: '8px 16px', fontSize: '0.85rem' }}>
+                            Qui sommes nous ?
+                        </Link>
+                        <Link href="#solutions" className="btn btn-outline" style={{ borderColor: 'white', color: 'white', padding: '8px 16px', fontSize: '0.85rem' }}>
+                            Nos Solutions
+                        </Link>
                         <Link href="#events-grid" className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
-                            Voir les événements
-                        </Link>
-                        <Link href="/organizer/create" className="btn btn-outline" style={{ borderColor: 'white', color: 'white', padding: '8px 16px', fontSize: '0.85rem' }}>
-                            Publier un événement
-                        </Link>
-                        <Link href="/organizer/cotisation/create" className="btn btn-outline" style={{ borderColor: 'white', color: 'white', padding: '8px 16px', fontSize: '0.85rem' }}>
-                            Lancer une cotisation
-                        </Link>
-                        <Link href="/organizer/support-campaign/create" className="btn btn-outline" style={{ borderColor: 'white', color: 'white', padding: '8px 16px', fontSize: '0.85rem' }}>
-                            Créer votre Campagne de Soutien
+                            Nos évènements en cours
                         </Link>
                     </div>
                 </div>
