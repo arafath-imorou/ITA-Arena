@@ -481,19 +481,19 @@ export default function CreateFormPage() {
                                         const filePath = `forms/${fileName}`;
 
                                         const { error: uploadError } = await supabase.storage
-                                            .from('events')
+                                            .from('event-images')
                                             .upload(filePath, file);
 
                                         if (uploadError) throw uploadError;
 
                                         const { data: { publicUrl } } = supabase.storage
-                                            .from('events')
+                                            .from('event-images')
                                             .getPublicUrl(filePath);
 
                                         setCoverImage(publicUrl);
                                     } catch (err) {
                                         console.error('Upload error:', err);
-                                        alert("Erreur lors du téléchargement de l'image");
+                                        alert("Erreur lors du téléchargement de l'image : " + (err.message || "Erreur inconnue"));
                                     } finally {
                                         setUploading(false);
                                     }
