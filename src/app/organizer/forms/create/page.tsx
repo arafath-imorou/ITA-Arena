@@ -491,7 +491,7 @@ export default function CreateFormPage() {
                                             .getPublicUrl(filePath);
 
                                         setCoverImage(publicUrl);
-                                    } catch (err) {
+                                    } catch (err: any) {
                                         console.error('Upload error:', err);
                                         alert("Erreur lors du téléchargement de l'image : " + (err.message || "Erreur inconnue"));
                                     } finally {
