@@ -7,6 +7,8 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { downloadTicket } from "@/lib/ticketUtils";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 function AdminDashboardContent() {
     const { user } = useAuth();
@@ -20,7 +22,7 @@ function AdminDashboardContent() {
     const [rawVotes, setRawVotes] = useState<any[]>([]);
     const [isAdmin, setIsAdmin] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
-    const [activeModalTab, setActiveModalTab] = useState<'stats' | 'tickets'>('stats');
+    const [activeModalTab, setActiveModalTab] = useState<'stats' | 'tickets' | 'participants'>('stats');
     const [mainTab, setMainTab] = useState<'overview' | 'organizers'>('overview');
     const [isManualModalOpen, setIsManualModalOpen] = useState(false);
     const [manualTicket, setManualTicket] = useState({
@@ -758,6 +760,12 @@ function AdminDashboardContent() {
                             >
                                 Tickets ({selectedEvent.sold_count})
                             </button>
+                            <button 
+                                className={`${styles.modalTab} ${activeModalTab === 'participants' ? styles.modalTabActive : ''}`}
+                                onClick={() => setActiveModalTab('participants')}
+                            >
+                                Participants
+                            </button>
                         </div>
                         
                         {activeModalTab === 'stats' ? (
@@ -787,6 +795,72 @@ function AdminDashboardContent() {
                                     </table>
                                 </div>
                             </>
+                        ) : activeModalTab === 'participants' ? (
+                            <div className={styles.ticketsList}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                                    <h3>Liste des Participants</h3>
+                                    <button 
+                                        onClick={() => {
+                                            const eventTickets = rawTickets.filter(t => t.event_id === selectedEvent.id);
+                                            const doc = new jsPDF();
+                                            doc.text(`Liste des Participants - ${selectedEvent.title}`, 14, 15);
+                                            const tableColumn = ["N°", "Nom", "Email", "Téléphone", "Catégorie", "Prix"];
+                                            const tableRows: any[] = [];
+                                            eventTickets.forEach(t => {
+                                                tableRows.push([
+                                                    `#${t.ticket_number.toString().padStart(5, '0')}`,
+                                                    t.user_name || 'Inconnu',
+                                                    t.user_email || 'N/A',
+                                                    t.user_phone || 'N/A',
+                                                    t.category,
+                                                    `${Number(t.amount).toLocaleString()} F`
+                                                ]);
+                                            });
+                                            autoTable(doc, {
+                                                head: [tableColumn],
+                                                body: tableRows,
+                                                startY: 20,
+                                            });
+                                            doc.save(`participants-${selectedEvent.id.substring(0, 8)}.pdf`);
+                                        }}
+                                        className={styles.badge}
+                                        style={{ background: '#059669', color: 'white', border: 'none', cursor: 'pointer' }}
+                                    >
+                                        📥 Télécharger PDF
+                                    </button>
+                                </div>
+                                <div className={styles.tableWrapper}>
+                                    <table className={styles.table} style={{ fontSize: '0.75rem' }}>
+                                        <thead>
+                                            <tr>
+                                                <th>N°</th>
+                                                <th>Nom</th>
+                                                <th>Email</th>
+                                                <th>Téléphone</th>
+                                                <th>Catégorie</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {rawTickets.filter(t => t.event_id === selectedEvent.id).map(t => (
+                                                <tr key={t.id}>
+                                                    <td><strong>#{t.ticket_number.toString().padStart(5, '0')}</strong></td>
+                                                    <td>{t.user_name || 'Inconnu'}</td>
+                                                    <td>{t.user_email || 'N/A'}</td>
+                                                    <td>{t.user_phone || 'N/A'}</td>
+                                                    <td>{t.category}</td>
+                                                </tr>
+                                            ))}
+                                            {rawTickets.filter(t => t.event_id === selectedEvent.id).length === 0 && (
+                                                <tr>
+                                                    <td colSpan={5} style={{ textAlign: 'center', padding: '1rem', color: '#64748b' }}>
+                                                        Aucun participant.
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         ) : (
                             <div className={styles.ticketsList}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>

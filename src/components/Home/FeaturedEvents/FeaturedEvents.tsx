@@ -298,7 +298,7 @@ export default function FeaturedEvents() {
                             const percent = item.total_capacity > 0 ? Math.round((item.collected_amount / item.total_capacity) * 100) : 0;
                             const isLiked = likedEvents.includes(item.id);
                             const isPast = checkIsPastEvent(item.date);
-                            const isSoldOut = item.total_capacity > 0 && item.sold_count >= item.total_capacity;
+                            const isSoldOut = item.is_closed || (item.total_capacity > 0 && item.sold_count >= item.total_capacity);
                             return (
                                 <div key={item.id} className={styles.card}>
                                     <div className={styles.imageWrapper}>
@@ -380,7 +380,7 @@ export default function FeaturedEvents() {
 
                                             {isSoldOut && !isPast && (
                                                 <div style={{ marginTop: '0.5rem', background: '#fef2f2', color: '#991b1b', fontSize: '0.75rem', padding: '0.4rem', borderRadius: '0.4rem', textAlign: 'center', fontWeight: 'bold' }}>
-                                                    🚫 COMPLET
+                                                    🚫 {item.is_closed ? "FERMÉ" : "COMPLET"}
                                                 </div>
                                             )}
                                             {isPast && (
@@ -401,7 +401,7 @@ export default function FeaturedEvents() {
                                                 }
                                             }}
                                         >
-                                            {isSoldOut ? "ÉPUISÉ" : (mode === 'support' ? "Soutenir" : (mode === 'forms' ? "S'inscrire" : (mode === 'votes' ? "Voter" : (mode === 'cotisations' ? "Cotiser" : "Réserver"))))}
+                                            {isSoldOut ? (item.is_closed ? "FERMÉ" : "ÉPUISÉ") : (mode === 'support' ? "Soutenir" : (mode === 'forms' ? "S'inscrire" : (mode === 'votes' ? "Voter" : (mode === 'cotisations' ? "Cotiser" : "Réserver"))))}
                                         </Link>
                                     </div>
                                 </div>
