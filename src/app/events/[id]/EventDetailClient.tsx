@@ -286,13 +286,13 @@ export default function EventDetailClient({ id }: { id: string }) {
                                     )} F CFA</span>
                                 </div>
                                 
-                                {item.total_capacity > 0 && item.sold_count >= item.total_capacity ? (
+                                {item.is_closed || (item.total_capacity > 0 && item.sold_count >= item.total_capacity) ? (
                                     <div style={{ textAlign: 'center', marginTop: '1rem' }}>
                                         <div style={{ background: '#fef2f2', color: '#991b1b', padding: '1rem', borderRadius: '0.75rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-                                            🚫 CET ÉVÉNEMENT EST COMPLET
+                                            🚫 {item.is_closed ? "RÉSERVATION FERMÉE" : "CET ÉVÉNEMENT EST COMPLET"}
                                         </div>
                                         <button className={styles.ctaBtn} disabled style={{ opacity: 0.5 }}>
-                                            SOLD OUT
+                                            {item.is_closed ? "FERMÉ" : "SOLD OUT"}
                                         </button>
                                     </div>
                                 ) : (
