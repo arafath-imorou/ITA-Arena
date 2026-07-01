@@ -262,6 +262,11 @@ export default function EventDetailClient({ id }: { id: string }) {
                                                 <span className={styles.ticketPrice}>
                                                     {parseFloat(cat.price) === 0 ? "GRATUIT" : `${new Intl.NumberFormat('fr-FR').format(cat.price)} F CFA`}
                                                 </span>
+                                                {cat.description && (
+                                                    <span style={{ display: 'block', fontSize: '0.75rem', color: '#64748b', marginTop: '0.3rem', lineHeight: '1.4' }}>
+                                                        {cat.description}
+                                                    </span>
+                                                )}
                                             </div>
                                             <div className={styles.qtyControl}>
                                                 <button onClick={() => handleQtyChange(cat.name, -1)} className={styles.qtyBtn}>-</button>
