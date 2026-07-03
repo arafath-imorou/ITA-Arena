@@ -106,6 +106,15 @@ export default function EventDetailClient({ id }: { id: string }) {
         const parts = text.split(regex);
         
         if (parts.length <= 1) {
+            // Si aucun motif "Titre - " n'est trouvé, on tente de séparer par les points pour aérer
+            const sentences = text.split(/(?<=[.!?])\s+/);
+            if (sentences.length > 1) {
+                return sentences.map((sentence, i) => (
+                    <span key={i} style={{ display: 'block', marginBottom: '0.6rem', color: '#64748b' }}>
+                        {sentence}
+                    </span>
+                ));
+            }
             return <span style={{ display: 'block', color: '#64748b' }}>{text}</span>;
         }
 
