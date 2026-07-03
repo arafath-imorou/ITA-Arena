@@ -30,6 +30,7 @@ export default function PhotoGenerator({ frameUrl, campaignId, onDownload }: Pho
     // Detect if this is the polio frame to automatically apply a circular mask
     // We check both the URL (for 'polio') and the specific campaign ID just in case
     const isPolioCampaign = frameUrl.toLowerCase().includes('polio') || campaignId === 'dd87821d-684f-4715-8e7b-e383b2550664';
+    const isSillageCampaign = frameUrl.toLowerCase().includes('sillage');
 
     // Load Frame Image
     useEffect(() => {
@@ -86,6 +87,11 @@ export default function PhotoGenerator({ frameUrl, campaignId, onDownload }: Pho
                 // We use a control point of (800, 650) to push this segment generously to the right.
                 ctx.quadraticCurveTo(800, 650, 571, 768);
                 ctx.clip();
+            } else if (isSillageCampaign) {
+                ctx.beginPath();
+                // Assumed circular mask for Sillage in the center of a 1080x1080 canvas
+                ctx.arc(540, 540, 480, 0, Math.PI * 2);
+                ctx.clip();
             }
 
             // Move to center of canvas
@@ -111,7 +117,7 @@ export default function PhotoGenerator({ frameUrl, campaignId, onDownload }: Pho
             ctx.drawImage(frameImage, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
         }
 
-    }, [userImage, frameImage, scale, rotation, offset, isPolioCampaign]);
+    }, [userImage, frameImage, scale, rotation, offset, isPolioCampaign, isSillageCampaign]);
 
     useEffect(() => {
         drawCanvas();
