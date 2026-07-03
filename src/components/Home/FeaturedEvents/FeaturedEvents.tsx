@@ -356,9 +356,18 @@ export default function FeaturedEvents() {
                                                     <span>💵</span>
                                                     <div className={styles.priceText} style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
                                                         {item.price.includes('\n') || item.price.includes('\\n') ? (
-                                                            (item.price.includes('\\n') ? item.price.split('\\n') : item.price.split('\n')).map((line: string, i: number) => (
-                                                                <span key={i} style={{ fontSize: '0.85rem', lineHeight: '1.2' }}>{line}</span>
-                                                            ))
+                                                            (item.price.includes('\\n') ? item.price.split('\\n') : item.price.split('\n')).map((line: string, i: number) => {
+                                                                const parts = line.split(':');
+                                                                if (parts.length > 1) {
+                                                                    return (
+                                                                        <span key={i} style={{ fontSize: '0.85rem', lineHeight: '1.2' }}>
+                                                                            <span style={{ color: '#FF5A1F', fontWeight: 'bold' }}>{parts[0]}:</span>
+                                                                            <span style={{ color: '#333' }}>{parts.slice(1).join(':')}</span>
+                                                                        </span>
+                                                                    );
+                                                                }
+                                                                return <span key={i} style={{ fontSize: '0.85rem', lineHeight: '1.2', color: '#333' }}>{line}</span>;
+                                                            })
                                                         ) : (
                                                             <span>
                                                                 {item.price.includes("À partir de") || item.price.length > 15 || item.price.includes("F CFA") ? item.price : `À partir de ${item.price}`}

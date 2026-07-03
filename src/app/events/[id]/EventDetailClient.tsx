@@ -213,9 +213,18 @@ export default function EventDetailClient({ id }: { id: string }) {
                             <span style={{ marginRight: '8px' }}>💵</span>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
                                 {item.price.includes('\n') || item.price.includes('\\n') ? (
-                                    (item.price.includes('\\n') ? item.price.split('\\n') : item.price.split('\n')).map((line: string, i: number) => (
-                                        <span key={i} style={{ fontSize: '0.9rem', lineHeight: '1.2' }}>{line}</span>
-                                    ))
+                                    (item.price.includes('\\n') ? item.price.split('\\n') : item.price.split('\n')).map((line: string, i: number) => {
+                                        const parts = line.split(':');
+                                        if (parts.length > 1) {
+                                            return (
+                                                <span key={i} style={{ fontSize: '0.9rem', lineHeight: '1.2' }}>
+                                                    <span style={{ color: '#FF5A1F', fontWeight: 'bold' }}>{parts[0]}:</span>
+                                                    <span style={{ color: '#333' }}>{parts.slice(1).join(':')}</span>
+                                                </span>
+                                            );
+                                        }
+                                        return <span key={i} style={{ fontSize: '0.9rem', lineHeight: '1.2', color: '#333' }}>{line}</span>;
+                                    })
                                 ) : (
                                     <span>
                                         {item.price}{item.price !== "Gratuit" && !item.price.includes("F CFA") ? " F CFA" : ""}
