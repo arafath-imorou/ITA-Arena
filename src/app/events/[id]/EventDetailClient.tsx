@@ -89,6 +89,51 @@ export default function EventDetailClient({ id }: { id: string }) {
 
     const [avatarError, setAvatarError] = useState(false);
 
+    const formatDescription = (text: string) => {
+        if (!text) return null;
+        
+        // Si le texte contient déjà des sauts de ligne manuels, on respecte
+        if (text.includes('\n')) {
+            return text.split('\n').map((line, i) => (
+                <span key={i} style={{ display: 'block', marginBottom: '0.4rem', color: '#64748b' }}>
+                    {line}
+                </span>
+            ));
+        }
+
+        // On cherche les motifs type "Titre - " ou "Titre : "
+        const regex = /([A-Z][\wÀ-ÿ\s"']{2,40}(?:\s-\s|\s:\s))/g;
+        const parts = text.split(regex);
+        
+        if (parts.length <= 1) {
+            return <span style={{ display: 'block', color: '#64748b' }}>{text}</span>;
+        }
+
+        const blocks: React.ReactNode[] = [];
+        for (let i = 1; i < parts.length; i += 2) {
+            const title = parts[i];
+            let content = parts[i + 1] || '';
+            content = content.replace(/^\s+|\s+$/g, '');
+            
+            blocks.push(
+                <span key={i} style={{ display: 'block', marginBottom: '0.6rem' }}>
+                    <strong style={{ fontWeight: 700, color: '#D4AF37' }}>{title}</strong>
+                    <span style={{ color: '#64748b' }}>{content}</span>
+                </span>
+            );
+        }
+        
+        if (parts[0].trim()) {
+            blocks.unshift(
+                <span key={0} style={{ display: 'block', marginBottom: '0.6rem', color: '#64748b' }}>
+                    {parts[0]}
+                </span>
+            );
+        }
+        
+        return blocks;
+    };
+
     if (loading) return (
         <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #FF5A1F', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
@@ -263,9 +308,9 @@ export default function EventDetailClient({ id }: { id: string }) {
                                                     {parseFloat(cat.price) === 0 ? "GRATUIT" : `${new Intl.NumberFormat('fr-FR').format(cat.price)} F CFA`}
                                                 </span>
                                                 {cat.description && (
-                                                    <span style={{ display: 'block', fontSize: '0.75rem', color: '#D4AF37', marginTop: '0.5rem', lineHeight: '1.5', textAlign: 'justify' }}>
-                                                        {cat.description}
-                                                    </span>
+                                                    <div style={{ fontSize: '0.75rem', marginTop: '0.5rem', lineHeight: '1.5', textAlign: 'justify' }}>
+                                                        {formatDescription(cat.description)}
+                                                    </div>
                                                 )}
                                             </div>
                                             <div className={styles.qtyControl}>
