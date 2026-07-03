@@ -355,7 +355,7 @@ export default function FeaturedEvents() {
                                                 <div className={styles.priceLine}>
                                                     <span>💵</span>
                                                     <span className={styles.priceText}>
-                                                        {item.price.includes("À partir de") ? item.price : `À partir de ${item.price}`}
+                                                        {item.price.includes("À partir de") || item.price.length > 15 || item.price.includes("F CFA") ? item.price : `À partir de ${item.price}`}
                                                         {item.price !== "Gratuit" && !item.price.includes("F CFA") ? " F CFA" : ""}
                                                     </span>
                                                 </div>
