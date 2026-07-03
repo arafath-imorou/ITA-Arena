@@ -61,30 +61,20 @@ export default function PhotoGenerator({ frameUrl, campaignId, onDownload }: Pho
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
+        // 1. For Sillage (which has an opaque grey circle), draw the frame FIRST
+        if (isSillageCampaign && frameImage) {
+            ctx.drawImage(frameImage, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
+        }
+
         // Draw User Image
         if (userImage) {
             ctx.save();
             
             if (isPolioCampaign) {
                 ctx.beginPath();
-                // The frame's hole is a large perfect circle with a soft, smooth "bite" 
-                // taken out of the right side to avoid the text banners (the exact red shape).
-                // We draw the main circular arc from the bottom-right (1.3 rad), 
-                // clockwise around the bottom, left, and top, ending at the top-right (5.8 rad).
                 ctx.arc(480, 440, 340, 1.3, 5.8);
-                
-                // Then we close the shape with a series of smooth curves that sweep outwards 
-                // to fill the right side as much as possible, dodging the text and icons.
-                // We use three precise segments to ensure it's smooth but very close to the right edge.
-                
-                // 1. Bulge out to the right to fill the space under the dark blue arc
                 ctx.quadraticCurveTo(900, 350, 800, 450);
-                
-                // 2. Drop down past the shield text, then curve left to avoid the "PÉRIODE" banner
                 ctx.quadraticCurveTo(800, 550, 750, 580);
-                
-                // 3. Drop down past the calendar icon and merge back into the circle's start (~571, 768)
-                // We use a control point of (800, 650) to push this segment generously to the right.
                 ctx.quadraticCurveTo(800, 650, 571, 768);
                 ctx.clip();
             } else if (isSillageCampaign) {
@@ -115,8 +105,8 @@ export default function PhotoGenerator({ frameUrl, campaignId, onDownload }: Pho
             ctx.restore();
         }
 
-        // Draw Frame Image
-        if (frameImage) {
+        // 2. For Polio and others (transparent center), draw the frame LAST
+        if (!isSillageCampaign && frameImage) {
             ctx.drawImage(frameImage, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
         }
 
