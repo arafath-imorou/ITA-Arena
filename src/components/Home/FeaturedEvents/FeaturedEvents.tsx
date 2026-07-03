@@ -355,8 +355,8 @@ export default function FeaturedEvents() {
                                                 <div className={styles.priceLine}>
                                                     <span>💵</span>
                                                     <div className={styles.priceText} style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                                                        {item.price.includes('\n') ? (
-                                                            item.price.split('\n').map((line: string, i: number) => (
+                                                        {item.price.includes('\n') || item.price.includes('\\n') ? (
+                                                            (item.price.includes('\\n') ? item.price.split('\\n') : item.price.split('\n')).map((line: string, i: number) => (
                                                                 <span key={i} style={{ fontSize: '0.85rem', lineHeight: '1.2' }}>{line}</span>
                                                             ))
                                                         ) : (
