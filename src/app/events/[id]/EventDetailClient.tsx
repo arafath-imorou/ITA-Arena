@@ -263,7 +263,7 @@ export default function EventDetailClient({ id }: { id: string }) {
                                                     {parseFloat(cat.price) === 0 ? "GRATUIT" : `${new Intl.NumberFormat('fr-FR').format(cat.price)} F CFA`}
                                                 </span>
                                                 {cat.description && (
-                                                    <span style={{ display: 'block', fontSize: '0.75rem', color: '#64748b', marginTop: '0.3rem', lineHeight: '1.4' }}>
+                                                    <span style={{ display: 'block', fontSize: '0.75rem', color: '#D4AF37', marginTop: '0.5rem', lineHeight: '1.5', textAlign: 'justify' }}>
                                                         {cat.description}
                                                     </span>
                                                 )}
