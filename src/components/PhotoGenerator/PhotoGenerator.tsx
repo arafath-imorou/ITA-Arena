@@ -79,15 +79,15 @@ export default function PhotoGenerator({ frameUrl, campaignId, onDownload }: Pho
                 ctx.clip();
             } else if (isSillageCampaign) {
                 ctx.beginPath();
-                // Circular mask for Sillage, offset to the right side
-                // Center X: ~740, Center Y: ~615, Radius: ~270
-                ctx.arc(740, 615, 270, 0, Math.PI * 2);
+                // Circular mask for Sillage, moved down and shrunk to avoid the top ribbon
+                // Center X: 740, Center Y: 635 (moved down from 615), Radius: 255 (shrunk from 270)
+                ctx.arc(740, 635, 255, 0, Math.PI * 2);
                 ctx.clip();
             }
 
             // Move to center of canvas (or center of mask for Sillage)
             const centerX = isSillageCampaign ? 740 : CANVAS_SIZE / 2;
-            const centerY = isSillageCampaign ? 615 : CANVAS_SIZE / 2;
+            const centerY = isSillageCampaign ? 635 : CANVAS_SIZE / 2;
             ctx.translate(centerX + offset.x, centerY + offset.y);
             // Rotate
             ctx.rotate((rotation * Math.PI) / 180);
