@@ -3,6 +3,7 @@ const supabase = createClient('https://eqqdjqdbbwmshllqesdt.supabase.co', 'eyJhb
 
 supabase.from('events').update({
     price: "Salon First Class (06 Personnes x 150.000 = 900 000), 70.000 F CFA : Business Class & 30.000 F CFA"
-}).ilike('title', '%SILLAGE COUTURE%').then(({data, error}) => {
-    console.log(error || "Success");
+}).ilike('title', '%SILLAGE COUTURE%').select().then(({data, error}) => {
+    console.log("Error:", error);
+    console.log("Data:", data);
 });

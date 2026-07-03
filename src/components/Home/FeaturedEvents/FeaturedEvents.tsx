@@ -354,10 +354,18 @@ export default function FeaturedEvents() {
                                             {mode === 'events' ? (
                                                 <div className={styles.priceLine}>
                                                     <span>💵</span>
-                                                    <span className={styles.priceText}>
-                                                        {item.price.includes("À partir de") || item.price.length > 15 || item.price.includes("F CFA") ? item.price : `À partir de ${item.price}`}
-                                                        {item.price !== "Gratuit" && !item.price.includes("F CFA") ? " F CFA" : ""}
-                                                    </span>
+                                                    <div className={styles.priceText} style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                                                        {item.price.includes('\n') ? (
+                                                            item.price.split('\n').map((line: string, i: number) => (
+                                                                <span key={i} style={{ fontSize: '0.85rem', lineHeight: '1.2' }}>{line}</span>
+                                                            ))
+                                                        ) : (
+                                                            <span>
+                                                                {item.price.includes("À partir de") || item.price.length > 15 || item.price.includes("F CFA") ? item.price : `À partir de ${item.price}`}
+                                                                {item.price !== "Gratuit" && !item.price.includes("F CFA") ? " F CFA" : ""}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             ) : (
                                                 <div style={{ padding: '0.8rem', background: '#f5f7fa', borderRadius: '0.5rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

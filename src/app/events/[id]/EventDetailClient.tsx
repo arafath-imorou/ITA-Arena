@@ -209,7 +209,20 @@ export default function EventDetailClient({ id }: { id: string }) {
                     <div className={styles.meta}>
                         <div className={styles.metaItem}>📅 {item.date} {item.time ? `| ${item.time}` : ''}</div>
                         <div className={styles.metaItem}>📍 {item.location}</div>
-                        <div className={styles.metaItem}>💵 {item.price}{item.price !== "Gratuit" && !item.price.includes("F CFA") ? " F CFA" : ""}</div>
+                        <div className={styles.metaItem} style={{ alignItems: 'flex-start' }}>
+                            <span style={{ marginRight: '8px' }}>💵</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                                {item.price.includes('\n') ? (
+                                    item.price.split('\n').map((line: string, i: number) => (
+                                        <span key={i} style={{ fontSize: '0.9rem', lineHeight: '1.2' }}>{line}</span>
+                                    ))
+                                ) : (
+                                    <span>
+                                        {item.price}{item.price !== "Gratuit" && !item.price.includes("F CFA") ? " F CFA" : ""}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
