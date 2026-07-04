@@ -44,7 +44,9 @@ export default function PhotoGenerator({ frameUrl, campaignId, onDownload }: Pho
             console.error("Failed to load frame image");
             setIsLoading(false);
         };
-        img.src = frameUrl;
+        // Add a timestamp to bypass browser cache for updated images
+        const cacheBusterUrl = frameUrl + (frameUrl.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+        img.src = cacheBusterUrl;
     }, [frameUrl]);
 
     // Draw Canvas
@@ -79,15 +81,15 @@ export default function PhotoGenerator({ frameUrl, campaignId, onDownload }: Pho
                 ctx.clip();
             } else if (isSillageCampaign) {
                 ctx.beginPath();
-                // Circular mask for Sillage, moved down and shrunk to avoid the top ribbon
-                // Center X: 740, Center Y: 635 (moved down from 615), Radius: 255 (shrunk from 270)
-                ctx.arc(740, 635, 255, 0, Math.PI * 2);
+                // Circular mask for Sillage, updated for new image
+                // Center X: 762, Center Y: 650, Radius: 240
+                ctx.arc(762, 650, 240, 0, Math.PI * 2);
                 ctx.clip();
             }
 
             // Move to center of canvas (or center of mask for Sillage)
-            const centerX = isSillageCampaign ? 740 : CANVAS_SIZE / 2;
-            const centerY = isSillageCampaign ? 635 : CANVAS_SIZE / 2;
+            const centerX = isSillageCampaign ? 762 : CANVAS_SIZE / 2;
+            const centerY = isSillageCampaign ? 650 : CANVAS_SIZE / 2;
             ctx.translate(centerX + offset.x, centerY + offset.y);
             // Rotate
             ctx.rotate((rotation * Math.PI) / 180);
