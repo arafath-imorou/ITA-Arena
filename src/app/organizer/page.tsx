@@ -16,6 +16,8 @@ function DashboardContent() {
     const [items, setItems] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedEvent, setSelectedEvent] = useState<any>(null);
+    const [rawTickets, setRawTickets] = useState<any[]>([]);
+    const [activeModalTab, setActiveModalTab] = useState<'stats' | 'tickets' | 'participants'>('stats');
 
     useEffect(() => {
         async function fetchDashboardData() {
@@ -39,6 +41,7 @@ function DashboardContent() {
                         .select('*')
                         .in('event_id', eventIds);
                     const tickets = tData || [];
+                    setRawTickets(tickets);
 
                     const enhancedData = data.map(e => {
                         let categoriesWithStats: any[] = [];
@@ -175,7 +178,7 @@ function DashboardContent() {
 
                                     <div className={styles.eventActions}>
                                         <span className={`${styles.badge} ${styles.badgeActive}`}>{isEvents ? "En vente" : "Ouverte"}</span>
-                                        <button onClick={() => setSelectedEvent(item)} className={styles.editBtn} style={{ background: '#e0f2fe', color: '#0369a1', borderColor: '#bae6fd' }} title="Indicateurs de ventes">📊 Stats</button>
+                                        <button onClick={() => { setSelectedEvent(item); setActiveModalTab('stats'); }} className={styles.editBtn} style={{ background: '#e0f2fe', color: '#0369a1', borderColor: '#bae6fd' }} title="Indicateurs de ventes">📊 Stats</button>
                                         <Link href={isEvents ? `/organizer/create?edit=${item.id}` : `/organizer/cotisation/create?edit=${item.id}`} className={styles.editBtn}>Gérer</Link>
                                     </div>
                                 </div>
@@ -226,34 +229,95 @@ function DashboardContent() {
                         <h2 style={{ marginBottom: '0.5rem', fontSize: '1.25rem' }}>{selectedEvent.title}</h2>
                         <span className={`${styles.badge} ${styles.badgeActive}`} style={{ marginBottom: '1.5rem', display: 'inline-block' }}>{isEvents ? 'Événement' : 'Cotisation'}</span>
                         
-                        <h3 style={{ marginBottom: '1rem' }}>Performances de Ventes</h3>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Total Vendus</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.sold_count}</h3></div>
-                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Revenu</p><h3 style={{ margin: 0, fontSize: '1.2rem', color: '#059669' }}>{Number(selectedEvent.collected_amount || 0).toLocaleString()} F</h3></div>
-                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Restants</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.total_capacity - selectedEvent.sold_count}</h3></div>
-                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Taux</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.percent}%</h3></div>
+                        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', borderBottom: '1px solid #e2e8f0' }}>
+                            <button onClick={() => setActiveModalTab('stats')} style={{ padding: '0.5rem 1rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 'bold', color: activeModalTab === 'stats' ? '#0a2e73' : '#64748b', borderBottom: activeModalTab === 'stats' ? '2px solid #ff5a1f' : '2px solid transparent' }}>Performances</button>
+                            <button onClick={() => setActiveModalTab('tickets')} style={{ padding: '0.5rem 1rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 'bold', color: activeModalTab === 'tickets' ? '#0a2e73' : '#64748b', borderBottom: activeModalTab === 'tickets' ? '2px solid #ff5a1f' : '2px solid transparent' }}>Tickets ({selectedEvent.sold_count})</button>
+                            <button onClick={() => setActiveModalTab('participants')} style={{ padding: '0.5rem 1rem', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 'bold', color: activeModalTab === 'participants' ? '#0a2e73' : '#64748b', borderBottom: activeModalTab === 'participants' ? '2px solid #ff5a1f' : '2px solid transparent' }}>Participants</button>
                         </div>
 
-                        {selectedEvent.categoriesWithStats && selectedEvent.categoriesWithStats.length > 0 && (
+                        {activeModalTab === 'stats' ? (
                             <>
-                                <h3>Par Catégorie</h3>
-                                <div style={{ overflowX: 'auto', marginTop: '1rem' }}>
+                                <h3 style={{ marginBottom: '1rem' }}>Performances de Ventes</h3>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                                    <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Total Vendus</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.sold_count}</h3></div>
+                                    <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Revenu</p><h3 style={{ margin: 0, fontSize: '1.2rem', color: '#059669' }}>{Number(selectedEvent.collected_amount || 0).toLocaleString()} F</h3></div>
+                                    <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Restants</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.total_capacity - selectedEvent.sold_count}</h3></div>
+                                    <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Taux</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.percent}%</h3></div>
+                                </div>
+
+                                {selectedEvent.categoriesWithStats && selectedEvent.categoriesWithStats.length > 0 && (
+                                    <>
+                                        <h3>Par Catégorie</h3>
+                                        <div style={{ overflowX: 'auto', marginTop: '1rem' }}>
+                                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left' }}>
+                                                <thead><tr style={{ borderBottom: '1px solid #e2e8f0' }}><th style={{ padding: '0.5rem' }}>Catégorie</th><th style={{ padding: '0.5rem' }}>Prix</th><th style={{ padding: '0.5rem' }}>Ventes</th><th style={{ padding: '0.5rem' }}>Revenu</th><th style={{ padding: '0.5rem' }}>Taux</th></tr></thead>
+                                                <tbody>
+                                                    {selectedEvent.categoriesWithStats.map((cat: any, idx: number) => (
+                                                        <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                                            <td style={{ padding: '0.5rem' }}><strong>{cat.name}</strong></td>
+                                                            <td style={{ padding: '0.5rem' }}>{Number(cat.price).toLocaleString()} F</td>
+                                                            <td style={{ padding: '0.5rem' }}>{cat.sold} / {cat.capacity}</td>
+                                                            <td style={{ padding: '0.5rem', color: '#059669', fontWeight: 'bold' }}>{Number(cat.revenue || 0).toLocaleString()} F</td>
+                                                            <td style={{ padding: '0.5rem' }}>{cat.percent}%</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </>
+                                )}
+                            </>
+                        ) : activeModalTab === 'participants' ? (
+                            <div>
+                                <h3 style={{ marginBottom: '1rem' }}>Liste des Participants</h3>
+                                <div style={{ overflowX: 'auto' }}>
                                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left' }}>
-                                        <thead><tr style={{ borderBottom: '1px solid #e2e8f0' }}><th style={{ padding: '0.5rem' }}>Catégorie</th><th style={{ padding: '0.5rem' }}>Prix</th><th style={{ padding: '0.5rem' }}>Ventes</th><th style={{ padding: '0.5rem' }}>Revenu</th><th style={{ padding: '0.5rem' }}>Taux</th></tr></thead>
+                                        <thead><tr style={{ borderBottom: '1px solid #e2e8f0' }}><th style={{ padding: '0.5rem' }}>N°</th><th style={{ padding: '0.5rem' }}>Nom</th><th style={{ padding: '0.5rem' }}>Email</th><th style={{ padding: '0.5rem' }}>Téléphone</th><th style={{ padding: '0.5rem' }}>Catégorie</th></tr></thead>
                                         <tbody>
-                                            {selectedEvent.categoriesWithStats.map((cat: any, idx: number) => (
-                                                <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                                    <td style={{ padding: '0.5rem' }}><strong>{cat.name}</strong></td>
-                                                    <td style={{ padding: '0.5rem' }}>{Number(cat.price).toLocaleString()} F</td>
-                                                    <td style={{ padding: '0.5rem' }}>{cat.sold} / {cat.capacity}</td>
-                                                    <td style={{ padding: '0.5rem', color: '#059669', fontWeight: 'bold' }}>{Number(cat.revenue || 0).toLocaleString()} F</td>
-                                                    <td style={{ padding: '0.5rem' }}>{cat.percent}%</td>
+                                            {rawTickets.filter(t => t.event_id === selectedEvent.id).map(t => (
+                                                <tr key={t.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                                    <td style={{ padding: '0.5rem' }}><strong>#{t.ticket_number.toString().padStart(5, '0')}</strong></td>
+                                                    <td style={{ padding: '0.5rem' }}>{t.user_name || 'Inconnu'}</td>
+                                                    <td style={{ padding: '0.5rem' }}>{t.user_email || 'N/A'}</td>
+                                                    <td style={{ padding: '0.5rem' }}>{t.user_phone || 'N/A'}</td>
+                                                    <td style={{ padding: '0.5rem' }}>{t.category}</td>
                                                 </tr>
                                             ))}
+                                            {rawTickets.filter(t => t.event_id === selectedEvent.id).length === 0 && (
+                                                <tr><td colSpan={5} style={{ textAlign: 'center', padding: '1rem', color: '#64748b' }}>Aucun participant.</td></tr>
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>
-                            </>
+                            </div>
+                        ) : (
+                            <div>
+                                <h3 style={{ marginBottom: '1rem' }}>Liste des Tickets</h3>
+                                <div style={{ overflowX: 'auto' }}>
+                                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left' }}>
+                                        <thead><tr style={{ borderBottom: '1px solid #e2e8f0' }}><th style={{ padding: '0.5rem' }}>N°</th><th style={{ padding: '0.5rem' }}>Client</th><th style={{ padding: '0.5rem' }}>Catégorie</th><th style={{ padding: '0.5rem' }}>Paiement</th></tr></thead>
+                                        <tbody>
+                                            {rawTickets.filter(t => t.event_id === selectedEvent.id).map(t => (
+                                                <tr key={t.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                                    <td style={{ padding: '0.5rem' }}><strong>#{t.ticket_number.toString().padStart(5, '0')}</strong></td>
+                                                    <td style={{ padding: '0.5rem' }}>
+                                                        <div>{t.user_name || 'Inconnu'}</div>
+                                                        <div style={{ fontSize: '0.65rem', color: '#64748b' }}>{t.user_email}</div>
+                                                    </td>
+                                                    <td style={{ padding: '0.5rem' }}>{t.category}</td>
+                                                    <td style={{ padding: '0.5rem' }}>
+                                                        <div>{t.payment_phone || 'N/A'}</div>
+                                                        <div style={{ fontSize: '0.65rem', color: '#64748b' }}>{Number(t.amount).toLocaleString()} F</div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {rawTickets.filter(t => t.event_id === selectedEvent.id).length === 0 && (
+                                                <tr><td colSpan={4} style={{ textAlign: 'center', padding: '1rem', color: '#64748b' }}>Aucun ticket.</td></tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         )}
                     </div>
                 </div>
