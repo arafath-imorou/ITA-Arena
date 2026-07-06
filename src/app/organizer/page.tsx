@@ -15,6 +15,7 @@ function DashboardContent() {
     const [stats, setStats] = useState({ primaryCount: 0, secondaryStat: 0, revenue: 0 });
     const [items, setItems] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedEvent, setSelectedEvent] = useState<any>(null);
 
     useEffect(() => {
         async function fetchDashboardData() {
@@ -32,11 +33,38 @@ function DashboardContent() {
                 if (error) throw error;
 
                 if (data) {
-                    setItems(data);
+                    const eventIds = data.map(e => e.id);
+                    const { data: tData } = await supabase
+                        .from('tickets')
+                        .select('*')
+                        .in('event_id', eventIds);
+                    const tickets = tData || [];
+
+                    const enhancedData = data.map(e => {
+                        let categoriesWithStats: any[] = [];
+                        let totalCatCapacity = 0;
+                        if (e.ticket_categories && Array.isArray(e.ticket_categories)) {
+                            categoriesWithStats = e.ticket_categories.map((cat: any) => {
+                                const catTickets = tickets.filter(t => t.event_id === e.id && t.category === cat.name);
+                                const sold = catTickets.length;
+                                const revenue = catTickets.reduce((acc, t) => acc + Number(t.amount || 0), 0);
+                                const capacity = Number(cat.stock) || 0;
+                                totalCatCapacity += capacity;
+                                return { ...cat, sold, revenue, capacity, percent: capacity > 0 ? Math.round((sold/capacity)*100) : 0 };
+                            });
+                        }
+                        return {
+                            ...e,
+                            categoriesWithStats,
+                            percent: e.total_capacity > 0 ? Math.round((e.sold_count / e.total_capacity) * 100) : 0
+                        };
+                    });
+
+                    setItems(enhancedData);
                     setStats({
-                        primaryCount: data.length,
-                        secondaryStat: data.reduce((acc, item) => acc + (item.sold_count || 0), 0),
-                        revenue: data.reduce((acc, item) => acc + Number(item.collected_amount || 0), 0)
+                        primaryCount: enhancedData.length,
+                        secondaryStat: enhancedData.reduce((acc, item) => acc + (item.sold_count || 0), 0),
+                        revenue: enhancedData.reduce((acc, item) => acc + Number(item.collected_amount || 0), 0)
                     });
                 }
             } catch (err) {
@@ -147,6 +175,7 @@ function DashboardContent() {
 
                                     <div className={styles.eventActions}>
                                         <span className={`${styles.badge} ${styles.badgeActive}`}>{isEvents ? "En vente" : "Ouverte"}</span>
+                                        <button onClick={() => setSelectedEvent(item)} className={styles.editBtn} style={{ background: '#e0f2fe', color: '#0369a1', borderColor: '#bae6fd' }} title="Indicateurs de ventes">📊 Stats</button>
                                         <Link href={isEvents ? `/organizer/create?edit=${item.id}` : `/organizer/cotisation/create?edit=${item.id}`} className={styles.editBtn}>Gérer</Link>
                                     </div>
                                 </div>
@@ -189,6 +218,46 @@ function DashboardContent() {
                     </div>
                 </div>
             </div>
+            {/* Détails Modal Overlay */}
+            {selectedEvent && (
+                <div className={styles.modalOverlay} onClick={() => setSelectedEvent(null)}>
+                    <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+                        <button onClick={() => setSelectedEvent(null)} style={{ position: 'absolute', top: '1rem', right: '1rem', border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }}>×</button>
+                        <h2 style={{ marginBottom: '0.5rem', fontSize: '1.25rem' }}>{selectedEvent.title}</h2>
+                        <span className={`${styles.badge} ${styles.badgeActive}`} style={{ marginBottom: '1.5rem', display: 'inline-block' }}>{isEvents ? 'Événement' : 'Cotisation'}</span>
+                        
+                        <h3 style={{ marginBottom: '1rem' }}>Performances de Ventes</h3>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Total Vendus</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.sold_count}</h3></div>
+                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Revenu</p><h3 style={{ margin: 0, fontSize: '1.2rem', color: '#059669' }}>{Number(selectedEvent.collected_amount || 0).toLocaleString()} F</h3></div>
+                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Restants</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.total_capacity - selectedEvent.sold_count}</h3></div>
+                            <div style={{ padding: '0.75rem', background: '#f8fafc', borderRadius: '0.75rem' }}><p style={{ margin: 0, color: '#64748b', fontSize: '0.7rem' }}>Taux</p><h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedEvent.percent}%</h3></div>
+                        </div>
+
+                        {selectedEvent.categoriesWithStats && selectedEvent.categoriesWithStats.length > 0 && (
+                            <>
+                                <h3>Par Catégorie</h3>
+                                <div style={{ overflowX: 'auto', marginTop: '1rem' }}>
+                                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left' }}>
+                                        <thead><tr style={{ borderBottom: '1px solid #e2e8f0' }}><th style={{ padding: '0.5rem' }}>Catégorie</th><th style={{ padding: '0.5rem' }}>Prix</th><th style={{ padding: '0.5rem' }}>Ventes</th><th style={{ padding: '0.5rem' }}>Revenu</th><th style={{ padding: '0.5rem' }}>Taux</th></tr></thead>
+                                        <tbody>
+                                            {selectedEvent.categoriesWithStats.map((cat: any, idx: number) => (
+                                                <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                                    <td style={{ padding: '0.5rem' }}><strong>{cat.name}</strong></td>
+                                                    <td style={{ padding: '0.5rem' }}>{Number(cat.price).toLocaleString()} F</td>
+                                                    <td style={{ padding: '0.5rem' }}>{cat.sold} / {cat.capacity}</td>
+                                                    <td style={{ padding: '0.5rem', color: '#059669', fontWeight: 'bold' }}>{Number(cat.revenue || 0).toLocaleString()} F</td>
+                                                    <td style={{ padding: '0.5rem' }}>{cat.percent}%</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
