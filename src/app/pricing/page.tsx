@@ -119,7 +119,7 @@ export default function PricingPage() {
                         <h2 className={styles.centerTitle}>ILS NOUS ONT FAIT CONFIANCE</h2>
                         <div className={styles.logoGrid}>
                             {featuredEvents.map(event => (
-                                <Link key={event.id} href={`/events/${event.id}`} className={styles.eventPoster}>
+                                <Link key={event.id} href={`/events/${event.slug || event.id}`} className={styles.eventPoster}>
                                     <img src={event.image_url} alt={event.title} />
                                 </Link>
                             ))}

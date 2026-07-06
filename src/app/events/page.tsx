@@ -110,7 +110,7 @@ export default function EventsPage() {
                                     </div>
                                     <div className={styles.footer}>
                                         <span className={styles.price}>{event.price}{event.price !== "Gratuit" && !event.price.includes("F CFA") ? " F CFA" : ""}</span>
-                                        <Link href={`/events/${event.id}`} className={styles.buyBtn}>Détails</Link>
+                                        <Link href={`/events/${event.slug || event.id}`} className={styles.buyBtn}>Détails</Link>
                                     </div>
                                 </div>
                             </div>

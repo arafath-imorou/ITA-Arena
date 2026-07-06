@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import BackButton from "@/components/BackButton";
 import { useAuth } from "@/context/AuthContext";
+import { generateSlug } from "@/lib/slugUtils";
 
 export default function CreateCotisationPage() {
     const router = useRouter();
@@ -141,7 +142,8 @@ export default function CreateCotisationPage() {
                 setShowSuccess(true);
             }
         } else {
-            const { error } = await supabase.from('events').insert([submissionData]);
+            const finalData = { ...submissionData, slug: generateSlug(submissionData.title) };
+            const { error } = await supabase.from('events').insert([finalData]);
             if (error) {
                 console.error('Error creating cotisation:', error);
                 alert("Erreur lors de la création : " + error.message);

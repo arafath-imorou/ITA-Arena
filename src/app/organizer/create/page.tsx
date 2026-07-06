@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useMode } from "@/context/ModeContext";
 import BackButton from "@/components/BackButton";
+import { generateSlug } from "@/lib/slugUtils";
 
 import { useAuth } from "@/context/AuthContext";
 
@@ -201,7 +202,8 @@ export default function CreateEventPage() {
                 setShowSuccess(true);
             }
         } else {
-            const { error } = await supabase.from('events').insert([submissionData]);
+            const finalData = { ...submissionData, slug: generateSlug(submissionData.title) };
+            const { error } = await supabase.from('events').insert([finalData]);
             if (error) {
                 console.error('Error creating event:', error);
                 alert("Erreur lors de la création de l'évènement : " + error.message);

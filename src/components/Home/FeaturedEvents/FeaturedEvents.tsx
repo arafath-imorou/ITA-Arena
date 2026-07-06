@@ -408,7 +408,7 @@ export default function FeaturedEvents() {
                                         </div>
 
                                         <Link 
-                                            href={isPast ? "#" : (mode === 'support' ? `/support/${item.slug}` : (mode === 'forms' ? `/f/${item.slug}` : (mode === 'votes' ? `/vote/${item.slug}` : `/events/${item.id}`)))} 
+                                            href={isPast ? "#" : (mode === 'support' ? `/support/${item.slug}` : (mode === 'forms' ? `/f/${item.slug}` : (mode === 'votes' ? `/vote/${item.slug}` : `/events/${item.slug || item.id}`)))} 
                                             className={styles.buyBtn}
                                             style={(isSoldOut || isPast) ? { background: '#ccc', pointerEvents: 'none' } : {}}
                                             onClick={(e) => {

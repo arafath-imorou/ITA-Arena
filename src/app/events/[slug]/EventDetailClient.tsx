@@ -8,7 +8,7 @@ import BackButton from "@/components/BackButton";
 import HomeButton from "@/components/HomeButton";
 import { supabase } from "@/lib/supabase";
 
-export default function EventDetailClient({ id }: { id: string }) {
+export default function EventDetailClient({ slug }: { slug: string }) {
     const { mode } = useMode();
     const isCotisation = mode === 'cotisations';
 
@@ -38,19 +38,25 @@ export default function EventDetailClient({ id }: { id: string }) {
         async function fetchEvent() {
             setLoading(true);
             
-            // Fetch from database
-            const { data, error } = await supabase
+            const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
+            let query = supabase
                 .from('events')
-                .select('*, organizer:profiles(name:full_name, avatar_url)')
-                .eq('id', id)
-                .single();
+                .select('*, organizer:profiles(name:full_name, avatar_url)');
+                
+            if (isUUID) {
+                query = query.eq('id', slug);
+            } else {
+                query = query.eq('slug', slug);
+            }
+            
+            const { data, error } = await query.single();
 
             if (!error && data) {
                 // Fetch collected amount and sold count from tickets
                 const { data: ticketsData } = await supabase
                     .from('tickets')
                     .select('amount')
-                    .eq('event_id', id)
+                    .eq('event_id', data.id)
                     .eq('status', 'valid');
                 
                 const collectedAmount = ticketsData?.reduce((acc, t) => acc + Number(t.amount), 0) || 0;
@@ -78,7 +84,7 @@ export default function EventDetailClient({ id }: { id: string }) {
         }
 
         fetchEvent();
-    }, [id, isCotisation]);
+    }, [slug, isCotisation]);
 
     const handleQtyChange = (type: string, delta: number) => {
         setQuantities((prev) => ({
