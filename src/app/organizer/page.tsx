@@ -147,7 +147,7 @@ function DashboardContent() {
 
                                     <div className={styles.eventActions}>
                                         <span className={`${styles.badge} ${styles.badgeActive}`}>{isEvents ? "En vente" : "Ouverte"}</span>
-                                        <Link href={`/organizer/events/${item.id}`} className={styles.editBtn}>Gérer</Link>
+                                        <Link href={isEvents ? `/organizer/create?edit=${item.id}` : `/organizer/cotisation/create?edit=${item.id}`} className={styles.editBtn}>Gérer</Link>
                                     </div>
                                 </div>
 
