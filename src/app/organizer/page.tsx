@@ -181,6 +181,7 @@ function DashboardContent() {
                                         <span className={`${styles.badge} ${styles.badgeActive}`}>{isEvents ? "En vente" : "Ouverte"}</span>
                                         <button onClick={() => { setSelectedEvent(item); setActiveModalTab('stats'); }} className={styles.editBtn} style={{ background: '#e0f2fe', color: '#0369a1', borderColor: '#bae6fd' }} title="Indicateurs de ventes">📊 Stats</button>
                                         <Link href={isEvents ? `/organizer/create?edit=${item.id}` : `/organizer/cotisation/create?edit=${item.id}`} className={styles.editBtn}>Gérer</Link>
+                                        <Link href={`/events/${item.slug || item.id}`} target="_blank" className={styles.editBtn} style={{ background: '#f8fafc', color: '#64748b', border: '1px solid #e2e8f0', marginLeft: '8px' }}>🔗 Voir</Link>
                                     </div>
                                 </div>
 
