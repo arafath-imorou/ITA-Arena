@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
+import { downloadTicket } from "@/lib/ticketUtils";
 
 function DashboardContent() {
     const { user } = useAuth();
@@ -295,7 +296,7 @@ function DashboardContent() {
                                 <h3 style={{ marginBottom: '1rem' }}>Liste des Tickets</h3>
                                 <div style={{ overflowX: 'auto' }}>
                                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left' }}>
-                                        <thead><tr style={{ borderBottom: '1px solid #e2e8f0' }}><th style={{ padding: '0.5rem' }}>N°</th><th style={{ padding: '0.5rem' }}>Client</th><th style={{ padding: '0.5rem' }}>Catégorie</th><th style={{ padding: '0.5rem' }}>Paiement</th></tr></thead>
+                                        <thead><tr style={{ borderBottom: '1px solid #e2e8f0' }}><th style={{ padding: '0.5rem' }}>N°</th><th style={{ padding: '0.5rem' }}>Client</th><th style={{ padding: '0.5rem' }}>Catégorie</th><th style={{ padding: '0.5rem' }}>Paiement</th><th style={{ padding: '0.5rem' }}>Action</th></tr></thead>
                                         <tbody>
                                             {rawTickets.filter(t => t.event_id === selectedEvent.id).map(t => (
                                                 <tr key={t.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
@@ -309,10 +310,32 @@ function DashboardContent() {
                                                         <div>{t.payment_phone || 'N/A'}</div>
                                                         <div style={{ fontSize: '0.65rem', color: '#64748b' }}>{Number(t.amount).toLocaleString()} F</div>
                                                     </td>
+                                                    <td style={{ padding: '0.5rem' }}>
+                                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                            <button 
+                                                                onClick={() => downloadTicket(t, selectedEvent)}
+                                                                className={styles.badge}
+                                                                style={{ background: '#f1f5f9', border: 'none', cursor: 'pointer', padding: '0.2rem 0.5rem', borderRadius: '4px' }}
+                                                                title="Télécharger PDF"
+                                                            >
+                                                                📥 PDF
+                                                            </button>
+                                                            <a 
+                                                                href={`https://wa.me/${(t.payment_phone || t.user_phone || '').replace(/\+/g, '').replace(/\s/g, '')}?text=Bonjour ${t.user_name || ''}, voici votre ticket pour ${selectedEvent.title}.`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className={styles.badge}
+                                                                style={{ background: '#25D366', color: 'white', border: 'none', cursor: 'pointer', textDecoration: 'none', padding: '0.2rem 0.5rem', borderRadius: '4px' }}
+                                                                title="Envoyer via WhatsApp"
+                                                            >
+                                                                💬 WhatsApp
+                                                            </a>
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                             ))}
                                             {rawTickets.filter(t => t.event_id === selectedEvent.id).length === 0 && (
-                                                <tr><td colSpan={4} style={{ textAlign: 'center', padding: '1rem', color: '#64748b' }}>Aucun ticket.</td></tr>
+                                                <tr><td colSpan={5} style={{ textAlign: 'center', padding: '1rem', color: '#64748b' }}>Aucun ticket.</td></tr>
                                             )}
                                         </tbody>
                                     </table>
