@@ -18,9 +18,10 @@ export default function FeaturedEvents() {
 
     const checkIsPastEvent = (dateStr: string) => {
         if (!dateStr) return false;
-        const match = dateStr.match(/\d{4}-\d{2}-\d{2}/);
-        if (match) {
-            const d = new Date(match[0]);
+        const matches = dateStr.match(/\d{4}-\d{2}-\d{2}/g);
+        if (matches && matches.length > 0) {
+            const lastDateStr = matches[matches.length - 1];
+            const d = new Date(lastDateStr);
             if (!isNaN(d.getTime())) {
                 return d < new Date(new Date().setHours(0, 0, 0, 0));
             }
