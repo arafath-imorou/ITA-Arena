@@ -102,9 +102,7 @@ export default function EventDetailClient({ slug }: { slug: string }) {
         // Si le texte contient déjà des sauts de ligne manuels, on respecte
         if (text.includes('\n')) {
             return text.split('\n').map((line, i) => (
-                <span key={i} style={{ display: 'block', marginBottom: '0.4rem', color: '#64748b' }}>
-                    {line}
-                </span>
+                <span key={i} style={{ display: 'block', marginBottom: '0.4rem', color: '#64748b' }} dangerouslySetInnerHTML={{ __html: line }} />
             ));
         }
 
@@ -117,9 +115,7 @@ export default function EventDetailClient({ slug }: { slug: string }) {
             const sentences = text.split(/(?<=[.!?])\s+/);
             if (sentences.length > 1) {
                 return sentences.map((sentence, i) => (
-                    <span key={i} style={{ display: 'block', marginBottom: '0.6rem', color: '#64748b' }}>
-                        {sentence}
-                    </span>
+                    <span key={i} style={{ display: 'block', marginBottom: '0.6rem', color: '#64748b' }} dangerouslySetInnerHTML={{ __html: sentence }} />
                 ));
             }
             return <span style={{ display: 'block', color: '#64748b' }}>{text}</span>;
