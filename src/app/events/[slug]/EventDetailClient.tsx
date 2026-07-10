@@ -247,7 +247,9 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                 <div className={styles.infoColumn}>
                     <section className={styles.descriptionSection}>
                         <h2 className={styles.heading}>À propos</h2>
-                        <p className={styles.descriptionText}>{item.description}</p>
+                        {item.description ? (
+                            <p className={styles.descriptionText} dangerouslySetInnerHTML={{ __html: item.description.replace(/\n/g, '<br/>') }}></p>
+                        ) : null}
                     </section>
 
                     {isCotisation && (
