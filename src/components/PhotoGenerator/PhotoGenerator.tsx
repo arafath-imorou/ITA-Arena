@@ -6,10 +6,11 @@ import styles from './PhotoGenerator.module.css';
 interface PhotoGeneratorProps {
     frameUrl: string;
     campaignId: string;
+    campaignTitle?: string;
     onDownload?: () => void;
 }
 
-export default function PhotoGenerator({ frameUrl, campaignId, onDownload }: PhotoGeneratorProps) {
+export default function PhotoGenerator({ frameUrl, campaignId, campaignTitle = "", onDownload }: PhotoGeneratorProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -29,9 +30,9 @@ export default function PhotoGenerator({ frameUrl, campaignId, onDownload }: Pho
 
     // Detect if this is the polio frame to automatically apply a circular mask
     // We check both the URL (for 'polio') and the specific campaign ID just in case
-    const isPolioCampaign = frameUrl.toLowerCase().includes('polio') || campaignId === 'dd87821d-684f-4715-8e7b-e383b2550664';
-    const isSillageCampaign = frameUrl.toLowerCase().includes('sillage');
-    const isPlageCampaign = frameUrl.toLowerCase().includes('plage') || campaignId.includes('plage');
+    const isPolioCampaign = frameUrl.toLowerCase().includes('polio') || campaignTitle.toLowerCase().includes('polio');
+    const isSillageCampaign = frameUrl.toLowerCase().includes('sillage') || campaignTitle.toLowerCase().includes('sillage');
+    const isPlageCampaign = campaignTitle.toLowerCase().includes('plage') || campaignTitle.toLowerCase().includes('acte');
 
     // Load Frame Image
     useEffect(() => {

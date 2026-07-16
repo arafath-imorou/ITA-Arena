@@ -150,6 +150,7 @@ export default function SupportCampaignPage() {
                         <PhotoGenerator 
                             frameUrl={campaign.frame_image} 
                             campaignId={campaign.id} 
+                            campaignTitle={campaign.title}
                             onDownload={handleDownload}
                         />
 
