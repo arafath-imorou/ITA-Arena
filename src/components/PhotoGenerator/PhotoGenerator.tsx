@@ -31,6 +31,7 @@ export default function PhotoGenerator({ frameUrl, campaignId, onDownload }: Pho
     // We check both the URL (for 'polio') and the specific campaign ID just in case
     const isPolioCampaign = frameUrl.toLowerCase().includes('polio') || campaignId === 'dd87821d-684f-4715-8e7b-e383b2550664';
     const isSillageCampaign = frameUrl.toLowerCase().includes('sillage');
+    const isPlageCampaign = frameUrl.toLowerCase().includes('plage') || campaignId.includes('plage');
 
     // Load Frame Image
     useEffect(() => {
@@ -87,9 +88,19 @@ export default function PhotoGenerator({ frameUrl, campaignId, onDownload }: Pho
                 ctx.clip();
             }
 
-            // Move to center of canvas (or center of mask for Sillage)
-            const centerX = isSillageCampaign ? 762 : CANVAS_SIZE / 2;
-            const centerY = isSillageCampaign ? 650 : CANVAS_SIZE / 2;
+            // Move to center of canvas (or center of mask for specific campaigns)
+            let centerX = CANVAS_SIZE / 2;
+            let centerY = CANVAS_SIZE / 2;
+            
+            if (isSillageCampaign) {
+                centerX = 762;
+                centerY = 650;
+            } else if (isPlageCampaign || frameUrl.toLowerCase().includes('acte')) {
+                // Approximate center for the "Tous à la plage" frame
+                centerX = 660;
+                centerY = 350;
+            }
+
             ctx.translate(centerX + offset.x, centerY + offset.y);
             // Rotate
             ctx.rotate((rotation * Math.PI) / 180);
