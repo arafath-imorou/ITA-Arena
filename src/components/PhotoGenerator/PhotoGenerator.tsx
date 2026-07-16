@@ -46,9 +46,8 @@ export default function PhotoGenerator({ frameUrl, campaignId, campaignTitle = "
             console.error("Failed to load frame image");
             setIsLoading(false);
         };
-        // Add a timestamp to bypass browser cache for updated images
-        const cacheBusterUrl = frameUrl + (frameUrl.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
-        img.src = cacheBusterUrl;
+        // Use the frameUrl directly to allow browser caching
+        img.src = frameUrl;
     }, [frameUrl]);
 
     // Draw Canvas

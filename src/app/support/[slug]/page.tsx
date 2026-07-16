@@ -137,7 +137,7 @@ export default function SupportCampaignPage() {
                 {!showGenerator ? (
                     <div className={`${styles.card} animate-in`}>
                         <div className={styles.framePreview}>
-                            <img src={`${campaign.frame_image}${campaign.frame_image.includes('?') ? '&' : '?'}t=${new Date().getTime()}`} alt="Cadre de soutien" />
+                            <img src={campaign.frame_image} alt="Cadre de soutien" />
                         </div>
                         <h2 style={{ color: '#0A2E73', marginBottom: '1.5rem' }}>Prêt à montrer votre soutien ?</h2>
                         <button className={styles.btnParticipate} onClick={handleParticipate}>
