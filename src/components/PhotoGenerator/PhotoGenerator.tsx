@@ -89,7 +89,7 @@ export default function PhotoGenerator({ frameUrl, campaignId, campaignTitle = "
             } else if (isPlageCampaign) {
                 ctx.beginPath();
                 // Exact Circular mask for Plage to cover the placeholder
-                ctx.arc(645, 325, 290, 0, Math.PI * 2);
+                ctx.arc(645, 325, 320, 0, Math.PI * 2); // Increased radius to ensure full coverage
                 ctx.clip();
             }
 
