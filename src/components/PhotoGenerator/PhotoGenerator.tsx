@@ -65,8 +65,8 @@ export default function PhotoGenerator({ frameUrl, campaignId, campaignTitle = "
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-        // 1. For Sillage or Plage (which might have opaque circles), draw the frame FIRST
-        if ((isSillageCampaign || isPlageCampaign) && frameImage) {
+        // 1. For Sillage (which might have opaque circles), draw the frame FIRST
+        if (isSillageCampaign && frameImage) {
             ctx.drawImage(frameImage, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
         }
 
@@ -86,11 +86,6 @@ export default function PhotoGenerator({ frameUrl, campaignId, campaignTitle = "
                 // Circular mask for Sillage
                 ctx.arc(762, 650, 240, 0, Math.PI * 2);
                 ctx.clip();
-            } else if (isPlageCampaign) {
-                ctx.beginPath();
-                // Circular mask for Plage (using the centerX/Y we defined)
-                ctx.arc(660, 350, 240, 0, Math.PI * 2); // Approximate radius
-                ctx.clip();
             }
 
             // Move to center of canvas (or center of mask for specific campaigns)
@@ -100,10 +95,10 @@ export default function PhotoGenerator({ frameUrl, campaignId, campaignTitle = "
             if (isSillageCampaign) {
                 centerX = 762;
                 centerY = 650;
-            } else if (isPlageCampaign || frameUrl.toLowerCase().includes('acte')) {
+            } else if (isPlageCampaign) {
                 // Approximate center for the "Tous à la plage" frame
-                centerX = 660;
-                centerY = 350;
+                centerX = 645;
+                centerY = 325;
             }
 
             ctx.translate(centerX + offset.x, centerY + offset.y);
@@ -123,8 +118,8 @@ export default function PhotoGenerator({ frameUrl, campaignId, campaignTitle = "
             ctx.restore();
         }
 
-        // 2. For Polio and others (transparent center), draw the frame LAST
-        if (!isSillageCampaign && !isPlageCampaign && frameImage) {
+        // 2. For Polio, Plage and others (transparent center), draw the frame LAST
+        if (!isSillageCampaign && frameImage) {
             ctx.drawImage(frameImage, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
         }
 
