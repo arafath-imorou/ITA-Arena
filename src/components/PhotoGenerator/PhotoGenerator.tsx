@@ -89,7 +89,7 @@ export default function PhotoGenerator({ frameUrl, campaignId, campaignTitle = "
             } else if (isPlageCampaign) {
                 ctx.beginPath();
                 // Exact Circular mask for Plage to cover the placeholder
-                ctx.arc(645, 325, 320, 0, Math.PI * 2); // Increased radius to ensure full coverage
+                ctx.arc(660, 360, 300, 0, Math.PI * 2); // Adjusted based on new frame layout
                 ctx.clip();
             }
 
@@ -102,8 +102,8 @@ export default function PhotoGenerator({ frameUrl, campaignId, campaignTitle = "
                 centerY = 650;
             } else if (isPlageCampaign) {
                 // Approximate center for the "Tous à la plage" frame
-                centerX = 645;
-                centerY = 325;
+                centerX = 660;
+                centerY = 360;
             }
 
             ctx.translate(centerX + offset.x, centerY + offset.y);
