@@ -65,8 +65,8 @@ export default function PhotoGenerator({ frameUrl, campaignId, campaignTitle = "
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-        // 1. For Sillage (which has an opaque grey circle), draw the frame FIRST
-        if (isSillageCampaign && frameImage) {
+        // 1. For Sillage or Plage (which might have opaque circles), draw the frame FIRST
+        if ((isSillageCampaign || isPlageCampaign) && frameImage) {
             ctx.drawImage(frameImage, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
         }
 
@@ -83,9 +83,13 @@ export default function PhotoGenerator({ frameUrl, campaignId, campaignTitle = "
                 ctx.clip();
             } else if (isSillageCampaign) {
                 ctx.beginPath();
-                // Circular mask for Sillage, updated for new image
-                // Center X: 762, Center Y: 650, Radius: 240
+                // Circular mask for Sillage
                 ctx.arc(762, 650, 240, 0, Math.PI * 2);
+                ctx.clip();
+            } else if (isPlageCampaign) {
+                ctx.beginPath();
+                // Circular mask for Plage (using the centerX/Y we defined)
+                ctx.arc(660, 350, 240, 0, Math.PI * 2); // Approximate radius
                 ctx.clip();
             }
 
@@ -120,7 +124,7 @@ export default function PhotoGenerator({ frameUrl, campaignId, campaignTitle = "
         }
 
         // 2. For Polio and others (transparent center), draw the frame LAST
-        if (!isSillageCampaign && frameImage) {
+        if (!isSillageCampaign && !isPlageCampaign && frameImage) {
             ctx.drawImage(frameImage, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
         }
 
