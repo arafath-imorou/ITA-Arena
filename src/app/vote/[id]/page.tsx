@@ -101,6 +101,24 @@ export default function PublicVotePage() {
 
                 const amount = voteCount * campaign.price_per_vote;
 
+                // 1.5 INSERT VOTE AS PENDING BEFORE PAYMENT
+                const { data: pendingVote, error: pendingError } = await supabase.from('votes_cast').insert({
+                    campaign_id: campaignId,
+                    candidate_id: selectedCandidate.id,
+                    voter_email: email,
+                    voter_phone: phone,
+                    vote_count: voteCount,
+                    amount_paid: amount,
+                    transaction_id: null,
+                    status: 'pending' // pending status to save the vote intent
+                }).select().single();
+
+                if (pendingError) {
+                    alert("Erreur lors de l'initialisation du vote. Veuillez réessayer.");
+                    setProcessing(false);
+                    return;
+                }
+
                 const fedaConfig = {
                     public_key: fedapayKey,
                     transaction: {
@@ -109,7 +127,8 @@ export default function PublicVotePage() {
                         custom_metadata: {
                             campaign_id: campaignId,
                             candidate_id: selectedCandidate.id,
-                            vote_count: voteCount
+                            vote_count: voteCount,
+                            vote_id: pendingVote?.id
                         }
                     },
                     customer: {
@@ -121,11 +140,11 @@ export default function PublicVotePage() {
                     },
                     onComplete: async (response: any) => {
                         console.log("FedaPay Response:", response);
-                        if (response.reason === "checkout.complete") {
-                            // Enregistrer le vote en base de données
-                            await recordVote(response.transaction.id, amount);
+                        if (response.reason === "checkout.complete" || (response.status || "").toLowerCase() === "approved") {
+                            // Enregistrer le vote en base de données (mise à jour)
+                            await recordVote(response.transaction?.id || null, amount, pendingVote?.id);
                         } else {
-                            alert("Le paiement n'a pas pu être finalisé.");
+                            alert("Le paiement n'a pas pu être finalisé automatiquement. Si vous avez été débité, contactez le support.");
                             setProcessing(false);
                         }
                     }
@@ -149,20 +168,33 @@ export default function PublicVotePage() {
         }
     };
 
-    const recordVote = async (transactionId: string | null, amountPaid: number) => {
+    const recordVote = async (transactionId: string | null, amountPaid: number, pendingVoteId?: string) => {
         try {
-            const { error } = await supabase.from('votes_cast').insert({
-                campaign_id: campaignId,
-                candidate_id: selectedCandidate.id,
-                voter_email: email,
-                voter_phone: phone,
-                vote_count: voteCount,
-                amount_paid: amountPaid,
-                transaction_id: transactionId,
-                status: 'valid'
-            });
+            if (pendingVoteId) {
+                // Update existing pending vote
+                const { error } = await supabase.from('votes_cast')
+                    .update({
+                        transaction_id: transactionId,
+                        status: 'valid'
+                    })
+                    .eq('id', pendingVoteId);
 
-            if (error) throw error;
+                if (error) throw error;
+            } else {
+                // Free vote or fallback insert
+                const { error } = await supabase.from('votes_cast').insert({
+                    campaign_id: campaignId,
+                    candidate_id: selectedCandidate.id,
+                    voter_email: email,
+                    voter_phone: phone,
+                    vote_count: voteCount,
+                    amount_paid: amountPaid,
+                    transaction_id: transactionId,
+                    status: 'valid'
+                });
+
+                if (error) throw error;
+            }
             
             alert("Votre vote a été pris en compte avec succès ! Merci.");
             setSelectedCandidate(null);
