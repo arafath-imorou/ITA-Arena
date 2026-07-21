@@ -132,47 +132,41 @@ function CheckoutContent() {
             }
 
             if (ticketsToCreate.length > 0) {
-                // 2. TRIGGER FEDAPAY (Programmatically)
-                // In a production app, we would use the transaction token from the server
-                // For now, we use the public key and simple checkout
+                // 1.5 INSERT AS PENDING BEFORE PAYMENT
+                // This ensures we have a record even if the user closes the page before onComplete fires.
+                const { error: preInsertError } = await supabase
+                    .from('tickets')
+                    .insert(ticketsToCreate.map(t => ({ ...t, status: 'pending' })));
+
+                if (preInsertError) {
+                    console.error("Supabase pre-insert error:", preInsertError);
+                    alert("Erreur lors de l'initialisation de la commande. Veuillez réessayer.");
+                    setIsProcessing(false);
+                    return;
+                }
+
+                // 2. TRIGGER FEDAPAY
                 // Helper to map country codes
                 const countryMapping: { [key: string]: string } = {
-                    "+229": "BJ",
-                    "+225": "CI",
-                    "+221": "SN",
-                    "+228": "TG",
-                    "+223": "ML",
-                    "+226": "BF",
-                    "+227": "NE",
-                    "+224": "GN"
+                    "+229": "BJ", "+225": "CI", "+221": "SN", "+228": "TG",
+                    "+223": "ML", "+226": "BF", "+227": "NE", "+224": "GN"
                 };
 
-                // Clean phone number (remove spaces and current prefix if present to avoid duplication)
                 let cleanPhone = paymentPhone.replace(/\s+/g, '');
                 const prefix = selectedCountryObj.code;
                 if (cleanPhone.startsWith(prefix)) {
                     cleanPhone = cleanPhone.substring(prefix.length);
                 } else if (cleanPhone.startsWith('+')) {
-                    // Remove any other prefix
                     cleanPhone = cleanPhone.replace(/^\+\d+/, '');
                 }
 
-                // Handle name parsing more safely
                 const nameParts = fullName.trim().split(/\s+/);
                 const lastname = nameParts.length > 1 ? nameParts.pop() : nameParts[0];
                 const firstname = nameParts.length > 0 ? nameParts.join(' ') : 'Client';
 
-                // Map our payment methods to FedaPay methods
                 const fedaMethodMapping: { [key: string]: string } = {
-                    "mtn": "mtn",
-                    "moov": "moov",
-                    "orange": "orange",
-                    "wave": "wave",
-                    "celtiis": "celtiis",
-                    "free": "free",
-                    "tmoney": "tmoney",
-                    "airtel": "airtel",
-                    "card": "card"
+                    "mtn": "mtn", "moov": "moov", "orange": "orange", "wave": "wave",
+                    "celtiis": "celtiis", "free": "free", "tmoney": "tmoney", "airtel": "airtel", "card": "card"
                 };
 
                 let insertionStarted = false;
@@ -181,6 +175,10 @@ function CheckoutContent() {
                     transaction: {
                         amount: total,
                         description: `Achat de tickets - ${eventName}`,
+                        custom_metadata: {
+                            checkout_session_id: checkoutSessionId,
+                            event_id: eventId
+                        }
                     },
                     customer: {
                         email: email.trim(),
@@ -191,7 +189,6 @@ function CheckoutContent() {
                             country: countryMapping[selectedCountryObj.code] || 'BJ'
                         }
                     },
-                    // Direct payment method selection
                     method: fedaMethodMapping[paymentMethod] || 'mtn',
                     onComplete: async (response: any) => {
                         console.log("FedaPay Response:", response);
@@ -201,16 +198,15 @@ function CheckoutContent() {
                             if (insertionStarted) return;
                             insertionStarted = true;
 
-                            // 3. Save to database only after approval
-                            const { data, error } = await supabase
+                            // 3. UPDATE database to 'valid' after approval
+                            const { error } = await supabase
                                 .from('tickets')
-                                .insert(ticketsToCreate);
+                                .update({ status: 'valid' })
+                                .eq('checkout_session_id', checkoutSessionId);
 
                             if (error) {
-                                console.error("Supabase insert error:", error);
-                                // More detailed error for debugging
-                                const errorDetail = error.message || (typeof error === 'object' ? JSON.stringify(error) : String(error));
-                                alert(`Paiement réussi, mais une erreur est survenue lors de la création de vos billets : ${errorDetail}. Notez votre numéro de transaction et contactez le support (+229 0152818100).`);
+                                console.error("Supabase update error:", error);
+                                alert(`Paiement réussi, mais une erreur est survenue lors de la validation. Notez votre numéro de transaction et contactez le support.`);
                             } else {
                                 router.push(`/checkout/confirmation?session=${checkoutSessionId}&event=${eventId}`);
                             }
