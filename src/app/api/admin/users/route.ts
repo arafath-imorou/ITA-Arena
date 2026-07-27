@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     }
 
     // List users
-    const { data: users, error } = await supabase.from('profiles').select('*').in('role', ['super_admin', 'admin', 'organisateur', 'organizer', 'visualiseur']).order('created_at', { ascending: false });
+    const { data: users, error } = await supabase.from('profiles').select('*').in('role', ['super_admin', 'admin', 'organisateur', 'organizer', 'visualiseur']).eq('company_name', 'ITA_ARENA').order('created_at', { ascending: false });
     
     if (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
@@ -57,7 +57,8 @@ export async function POST(request: Request) {
         email: email,
         full_name: fullName || '',
         role: role || 'visualiseur',
-        user_type: 'particulier'
+        user_type: 'particulier',
+        company_name: 'ITA_ARENA'
     });
 
     if (profileError) {
