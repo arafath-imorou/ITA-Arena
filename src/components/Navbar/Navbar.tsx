@@ -123,7 +123,7 @@ export default function Navbar() {
                             </div>
                           </div>
                           <hr className={styles.divider} />
-                          {role === 'admin' && (
+                          {['admin', 'super_admin', 'organisateur', 'organizer', 'visualiseur'].includes(role || '') && (
                             <>
                               <Link href="/admin" className={styles.dropdownItem} style={{ color: '#ff5a1f', fontWeight: 'bold' }} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>
                                 🔧 Administration
