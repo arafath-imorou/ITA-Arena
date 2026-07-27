@@ -41,6 +41,7 @@ export async function POST(request: Request) {
     }
 
     // 1. Create Auth User
+    let userId;
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
         email: email,
         password: password,
@@ -48,12 +49,24 @@ export async function POST(request: Request) {
     });
 
     if (authError) {
-        return NextResponse.json({ error: authError.message }, { status: 500 });
+        if (authError.message.includes('already been registered') || authError.status === 422) {
+            // User already exists. Fetch their profile ID.
+            const { data: existingProfile } = await supabase.from('profiles').select('id').eq('email', email).single();
+            if (existingProfile) {
+                userId = existingProfile.id;
+            } else {
+                return NextResponse.json({ error: 'L\'utilisateur existe déjà mais son profil est introuvable.' }, { status: 500 });
+            }
+        } else {
+            return NextResponse.json({ error: authError.message }, { status: 500 });
+        }
+    } else {
+        userId = authData.user.id;
     }
 
-    // 2. Insert into profiles
+    // 2. Insert or update into profiles
     const { error: profileError } = await supabase.from('profiles').upsert({
-        id: authData.user.id,
+        id: userId,
         email: email,
         full_name: fullName || '',
         role: role || 'visualiseur',
@@ -62,11 +75,10 @@ export async function POST(request: Request) {
     });
 
     if (profileError) {
-        // If profile creation fails, we might want to delete the auth user, but for now just return error
         return NextResponse.json({ error: profileError.message }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, user: authData.user });
+    return NextResponse.json({ success: true, user: { id: userId, email: email } });
 }
 
 export async function PATCH(request: Request) {
