@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     }
 
     // 2. Insert into profiles
-    const { error: profileError } = await supabase.from('profiles').insert({
+    const { error: profileError } = await supabase.from('profiles').upsert({
         id: authData.user.id,
         email: email,
         full_name: fullName || '',
