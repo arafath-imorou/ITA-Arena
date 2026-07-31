@@ -83,20 +83,26 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    const { adminEmail, userId, newRole } = await request.json();
+    const { adminEmail, userId, newRole, newPassword } = await request.json();
 
     const { data: adminUser } = await supabase.from('profiles').select('role').eq('email', adminEmail).single();
     if (!adminUser || adminUser.role !== 'super_admin') {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    const { error } = await supabase.from('profiles').update({ role: newRole }).eq('id', userId);
-    
-    if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    if (newPassword) {
+        const { error } = await supabase.auth.admin.updateUserById(userId, { password: newPassword });
+        if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ success: true, message: 'Mot de passe mis à jour' });
     }
 
-    return NextResponse.json({ success: true });
+    if (newRole) {
+        const { error } = await supabase.from('profiles').update({ role: newRole }).eq('id', userId);
+        if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ success: true, message: 'Rôle mis à jour' });
+    }
+
+    return NextResponse.json({ error: 'No update data provided' }, { status: 400 });
 }
 
 export async function DELETE(request: Request) {

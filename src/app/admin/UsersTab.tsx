@@ -80,6 +80,24 @@ export default function UsersTab() {
         }
     };
 
+    const handleResetPassword = async (userId: string) => {
+        const newPassword = window.prompt("Nouveau mot de passe pour cet utilisateur :");
+        if (!newPassword) return;
+
+        try {
+            const res = await fetch('/api/admin/users', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ adminEmail: user?.email, userId, newPassword })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Erreur lors du changement de mot de passe');
+            alert('Mot de passe mis à jour avec succès !');
+        } catch (err: any) {
+            alert(err.message);
+        }
+    };
+
     const handleChangeRole = async (userId: string, newRole: string) => {
         try {
             const res = await fetch('/api/admin/users', {

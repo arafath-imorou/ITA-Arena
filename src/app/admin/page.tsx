@@ -732,6 +732,14 @@ function AdminDashboardContent() {
                                         <td>
                                             <div style={{ fontSize: '0.85rem' }}>📧 {org.email}</div>
                                             {org.phone && <div style={{ fontSize: '0.85rem' }}>📱 {org.phone}</div>}
+                                            {userRole !== 'visualiseur' && (
+                                                <button 
+                                                    onClick={() => handleResetPassword(org.id)}
+                                                    style={{ marginTop: '0.5rem', fontSize: '0.75rem', padding: '0.2rem 0.5rem', background: '#fef3c7', color: '#d97706', border: '1px solid #fcd34d', borderRadius: '4px', cursor: 'pointer' }}
+                                                >
+                                                    🔑 Changer mot de passe
+                                                </button>
+                                            )}
                                         </td>
                                         <td>
                                             <span className={styles.badge} style={{ background: '#e0f2fe', color: '#0369a1' }}>
