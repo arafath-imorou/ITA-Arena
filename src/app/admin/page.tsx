@@ -53,7 +53,7 @@ function AdminDashboardContent() {
             const { data: ticketsData } = await supabase.from('tickets').select('*').eq('status', 'valid').order('created_at', { ascending: false });
             const { data: campaignsData } = await supabase.from('support_campaigns').select('*').order('created_at', { ascending: false });
             const { data: formsData } = await supabase.from('forms').select('*').order('created_at', { ascending: false });
-            const { data: votesData } = await supabase.from('votes_campaigns').select('*').order('created_at', { ascending: false });
+            const { data: votesData } = await supabase.from('votes_campaigns').select('*, votes_cast(status, vote_count, amount_paid)').order('created_at', { ascending: false });
 
             setRawProfiles(profilesData || []);
             setRawEvents(eventsData || []);
@@ -94,7 +94,7 @@ function AdminDashboardContent() {
     }, [user, router]);
 
     // Computed Data based on filters
-    const { filteredEvents, filteredCampaigns, filteredTickets, filteredForms, stats, organizersList, yearsList } = useMemo(() => {
+    const { filteredEvents, filteredCampaigns, filteredTickets, filteredForms, filteredVotes, stats, organizersList, yearsList } = useMemo(() => {
         const profileMap = rawProfiles.reduce((acc: any, p) => { acc[p.id] = p; return acc; }, {});
         const eventMap = rawEvents.reduce((acc: any, e) => { acc[e.id] = e; return acc; }, {});
 
@@ -157,7 +157,11 @@ function AdminDashboardContent() {
             events: eventMap[t.event_id] || null
         }));
 
-        const totalRev = tickets.reduce((acc, t) => acc + Number(t.amount), 0);
+        const totalRevTickets = tickets.reduce((acc, t) => acc + Number(t.amount), 0);
+        const validVotesGlobal = rawVotes.flatMap(v => (v.votes_cast || []).filter((vc: any) => vc.status === 'valid'));
+        const totalRevVotes = validVotesGlobal.reduce((acc, vc) => acc + (vc.amount_paid || 0), 0);
+        const totalRev = totalRevTickets + totalRevVotes;
+        
         const evtsOnly = events.filter(i => i.type === 'event' || !i.type);
         const cotisOnly = events.filter(i => i.type === 'cotisation');
 
@@ -205,6 +209,29 @@ function AdminDashboardContent() {
             };
         });
         
+        let votes = rawVotes;
+        if (filters.search) {
+            const s = filters.search.toLowerCase();
+            votes = votes.filter(v => v.title.toLowerCase().includes(s));
+        }
+        if (filters.organizerId !== 'all') {
+            votes = votes.filter(v => v.organizer_id === filters.organizerId);
+        }
+        if (filters.year !== 'all') {
+            votes = votes.filter(v => new Date(v.created_at).getFullYear().toString() === filters.year);
+        }
+        if (filters.month !== 'all') {
+            votes = votes.filter(v => (new Date(v.created_at).getMonth() + 1).toString() === filters.month);
+        }
+        votes = votes.map(v => {
+            const valid = (v.votes_cast || []).filter((vc: any) => vc.status === 'valid');
+            return {
+                ...v,
+                computedTotalVotes: valid.reduce((acc: any, vc: any) => acc + (vc.vote_count || 1), 0),
+                computedTotalRevenue: valid.reduce((acc: any, vc: any) => acc + (vc.amount_paid || 0), 0)
+            };
+        });
+
         const allDates = [...rawEvents.map(e => e.created_at), ...rawCampaigns.map(c => c.created_at)];
         const years = Array.from(new Set(allDates.map(d => new Date(d).getFullYear()))).sort((a, b) => b - a);
 
@@ -213,6 +240,7 @@ function AdminDashboardContent() {
             filteredCampaigns: campaigns,
             filteredTickets: tickets,
             filteredForms: forms,
+            filteredVotes: votes,
             stats: {
                 totalRevenue: totalRev,
                 totalTickets: tickets.length,
@@ -666,24 +694,23 @@ function AdminDashboardContent() {
                                     <tr>
                                         <th>Élection</th>
                                         <th>Date</th>
+                                        <th>Votes</th>
+                                        <th>Revenus</th>
                                         <th>Type</th>
                                         <th>Statut</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {rawVotes.filter(v => 
-                                        (filters.organizerId === 'all' || v.organizer_id === filters.organizerId) &&
-                                        (filters.year === 'all' || new Date(v.created_at).getFullYear().toString() === filters.year) &&
-                                        (filters.month === 'all' || (new Date(v.created_at).getMonth() + 1).toString() === filters.month) &&
-                                        (filters.search === '' || v.title.toLowerCase().includes(filters.search.toLowerCase()))
-                                    ).map((v: any) => (
+                                    {filteredVotes.map((v: any) => (
                                         <tr key={v.id}>
                                             <td>
                                                 <strong>{v.title}</strong>
                                                 <p style={{ margin: 0, fontSize: '0.7rem', color: '#64748b' }}>{v.category || 'Non classé'}</p>
                                             </td>
                                             <td>{new Date(v.created_at).toLocaleDateString('fr-FR')}</td>
+                                            <td style={{ fontWeight: 'bold' }}>{v.computedTotalVotes}</td>
+                                            <td style={{ fontWeight: 'bold', color: '#047857' }}>{v.computedTotalRevenue.toLocaleString()} F</td>
                                             <td><span className={styles.badge} style={{ background: v.is_paid ? '#fef3c7' : '#e0f2fe', color: v.is_paid ? '#92400e' : '#0369a1' }}>{v.is_paid ? `Payant (${v.price_per_vote} F)` : 'Gratuit'}</span></td>
                                             <td><span className={`${styles.badge} ${v.status === 'active' ? styles.badgeSuccess : styles.badgeInfo}`}>{v.status === 'active' ? 'En ligne' : 'Terminé'}</span></td>
                                             <td>
