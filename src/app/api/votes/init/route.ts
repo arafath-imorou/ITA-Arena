@@ -9,7 +9,7 @@ export async function POST(request: Request) {
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
         const { campaign_id, candidate_id, voter_email, voter_phone, vote_count, amount_paid } = await request.json();
 
-        if (!campaign_id || !candidate_id || !voter_email) {
+        if (!campaign_id || !candidate_id) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 

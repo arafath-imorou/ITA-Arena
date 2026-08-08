@@ -81,7 +81,7 @@ export default function PublicVotePage() {
 
     const handleVoteSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!email) return alert("L'email est requis.");
+        
         
         if (campaign.vote_limit_per_user > 0 && voteCount > campaign.vote_limit_per_user) {
             return alert(`Vous ne pouvez pas acheter plus de ${campaign.vote_limit_per_user} votes.`);
@@ -139,7 +139,7 @@ export default function PublicVotePage() {
                         }
                     },
                     customer: {
-                        email: email,
+                        email: email || "anonyme@itaarena.com",
                         phone_number: {
                             number: phone,
                             country: "BJ"
@@ -289,8 +289,8 @@ export default function PublicVotePage() {
                                 </div>
                             )}
 
-                            <label>Email *</label>
-                            <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="votre@email.com" className={styles.input} />
+                            <label>Email (facultatif)</label>
+                            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="votre@email.com" className={styles.input} />
 
                             <label>Téléphone (optionnel)</label>
                             <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="Ex: 01234567" className={styles.input} />
