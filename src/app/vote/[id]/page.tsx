@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import styles from "./PublicVote.module.css";
 import Script from "next/script";
 
@@ -15,6 +15,8 @@ declare global {
 export default function PublicVotePage() {
     const params = useParams();
     const campaignId = params.id as string;
+    const searchParams = useSearchParams();
+    const autoCandidateId = searchParams.get("candidat");
     
     const [campaign, setCampaign] = useState<any>(null);
     const [candidates, setCandidates] = useState<any[]>([]);
@@ -70,9 +72,20 @@ export default function PublicVotePage() {
                         ...c,
                         percentage: globalTotal > 0 ? ((c.totalVotes / globalTotal) * 100).toFixed(1) : 0
                     })).sort((a, b) => b.totalVotes - a.totalVotes);
-                    setCandidates(candidatesWithScores);
+                    
+                    const finalCands = candidatesWithScores;
+                    setCandidates(finalCands);
+                    if (autoCandidateId) {
+                        const match = finalCands.find(c => c.id === autoCandidateId);
+                        if (match) { setSelectedCandidate(match); setVoteCount(1); }
+                    }
                 } else {
-                    setCandidates(candsData || []);
+                    const finalCands = candsData || [];
+                    setCandidates(finalCands);
+                    if (autoCandidateId) {
+                        const match = finalCands.find(c => c.id === autoCandidateId);
+                        if (match) { setSelectedCandidate(match); setVoteCount(1); }
+                    }
                 }
             } catch (err: any) {
                 console.error(err);
@@ -231,6 +244,12 @@ export default function PublicVotePage() {
 
     const totalPrice = campaign.is_paid ? voteCount * campaign.price_per_vote : 0;
 
+    const copyLink = (candId: string) => {
+        const url = `${window.location.origin}/vote/${campaignId}?candidat=${candId}`;
+        navigator.clipboard.writeText(url);
+        alert("Lien direct copié dans le presse-papier !");
+    };
+
     return (
         <div className={styles.page}>
             <Script src="https://cdn.fedapay.com/checkout.js?v=1.1.7" strategy="lazyOnload" />
@@ -277,6 +296,9 @@ export default function PublicVotePage() {
                                 
                                 <button onClick={() => { setSelectedCandidate(cand); setVoteCount(1); }} className={styles.voteBtn}>
                                     🗳️ Voter pour ce candidat
+                                </button>
+                                <button onClick={() => copyLink(cand.id)} style={{ marginTop: '10px', fontSize: '0.8rem', background: 'transparent', border: '1px solid #ddd', padding: '5px', borderRadius: '4px', cursor: 'pointer', color: '#555', width: '100%' }}>
+                                    🔗 Copier le lien direct
                                 </button>
                             </div>
                         </div>
