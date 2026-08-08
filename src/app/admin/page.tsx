@@ -53,7 +53,10 @@ function AdminDashboardContent() {
             const { data: ticketsData } = await supabase.from('tickets').select('*').eq('status', 'valid').order('created_at', { ascending: false });
             const { data: campaignsData } = await supabase.from('support_campaigns').select('*').order('created_at', { ascending: false });
             const { data: formsData } = await supabase.from('forms').select('*').order('created_at', { ascending: false });
-            const { data: votesData } = await supabase.from('votes_campaigns').select('*, votes_cast(status, vote_count, amount_paid)').order('created_at', { ascending: false });
+            
+            // On utilise l'API pour contourner le RLS et obtenir les votes_cast pour le super admin
+            const resVotes = await fetch('/api/admin/votes');
+            const votesData = resVotes.ok ? await resVotes.json() : [];
 
             setRawProfiles(profilesData || []);
             setRawEvents(eventsData || []);
