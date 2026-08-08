@@ -19,7 +19,7 @@ export default function VotesDashboard() {
             setLoading(true);
             const { data, error } = await supabase
                 .from('votes_campaigns')
-                .select('*, vote_candidates(count), votes_cast(count, amount_paid)')
+                .select('*, vote_candidates(count), votes_cast(status, vote_count, amount_paid)')
                 .eq('organizer_id', user.id)
                 .order('created_at', { ascending: false });
 
@@ -72,8 +72,9 @@ export default function VotesDashboard() {
 
             <div className={styles.grid}>
                 {campaigns.map(campaign => {
-                    const totalVotes = campaign.votes_cast[0]?.count || 0;
-                    const totalRevenue = campaign.votes_cast.reduce((acc: number, v: any) => acc + (v.amount_paid || 0), 0);
+                    const validVotes = (campaign.votes_cast || []).filter((v: any) => v.status === 'valid');
+                    const totalVotes = validVotes.reduce((acc: number, v: any) => acc + (v.vote_count || 1), 0);
+                    const totalRevenue = validVotes.reduce((acc: number, v: any) => acc + (v.amount_paid || 0), 0);
                     const candidatesCount = campaign.vote_candidates[0]?.count || 0;
 
                     return (
