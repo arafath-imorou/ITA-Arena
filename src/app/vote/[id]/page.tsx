@@ -147,7 +147,9 @@ export default function PublicVotePage() {
                     },
                     onComplete: async (response: any) => {
                         console.log("FedaPay Response:", response);
-                        if (response.reason === "checkout.complete" || (response.status || "").toLowerCase() === "approved") {
+                        const reason = (response.reason || "").toLowerCase().replace(/_/g, ' ').replace(/\./g, ' ');
+                        const status = (response.transaction?.status || response.status || "").toLowerCase();
+                        if (reason === "checkout complete" || status === "approved") {
                             // Enregistrer le vote en base de données (mise à jour)
                             await recordVote(response.transaction?.id || null, amount, pendingVote?.id);
                         } else {
