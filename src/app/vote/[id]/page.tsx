@@ -101,23 +101,30 @@ export default function PublicVotePage() {
 
                 const amount = voteCount * campaign.price_per_vote;
 
-                // 1.5 INSERT VOTE AS PENDING BEFORE PAYMENT
-                const { data: pendingVote, error: pendingError } = await supabase.from('votes_cast').insert({
-                    campaign_id: campaignId,
-                    candidate_id: selectedCandidate.id,
-                    voter_email: email,
-                    voter_phone: phone,
-                    vote_count: voteCount,
-                    amount_paid: amount,
-                    transaction_id: null,
-                    status: 'pending' // pending status to save the vote intent
-                }).select().single();
+                // 1.5 INSERT VOTE AS PENDING BEFORE PAYMENT VIA API (to bypass RLS)
+                const initRes = await fetch('/api/votes/init', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        campaign_id: campaignId,
+                        candidate_id: selectedCandidate.id,
+                        voter_email: email,
+                        voter_phone: phone,
+                        vote_count: voteCount,
+                        amount_paid: amount
+                    })
+                });
 
-                if (pendingError) {
+                const initData = await initRes.json();
+
+                if (!initRes.ok || initData.error) {
+                    console.error("Init Error:", initData.error);
                     alert("Erreur lors de l'initialisation du vote. Veuillez réessayer.");
                     setProcessing(false);
                     return;
                 }
+
+                const pendingVote = initData.pendingVote;
 
                 const fedaConfig = {
                     public_key: fedapayKey,
