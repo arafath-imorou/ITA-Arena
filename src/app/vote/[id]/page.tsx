@@ -59,11 +59,17 @@ export default function PublicVotePage() {
                         .eq('campaign_id', campaignId)
                         .eq('status', 'valid');
                     
-                    const candidatesWithScores = (candsData || []).map(cand => {
+                    let globalTotal = 0;
+                    const candsTemp = (candsData || []).map(cand => {
                         const candVotes = (votesData || []).filter(v => v.candidate_id === cand.id);
                         const totalVotes = candVotes.reduce((sum, v) => sum + (v.vote_count || 1), 0);
+                        globalTotal += totalVotes;
                         return { ...cand, totalVotes };
-                    }).sort((a, b) => b.totalVotes - a.totalVotes);
+                    });
+                    const candidatesWithScores = candsTemp.map(c => ({
+                        ...c,
+                        percentage: globalTotal > 0 ? ((c.totalVotes / globalTotal) * 100).toFixed(1) : 0
+                    })).sort((a, b) => b.totalVotes - a.totalVotes);
                     setCandidates(candidatesWithScores);
                 } else {
                     setCandidates(candsData || []);
@@ -263,6 +269,9 @@ export default function PublicVotePage() {
                                 {campaign.show_results && cand.totalVotes !== undefined && (
                                     <div className={styles.candScore}>
                                         <strong>{cand.totalVotes}</strong> votes
+                                        <span style={{ marginLeft: '8px', fontSize: '0.9em', color: '#666', fontWeight: 'bold' }}>
+                                            {cand.percentage}%
+                                        </span>
                                     </div>
                                 )}
                                 
