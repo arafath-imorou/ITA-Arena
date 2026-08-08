@@ -180,15 +180,20 @@ export default function PublicVotePage() {
     const recordVote = async (transactionId: string | null, amountPaid: number, pendingVoteId?: string) => {
         try {
             if (pendingVoteId) {
-                // Update existing pending vote
-                const { error } = await supabase.from('votes_cast')
-                    .update({
-                        transaction_id: transactionId,
-                        status: 'valid'
+                // Update existing pending vote via server-side API to bypass RLS
+                const updateRes = await fetch('/api/votes/confirm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        vote_id: pendingVoteId,
+                        transaction_id: transactionId
                     })
-                    .eq('id', pendingVoteId);
-
-                if (error) throw error;
+                });
+                
+                const updateData = await updateRes.json();
+                if (!updateRes.ok || updateData.error) {
+                    throw new Error(updateData.error || "Erreur lors de la confirmation du vote.");
+                }
             } else {
                 // Free vote or fallback insert
                 const { error } = await supabase.from('votes_cast').insert({
