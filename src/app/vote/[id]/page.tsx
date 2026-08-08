@@ -55,11 +55,8 @@ export default function PublicVotePage() {
 
                 if (campData.show_results) {
                     // Fetch Votes to compute current standings
-                    const { data: votesData } = await supabase
-                        .from('votes_cast')
-                        .select('candidate_id, vote_count')
-                        .eq('campaign_id', campaignId)
-                        .eq('status', 'valid');
+                    const statsRes = await fetch(`/api/votes/${campaignId}/stats`);
+                    const votesData: any[] = statsRes.ok ? await statsRes.json() : [];
                     
                     let globalTotal = 0;
                     const candsTemp = (candsData || []).map(cand => {
