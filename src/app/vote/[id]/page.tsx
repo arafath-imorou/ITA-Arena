@@ -252,7 +252,15 @@ export default function PublicVotePage() {
             <Script src="https://cdn.fedapay.com/checkout.js?v=1.1.7" strategy="lazyOnload" />
 
             {campaign.cover_image && (
-                <div className={styles.hero} style={{ backgroundImage: `url(${campaign.cover_image})` }}>
+                <div className={styles.hero}>
+                    <img
+                        src={campaign.cover_image}
+                        alt={campaign.title}
+                        className={styles.heroBg}
+                        loading="eager"
+                        decoding="async"
+                        fetchPriority="high"
+                    />
                     <div className={styles.heroOverlay}>
                         <h1>{campaign.title}</h1>
                         {campaign.category && <span className={styles.badge}>{campaign.category}</span>}
@@ -275,9 +283,19 @@ export default function PublicVotePage() {
                 )}
 
                 <div className={styles.candidatesGrid}>
-                    {candidates.map(cand => (
+                    {candidates.map((cand, index) => (
                         <div key={cand.id} className={styles.candCard}>
-                            <div className={styles.candPhoto} style={{ backgroundImage: `url(${cand.photo_url || '/placeholder.png'})` }}></div>
+                            <div className={styles.candPhoto}>
+                                <img
+                                    src={cand.photo_url || '/placeholder.png'}
+                                    alt={cand.name}
+                                    className={styles.candImg}
+                                    loading={index < 4 ? 'eager' : 'lazy'}
+                                    decoding="async"
+                                    width={800}
+                                    height={800}
+                                />
+                            </div>
                             <div className={styles.candInfo}>
                                 <h3>{cand.name} {cand.number && <span>N°{cand.number}</span>}</h3>
                                 {cand.description && <p className={styles.candDesc}>{cand.description}</p>}

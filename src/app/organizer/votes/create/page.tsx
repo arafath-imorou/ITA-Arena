@@ -45,11 +45,24 @@ export default function CreateVotePage() {
             try {
                 let coverUrl = null;
                 if (coverImage) {
-                    const ext = coverImage.name.split('.').pop();
-                    const path = `${uuidv4()}.${ext}`;
-                    await supabase.storage.from('vote_uploads').upload(path, coverImage);
-                    const { data } = supabase.storage.from('vote_uploads').getPublicUrl(path);
-                    coverUrl = data.publicUrl;
+                    // Optimize image before upload
+                    const fd = new FormData();
+                    fd.append('file', coverImage);
+                    fd.append('folder', 'vote-covers-optimized');
+                    fd.append('bucket', 'vote_uploads');
+                    const optimRes = await fetch('/api/upload/optimize', { method: 'POST', body: fd });
+                    const optimData = await optimRes.json();
+                    if (optimRes.ok) {
+                        coverUrl = optimData.url;
+                        console.log(`Cover image optimized: ${optimData.stats?.originalKb}KB → ${optimData.stats?.optimizedKb}KB (${optimData.stats?.reduction})`);
+                    } else {
+                        // Fallback to direct upload
+                        const ext = coverImage.name.split('.').pop();
+                        const path = `${uuidv4()}.${ext}`;
+                        await supabase.storage.from('vote_uploads').upload(path, coverImage);
+                        const { data } = supabase.storage.from('vote_uploads').getPublicUrl(path);
+                        coverUrl = data.publicUrl;
+                    }
                 }
 
                 const { data, error } = await supabase.from('votes_campaigns').insert({
@@ -87,11 +100,24 @@ export default function CreateVotePage() {
         try {
             let photoUrl = null;
             if (candidatePhoto) {
-                const ext = candidatePhoto.name.split('.').pop();
-                const path = `candidates/${uuidv4()}.${ext}`;
-                await supabase.storage.from('vote_uploads').upload(path, candidatePhoto);
-                const { data } = supabase.storage.from('vote_uploads').getPublicUrl(path);
-                photoUrl = data.publicUrl;
+                // Optimize image before upload
+                const fd = new FormData();
+                fd.append('file', candidatePhoto);
+                fd.append('folder', 'candidates-optimized');
+                fd.append('bucket', 'vote_uploads');
+                const optimRes = await fetch('/api/upload/optimize', { method: 'POST', body: fd });
+                const optimData = await optimRes.json();
+                if (optimRes.ok) {
+                    photoUrl = optimData.url;
+                    console.log(`Candidate photo optimized: ${optimData.stats?.originalKb}KB → ${optimData.stats?.optimizedKb}KB (${optimData.stats?.reduction})`);
+                } else {
+                    // Fallback to direct upload
+                    const ext = candidatePhoto.name.split('.').pop();
+                    const path = `candidates/${uuidv4()}.${ext}`;
+                    await supabase.storage.from('vote_uploads').upload(path, candidatePhoto);
+                    const { data } = supabase.storage.from('vote_uploads').getPublicUrl(path);
+                    photoUrl = data.publicUrl;
+                }
             }
 
             const { data, error } = await supabase.from('vote_candidates').insert({
