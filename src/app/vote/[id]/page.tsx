@@ -379,25 +379,25 @@ export default function PublicVotePage() {
                 <div className={styles.modalOverlay} onClick={() => !processing && setSelectedCandidate(null)}>
                     <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
                         {/* Candidate Card Header */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem', marginBottom: '1.5rem', borderBottom: '1px solid #eee', paddingBottom: '1.2rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem', marginBottom: '0.8rem', borderBottom: '1px solid #eee', paddingBottom: '0.8rem' }}>
                             <img
                                 src={selectedCandidate.photo_url || '/placeholder.png'}
                                 alt={selectedCandidate.name}
-                                style={{ width: '85px', height: '85px', borderRadius: '50%', objectFit: 'cover', border: '3px solid #F7931E', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}
+                                style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #F7931E', boxShadow: '0 2px 6px rgba(0,0,0,0.1)' }}
                             />
                             <div style={{ flex: 1 }}>
                                 {selectedCandidate.number && (
-                                    <span style={{ background: '#0A2E73', color: 'white', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold', display: 'inline-block', marginBottom: '0.3rem' }}>
+                                    <span style={{ background: '#0A2E73', color: 'white', padding: '0.15rem 0.5rem', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 'bold', display: 'inline-block', marginBottom: '0.2rem' }}>
                                         Candidate N°{selectedCandidate.number}
                                     </span>
                                 )}
-                                <h2 style={{ margin: 0, color: '#0A2E73', fontSize: '1.35rem', lineHeight: 1.2 }}>{selectedCandidate.name}</h2>
-                                <p style={{ margin: '0.3rem 0 0 0', color: '#6b7280', fontSize: '0.85rem' }}>{campaign.title}</p>
+                                <h2 style={{ margin: 0, color: '#0A2E73', fontSize: '1.15rem', lineHeight: 1.2 }}>{selectedCandidate.name}</h2>
+                                <p style={{ margin: '0.2rem 0 0 0', color: '#6b7280', fontSize: '0.8rem' }}>{campaign.title}</p>
                             </div>
                             <button
                                 type="button"
                                 onClick={() => setSelectedCandidate(null)}
-                                style={{ background: '#f3f4f6', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontSize: '1.1rem', color: '#666' }}
+                                style={{ background: '#f3f4f6', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer', fontSize: '1rem', color: '#666', flexShrink: 0 }}
                                 disabled={processing}
                             >
                                 ✕
@@ -407,7 +407,7 @@ export default function PublicVotePage() {
                         <form onSubmit={handleVoteSubmit} className={styles.voteForm}>
                             {campaign.is_paid && (
                                 <div className={styles.voteCountSelector}>
-                                    <label style={{ display: 'block', fontSize: '0.95rem', color: '#374151', marginBottom: '0.5rem' }}>Combien de votes voulez-vous acheter ?</label>
+                                    <label style={{ display: 'block', fontSize: '0.88rem', color: '#374151', marginBottom: '0.3rem' }}>Combien de votes voulez-vous acheter ?</label>
                                     
                                     {/* Counter */}
                                     <div className={styles.counter}>
@@ -417,20 +417,20 @@ export default function PublicVotePage() {
                                     </div>
 
                                     {/* Presets */}
-                                    <div style={{ display: 'flex', justifyContent: 'center', gap: '0.4rem', marginTop: '0.8rem', flexWrap: 'wrap' }}>
-                                        {[1, 5, 10, 25, 50, 100].map(count => (
+                                    <div style={{ display: 'flex', justifyContent: 'center', gap: '0.3rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+                                        {[1, 5, 10, 20, 50, 100].map(count => (
                                             <button
                                                 key={count}
                                                 type="button"
                                                 onClick={() => setVoteCount(count)}
                                                 style={{
-                                                    padding: '0.35rem 0.7rem',
-                                                    borderRadius: '20px',
+                                                    padding: '0.25rem 0.55rem',
+                                                    borderRadius: '16px',
                                                     border: voteCount === count ? '2px solid #F7931E' : '1px solid #d1d5db',
                                                     background: voteCount === count ? '#fff7ed' : '#ffffff',
                                                     color: voteCount === count ? '#c2410c' : '#4b5563',
                                                     fontWeight: 'bold',
-                                                    fontSize: '0.82rem',
+                                                    fontSize: '0.78rem',
                                                     cursor: 'pointer',
                                                     transition: 'all 0.15s'
                                                 }}
@@ -440,7 +440,7 @@ export default function PublicVotePage() {
                                         ))}
                                     </div>
 
-                                    <div className={styles.priceSummary} style={{ marginTop: '1rem', paddingTop: '0.8rem', borderTop: '1px dashed #e5e7eb' }}>
+                                    <div className={styles.priceSummary} style={{ marginTop: '0.7rem', paddingTop: '0.6rem', borderTop: '1px dashed #e5e7eb' }}>
                                         Total à payer : <strong>{totalPrice.toLocaleString()} {campaign.currency}</strong>
                                     </div>
                                 </div>
