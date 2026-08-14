@@ -303,9 +303,13 @@ function AdminDashboardContent() {
     const deleteForm = async (formId: string) => {
         if (!confirm("Voulez-vous vraiment supprimer ce formulaire ? Toutes les réponses seront perdues.")) return;
         try {
-            const { data, error } = await supabase.from('forms').delete().eq('id', formId).select();
-            if (error) throw error;
-            if (!data || data.length === 0) throw new Error("Permission refusée.");
+            const res = await fetch(`/api/admin/forms/${formId}`, {
+                method: 'DELETE'
+            });
+            const data = await res.json();
+            if (!res.ok || data.error) {
+                throw new Error(data.error || "La suppression a échoué via l'API.");
+            }
 
             setRawForms(rawForms.filter(f => f.id !== formId));
             alert("Formulaire supprimé avec succès.");
@@ -328,12 +332,35 @@ function AdminDashboardContent() {
     const deleteVote = async (voteId: string) => {
         if (!confirm("Voulez-vous vraiment supprimer cette campagne de vote ? Tous les candidats et les paiements associés pourraient être affectés.")) return;
         try {
-            const { data, error } = await supabase.from('votes_campaigns').delete().eq('id', voteId).select();
-            if (error) throw error;
-            if (!data || data.length === 0) throw new Error("Permission refusée.");
+            const res = await fetch(`/api/admin/votes/${voteId}`, {
+                method: 'DELETE'
+            });
+            const data = await res.json();
+            if (!res.ok || data.error) {
+                throw new Error(data.error || "La suppression a échoué via l'API.");
+            }
 
             setRawVotes(rawVotes.filter(v => v.id !== voteId));
             alert("Campagne de vote supprimée avec succès.");
+        } catch (err: any) {
+            console.error(err);
+            alert("Erreur de suppression: " + (err.message || "Erreur inconnue"));
+        }
+    };
+
+    const deleteSupportCampaign = async (campaignId: string) => {
+        if (!confirm("Voulez-vous vraiment supprimer cette campagne de soutien ?")) return;
+        try {
+            const res = await fetch(`/api/admin/support/${campaignId}`, {
+                method: 'DELETE'
+            });
+            const data = await res.json();
+            if (!res.ok || data.error) {
+                throw new Error(data.error || "La suppression a échoué via l'API.");
+            }
+
+            setRawCampaigns(rawCampaigns.filter(c => c.id !== campaignId));
+            alert("Campagne de soutien supprimée avec succès.");
         } catch (err: any) {
             console.error(err);
             alert("Erreur de suppression: " + (err.message || "Erreur inconnue"));
@@ -625,6 +652,7 @@ function AdminDashboardContent() {
                                                 <div style={{ display: 'flex', gap: '0.4rem' }}>
                                                     <a href={`/support/${c.slug}`} target="_blank" rel="noreferrer" className={styles.badge} style={{ textDecoration: 'none', background: '#e0f2fe', color: '#0369a1' }} title="Voir la page publique">👁️</a>
                                                     {userRole !== "visualiseur" && <Link href={`/organizer/support-campaign/create?edit=${c.id}`} className={styles.badge} style={{ display: 'inline-block', textDecoration: 'none', background: '#fef9c3', color: '#854d0e', textAlign: 'center' }} title="Modifier">✏️</Link>}
+                                                    {userRole !== "visualiseur" && <button onClick={() => deleteSupportCampaign(c.id)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#fee2e2', color: '#991b1b' }} title="Supprimer">🗑️</button>}
                                                 </div>
                                             </td>
                                         </tr>
