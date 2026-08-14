@@ -374,41 +374,102 @@ export default function PublicVotePage() {
                 </div>
             </div>
 
-            {/* Voting Modal */}
+            {/* Voting & Payment Modal */}
             {selectedCandidate && (
-                <div className={styles.modalOverlay}>
-                    <div className={styles.modalContent}>
-                        <h2>Voter pour {selectedCandidate.name}</h2>
+                <div className={styles.modalOverlay} onClick={() => !processing && setSelectedCandidate(null)}>
+                    <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+                        {/* Candidate Card Header */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem', marginBottom: '1.5rem', borderBottom: '1px solid #eee', paddingBottom: '1.2rem' }}>
+                            <img
+                                src={selectedCandidate.photo_url || '/placeholder.png'}
+                                alt={selectedCandidate.name}
+                                style={{ width: '85px', height: '85px', borderRadius: '50%', objectFit: 'cover', border: '3px solid #F7931E', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}
+                            />
+                            <div style={{ flex: 1 }}>
+                                {selectedCandidate.number && (
+                                    <span style={{ background: '#0A2E73', color: 'white', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold', display: 'inline-block', marginBottom: '0.3rem' }}>
+                                        Candidate N°{selectedCandidate.number}
+                                    </span>
+                                )}
+                                <h2 style={{ margin: 0, color: '#0A2E73', fontSize: '1.35rem', lineHeight: 1.2 }}>{selectedCandidate.name}</h2>
+                                <p style={{ margin: '0.3rem 0 0 0', color: '#6b7280', fontSize: '0.85rem' }}>{campaign.title}</p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setSelectedCandidate(null)}
+                                style={{ background: '#f3f4f6', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontSize: '1.1rem', color: '#666' }}
+                                disabled={processing}
+                            >
+                                ✕
+                            </button>
+                        </div>
                         
                         <form onSubmit={handleVoteSubmit} className={styles.voteForm}>
                             {campaign.is_paid && (
                                 <div className={styles.voteCountSelector}>
-                                    <label>Nombre de votes à acheter</label>
+                                    <label style={{ display: 'block', fontSize: '0.95rem', color: '#374151', marginBottom: '0.5rem' }}>Combien de votes voulez-vous acheter ?</label>
+                                    
+                                    {/* Counter */}
                                     <div className={styles.counter}>
                                         <button type="button" onClick={() => setVoteCount(Math.max(1, voteCount - 1))}>-</button>
                                         <input type="number" value={voteCount} onChange={e => setVoteCount(Math.max(1, Number(e.target.value)))} min={1} />
                                         <button type="button" onClick={() => setVoteCount(voteCount + 1)}>+</button>
                                     </div>
-                                    <div className={styles.priceSummary}>
+
+                                    {/* Presets */}
+                                    <div style={{ display: 'flex', justifyContent: 'center', gap: '0.4rem', marginTop: '0.8rem', flexWrap: 'wrap' }}>
+                                        {[1, 5, 10, 25, 50, 100].map(count => (
+                                            <button
+                                                key={count}
+                                                type="button"
+                                                onClick={() => setVoteCount(count)}
+                                                style={{
+                                                    padding: '0.35rem 0.7rem',
+                                                    borderRadius: '20px',
+                                                    border: voteCount === count ? '2px solid #F7931E' : '1px solid #d1d5db',
+                                                    background: voteCount === count ? '#fff7ed' : '#ffffff',
+                                                    color: voteCount === count ? '#c2410c' : '#4b5563',
+                                                    fontWeight: 'bold',
+                                                    fontSize: '0.82rem',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.15s'
+                                                }}
+                                            >
+                                                +{count} {count === 1 ? 'vote' : 'votes'}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <div className={styles.priceSummary} style={{ marginTop: '1rem', paddingTop: '0.8rem', borderTop: '1px dashed #e5e7eb' }}>
                                         Total à payer : <strong>{totalPrice.toLocaleString()} {campaign.currency}</strong>
                                     </div>
                                 </div>
                             )}
 
-                            <label>Email (facultatif)</label>
-                            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="votre@email.com" className={styles.input} />
+                            <div>
+                                <label style={{ fontSize: '0.85rem', color: '#4b5563', display: 'block', marginBottom: '0.3rem' }}>Email (facultatif)</label>
+                                <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="votre@email.com" className={styles.input} style={{ width: '100%', boxSizing: 'border-box' }} />
+                            </div>
 
-                            <label>Téléphone (optionnel)</label>
-                            <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="Ex: 01234567" className={styles.input} />
+                            <div>
+                                <label style={{ fontSize: '0.85rem', color: '#4b5563', display: 'block', marginBottom: '0.3rem' }}>Téléphone (Mobile Money - optionnel)</label>
+                                <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="Ex: 01234567" className={styles.input} style={{ width: '100%', boxSizing: 'border-box' }} />
+                            </div>
 
-                            <div className={styles.modalActions}>
+                            <div className={styles.modalActions} style={{ marginTop: '0.5rem' }}>
                                 <button type="button" onClick={() => setSelectedCandidate(null)} className={styles.cancelBtn} disabled={processing}>
                                     Annuler
                                 </button>
-                                <button type="submit" className={styles.submitBtn} disabled={processing}>
-                                    {processing ? "Traitement..." : campaign.is_paid ? `Payer ${totalPrice} ${campaign.currency}` : "Valider mon vote"}
+                                <button type="submit" className={styles.submitBtn} disabled={processing} style={{ flex: 2, background: 'linear-gradient(135deg, #F7931E 0%, #e07d06 100%)', fontWeight: 'bold', fontSize: '1.05rem' }}>
+                                    {processing ? "Chargement du paiement..." : campaign.is_paid ? `💳 Payer ${totalPrice.toLocaleString()} ${campaign.currency}` : "Valider mon vote"}
                                 </button>
                             </div>
+
+                            {campaign.is_paid && (
+                                <p style={{ textAlign: 'center', fontSize: '0.78rem', color: '#9ca3af', margin: '0.5rem 0 0 0' }}>
+                                    Paiement sécurisé par Moov Money, MTN Mobile Money & Wave
+                                </p>
+                            )}
                         </form>
                     </div>
                 </div>
