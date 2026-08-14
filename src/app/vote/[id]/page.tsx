@@ -29,6 +29,8 @@ export default function PublicVotePage() {
     const [phone, setPhone] = useState("");
     const [processing, setProcessing] = useState(false);
 
+    const [copiedCandId, setCopiedCandId] = useState<string | null>(null);
+
     useEffect(() => {
         if (!campaignId) return;
         const fetchData = async () => {
@@ -70,19 +72,9 @@ export default function PublicVotePage() {
                         percentage: globalTotal > 0 ? ((c.totalVotes / globalTotal) * 100).toFixed(1) : 0
                     })).sort((a, b) => b.totalVotes - a.totalVotes);
                     
-                    const finalCands = candidatesWithScores;
-                    setCandidates(finalCands);
-                    if (autoCandidateId) {
-                        const match = finalCands.find(c => c.id === autoCandidateId);
-                        if (match) { setSelectedCandidate(match); setVoteCount(1); }
-                    }
+                    setCandidates(candidatesWithScores);
                 } else {
-                    const finalCands = candsData || [];
-                    setCandidates(finalCands);
-                    if (autoCandidateId) {
-                        const match = finalCands.find(c => c.id === autoCandidateId);
-                        if (match) { setSelectedCandidate(match); setVoteCount(1); }
-                    }
+                    setCandidates(candsData || []);
                 }
             } catch (err: any) {
                 console.error(err);
@@ -94,6 +86,42 @@ export default function PublicVotePage() {
 
         fetchData();
     }, [campaignId]);
+
+    // Auto-select candidate and open vote modal when ?candidat= parameter is present in URL
+    useEffect(() => {
+        if (autoCandidateId && candidates.length > 0 && !selectedCandidate) {
+            const target = autoCandidateId.trim().toLowerCase();
+            const match = candidates.find(c => {
+                const candId = (c.id || '').toLowerCase();
+                const candNum = (c.number || '').toString().toLowerCase();
+                const candNumPadded = candNum.padStart(2, '0');
+                const candName = (c.name || '').toLowerCase();
+
+                return (
+                    candId === target ||
+                    candNum === target ||
+                    candNumPadded === target ||
+                    `n°${candNum}` === target ||
+                    `n${candNum}` === target ||
+                    `n°${candNumPadded}` === target ||
+                    `n${candNumPadded}` === target ||
+                    candName === target
+                );
+            });
+
+            if (match) {
+                setSelectedCandidate(match);
+                setVoteCount(1);
+
+                setTimeout(() => {
+                    const el = document.getElementById(`candidate-${match.id}`);
+                    if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 200);
+            }
+        }
+    }, [autoCandidateId, candidates, selectedCandidate]);
 
     const handleVoteSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -243,8 +271,18 @@ export default function PublicVotePage() {
 
     const copyLink = (candId: string) => {
         const url = `${window.location.origin}/vote/${campaignId}?candidat=${candId}`;
-        navigator.clipboard.writeText(url);
-        alert("Lien direct copié dans le presse-papier !");
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url);
+        } else {
+            const textArea = document.createElement("textarea");
+            textArea.value = url;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textArea);
+        }
+        setCopiedCandId(candId);
+        setTimeout(() => setCopiedCandId(null), 3000);
     };
 
     return (
@@ -284,7 +322,7 @@ export default function PublicVotePage() {
 
                 <div className={styles.candidatesGrid}>
                     {candidates.map((cand, index) => (
-                        <div key={cand.id} className={styles.candCard}>
+                        <div key={cand.id} id={`candidate-${cand.id}`} className={styles.candCard}>
                             <div className={styles.candPhoto}>
                                 <img
                                     src={cand.photo_url || '/placeholder.png'}
@@ -312,8 +350,23 @@ export default function PublicVotePage() {
                                 <button onClick={() => { setSelectedCandidate(cand); setVoteCount(1); }} className={styles.voteBtn}>
                                     🗳️ Voter pour ce candidat
                                 </button>
-                                <button onClick={() => copyLink(cand.id)} style={{ marginTop: '10px', fontSize: '0.8rem', background: 'transparent', border: '1px solid #ddd', padding: '5px', borderRadius: '4px', cursor: 'pointer', color: '#555', width: '100%' }}>
-                                    🔗 Copier le lien direct
+                                <button
+                                    onClick={() => copyLink(cand.id)}
+                                    style={{
+                                        marginTop: '10px',
+                                        fontSize: '0.85rem',
+                                        background: copiedCandId === cand.id ? '#10b981' : 'transparent',
+                                        border: copiedCandId === cand.id ? '1px solid #10b981' : '1px solid #ddd',
+                                        padding: '8px',
+                                        borderRadius: '6px',
+                                        cursor: 'pointer',
+                                        color: copiedCandId === cand.id ? '#ffffff' : '#555',
+                                        width: '100%',
+                                        fontWeight: 'bold',
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
+                                    {copiedCandId === cand.id ? "✅ Lien direct copié !" : "🔗 Copier le lien direct de vote"}
                                 </button>
                             </div>
                         </div>
