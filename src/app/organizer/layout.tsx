@@ -28,6 +28,11 @@ export default function OrganizerLayout({
         router.push('/');
     };
 
+    const SUPER_ADMIN_EMAILS = ['groupita25@gmail.com', 'admin@itaarena.com'];
+    const userEmail = (user?.email || '').toLowerCase().trim();
+    const isSuperAdminEmail = userEmail && SUPER_ADMIN_EMAILS.includes(userEmail);
+    const hasAdminAccess = isSuperAdminEmail || ['admin', 'super_admin', 'organisateur', 'organizer', 'visualiseur'].includes(role || '');
+
     if (loading) return (
         <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #FF5A1F', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
@@ -70,7 +75,7 @@ export default function OrganizerLayout({
                         <span className={styles.navIcon}>📊</span> Tableau de bord
                     </Link>
 
-                    {['admin', 'super_admin', 'organisateur', 'organizer', 'visualiseur'].includes(role || '') && (
+                    {hasAdminAccess && (
                         <Link
                             href="/admin"
                             className={`${styles.navItem}`}
@@ -239,7 +244,7 @@ export default function OrganizerLayout({
                                         <p className={styles.dropdownCode}>Code client: <span style={{ color: '#e53e3e', fontWeight: 800 }}>INVITE</span></p>
                                     </div>
                                     <hr className={styles.dropdownDivider} />
-                                    {['admin', 'super_admin', 'organisateur', 'organizer', 'visualiseur'].includes(role || '') && (
+                                    {hasAdminAccess && (
                                         <>
                                             <Link href="/admin" className={styles.dropdownItem} style={{ color: '#ff5a1f', fontWeight: 'bold' }}>🔧 Administration</Link>
                                             <hr className={styles.dropdownDivider} />

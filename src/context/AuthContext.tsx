@@ -22,25 +22,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [isApproved, setIsApproved] = useState<boolean>(true);
     const [loading, setLoading] = useState(true);
 
-    const fetchRole = async (userId: string) => {
+    const SUPER_ADMIN_EMAILS = ['groupita25@gmail.com', 'admin@itaarena.com'];
+
+    const fetchRole = async (userId: string, userEmail?: string) => {
         try {
+            const normalizedEmail = (userEmail || '').toLowerCase().trim();
+            if (normalizedEmail && SUPER_ADMIN_EMAILS.includes(normalizedEmail)) {
+                setRole('super_admin');
+                setIsApproved(true);
+                return;
+            }
+
             const { data } = await supabase
                 .from('profiles')
                 .select('role, is_approved')
                 .eq('id', userId)
                 .single();
-            const userRole = data?.role || 'user';
+
+            let userRole = data?.role;
+            if (!userRole && normalizedEmail && SUPER_ADMIN_EMAILS.includes(normalizedEmail)) {
+                userRole = 'super_admin';
+            } else if (!userRole) {
+                userRole = 'user';
+            }
+
             setRole(userRole);
 
-            // Admins and super_admins are automatically approved; organizers/users check is_approved (default true for backward compatibility unless explicitly false or pending)
-            if (userRole === 'super_admin' || userRole === 'admin') {
+            if (userRole === 'super_admin' || userRole === 'admin' || (normalizedEmail && SUPER_ADMIN_EMAILS.includes(normalizedEmail))) {
                 setIsApproved(true);
             } else {
                 setIsApproved(data?.is_approved !== false);
             }
         } catch (err) {
             console.error("Error fetching role:", err);
-            setRole('user');
+            const normalizedEmail = (userEmail || '').toLowerCase().trim();
+            if (normalizedEmail && SUPER_ADMIN_EMAILS.includes(normalizedEmail)) {
+                setRole('super_admin');
+            } else {
+                setRole('user');
+            }
             setIsApproved(true);
         }
     };
@@ -51,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setSession(session);
             setUser(session?.user ?? null);
             if (session?.user) {
-                fetchRole(session.user.id);
+                fetchRole(session.user.id, session.user.email);
             } else {
                 setRole(null);
                 setIsApproved(true);
@@ -64,7 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setSession(session);
             setUser(session?.user ?? null);
             if (session?.user) {
-                fetchRole(session.user.id);
+                fetchRole(session.user.id, session.user.email);
             } else {
                 setRole(null);
                 setIsApproved(true);

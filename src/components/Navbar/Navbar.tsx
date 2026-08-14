@@ -123,7 +123,7 @@ export default function Navbar() {
                             </div>
                           </div>
                           <hr className={styles.divider} />
-                          {['admin', 'super_admin', 'organisateur', 'organizer', 'visualiseur'].includes(role || '') && (
+                          {(['admin', 'super_admin', 'organisateur', 'organizer', 'visualiseur'].includes(role || '') || (user?.email && ['groupita25@gmail.com', 'admin@itaarena.com'].includes(user.email.toLowerCase().trim()))) && (
                             <>
                               <Link href="/admin" className={styles.dropdownItem} style={{ color: '#ff5a1f', fontWeight: 'bold' }} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>
                                 🔧 Administration

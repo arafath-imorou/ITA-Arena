@@ -78,17 +78,29 @@ function AdminDashboardContent() {
         }
 
         async function verifyAdmin() {
+            const SUPER_ADMIN_EMAILS = ['groupita25@gmail.com', 'admin@itaarena.com'];
+            const userEmail = (user?.email || '').toLowerCase().trim();
+
+            if (userEmail && SUPER_ADMIN_EMAILS.includes(userEmail)) {
+                setUserRole('super_admin');
+                setIsAdmin(true);
+                fetchAdminData();
+                return;
+            }
+
             const { data: profile } = await supabase
                 .from('profiles')
                 .select('role')
                 .eq('id', user?.id)
                 .single();
 
-            if (!['admin', 'super_admin', 'organisateur', 'organizer', 'visualiseur'].includes(profile?.role)) {
+            const currentRole = profile?.role || (SUPER_ADMIN_EMAILS.includes(userEmail) ? 'super_admin' : '');
+
+            if (!['admin', 'super_admin', 'organisateur', 'organizer', 'visualiseur'].includes(currentRole)) {
                 router.push("/");
                 return;
             }
-            setUserRole(profile?.role || "");
+            setUserRole(currentRole);
             setIsAdmin(true);
             fetchAdminData();
         }
