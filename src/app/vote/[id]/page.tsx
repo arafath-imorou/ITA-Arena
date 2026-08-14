@@ -44,58 +44,71 @@ export default function PublicVotePage() {
 
     useEffect(() => {
         if (!campaignId) return;
+        let isMounted = true;
+
         const fetchData = async () => {
             try {
-                // Fetch Campaign
-                const { data: campData, error: campError } = await supabase
-                    .from('votes_campaigns')
-                    .select('*')
-                    .eq('id', campaignId)
-                    .single();
-                
-                if (campError) throw campError;
-                if (campData.status !== 'active') throw new Error("Ce vote est actuellement fermé.");
-                
+                // Fetch Campaign & Candidates in PARALLEL for ultra-fast initial load (< 300ms)
+                const [campRes, candsRes] = await Promise.all([
+                    supabase
+                        .from('votes_campaigns')
+                        .select('*')
+                        .eq('id', campaignId)
+                        .single(),
+                    supabase
+                        .from('vote_candidates')
+                        .select('*')
+                        .eq('campaign_id', campaignId)
+                ]);
+
+                if (campRes.error) throw campRes.error;
+                if (campRes.data.status !== 'active') throw new Error("Ce vote est actuellement fermé.");
+                if (candsRes.error) throw candsRes.error;
+
+                const campData = campRes.data;
+                const candsData = candsRes.data || [];
+
+                if (!isMounted) return;
                 setCampaign(campData);
+                setCandidates(candsData);
+                setLoading(false); // Display page & candidate modal IMMEDIATELY!
 
-                // Fetch Candidates
-                const { data: candsData, error: candsError } = await supabase
-                    .from('vote_candidates')
-                    .select('*')
-                    .eq('campaign_id', campaignId);
-                
-                if (candsError) throw candsError;
-
+                // Background load stats & percentages if show_results is enabled
                 if (campData.show_results) {
-                    // Fetch Votes to compute current standings
-                    const statsRes = await fetch(`/api/votes/${campaignId}/stats`);
-                    const votesData: any[] = statsRes.ok ? await statsRes.json() : [];
-                    
-                    let globalTotal = 0;
-                    const candsTemp = (candsData || []).map(cand => {
-                        const candVotes = (votesData || []).filter(v => v.candidate_id === cand.id);
-                        const totalVotes = candVotes.reduce((sum, v) => sum + (v.vote_count || 1), 0);
-                        globalTotal += totalVotes;
-                        return { ...cand, totalVotes };
-                    });
-                    const candidatesWithScores = candsTemp.map(c => ({
-                        ...c,
-                        percentage: globalTotal > 0 ? ((c.totalVotes / globalTotal) * 100).toFixed(1) : 0
-                    })).sort((a, b) => b.totalVotes - a.totalVotes);
-                    
-                    setCandidates(candidatesWithScores);
-                } else {
-                    setCandidates(candsData || []);
+                    fetch(`/api/votes/${campaignId}/stats`)
+                        .then(res => res.ok ? res.json() : [])
+                        .then((votesData: any[]) => {
+                            if (!isMounted) return;
+                            let globalTotal = 0;
+                            const candsTemp = candsData.map(cand => {
+                                const candVotes = (votesData || []).filter(v => v.candidate_id === cand.id);
+                                const totalVotes = candVotes.reduce((sum, v) => sum + (v.vote_count || 1), 0);
+                                globalTotal += totalVotes;
+                                return { ...cand, totalVotes };
+                            });
+                            const candidatesWithScores = candsTemp.map(c => ({
+                                ...c,
+                                percentage: globalTotal > 0 ? ((c.totalVotes / globalTotal) * 100).toFixed(1) : 0
+                            })).sort((a, b) => b.totalVotes - a.totalVotes);
+
+                            setCandidates(candidatesWithScores);
+                        })
+                        .catch(err => console.error("Error loading vote stats in background:", err));
                 }
             } catch (err: any) {
                 console.error(err);
-                alert(err.message || "Erreur de chargement.");
-            } finally {
-                setLoading(false);
+                if (isMounted) {
+                    alert(err.message || "Erreur de chargement.");
+                    setLoading(false);
+                }
             }
         };
 
         fetchData();
+
+        return () => {
+            isMounted = false;
+        };
     }, [campaignId]);
 
     // Auto-select candidate and open vote modal when ?candidat= parameter is present in URL
