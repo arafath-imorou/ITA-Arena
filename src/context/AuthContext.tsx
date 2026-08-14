@@ -8,6 +8,7 @@ interface AuthContextType {
     user: User | null;
     session: Session | null;
     role: string | null;
+    isApproved: boolean;
     loading: boolean;
     signOut: () => Promise<void>;
 }
@@ -18,19 +19,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [session, setSession] = useState<Session | null>(null);
     const [role, setRole] = useState<string | null>(null);
+    const [isApproved, setIsApproved] = useState<boolean>(true);
     const [loading, setLoading] = useState(true);
 
     const fetchRole = async (userId: string) => {
         try {
             const { data } = await supabase
                 .from('profiles')
-                .select('role')
+                .select('role, is_approved')
                 .eq('id', userId)
                 .single();
-            setRole(data?.role || 'user');
+            const userRole = data?.role || 'user';
+            setRole(userRole);
+
+            // Admins and super_admins are automatically approved; organizers/users check is_approved (default true for backward compatibility unless explicitly false or pending)
+            if (userRole === 'super_admin' || userRole === 'admin') {
+                setIsApproved(true);
+            } else {
+                setIsApproved(data?.is_approved !== false);
+            }
         } catch (err) {
             console.error("Error fetching role:", err);
             setRole('user');
+            setIsApproved(true);
         }
     };
 
@@ -43,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 fetchRole(session.user.id);
             } else {
                 setRole(null);
+                setIsApproved(true);
             }
             setLoading(false);
         });
@@ -55,6 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 fetchRole(session.user.id);
             } else {
                 setRole(null);
+                setIsApproved(true);
             }
             setLoading(false);
         });
@@ -65,10 +78,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const signOut = async () => {
         await supabase.auth.signOut();
         setRole(null);
+        setIsApproved(true);
     };
 
     return (
-        <AuthContext.Provider value={{ user, session, role, loading, signOut }}>
+        <AuthContext.Provider value={{ user, session, role, isApproved, loading, signOut }}>
             {children}
         </AuthContext.Provider>
     );

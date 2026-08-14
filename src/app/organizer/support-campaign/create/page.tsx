@@ -9,7 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function CreateSupportCampaign() {
     const router = useRouter();
-    const { user } = useAuth();
+    const { user, role, isApproved } = useAuth();
     const [step, setStep] = useState(1);
     const [editId, setEditId] = useState<string | null>(null);
     const [existingSlug, setExistingSlug] = useState<string | null>(null);
@@ -176,6 +176,8 @@ export default function CreateSupportCampaign() {
                 show_logo: formData.showLogo,
             };
 
+            const isAutoActive = role === 'super_admin' || role === 'admin';
+
             // 2. Insert or Update Database
             if (editId) {
                 const { error: updateError } = await supabase
@@ -191,7 +193,7 @@ export default function CreateSupportCampaign() {
                         ...payload,
                         slug: slug,
                         created_by: user.id,
-                        status: 'active'
+                        status: isAutoActive ? 'active' : 'pending'
                     });
 
                 if (insertError) throw insertError;

@@ -258,10 +258,22 @@ function AdminDashboardContent() {
         };
     }, [rawEvents, rawCampaigns, rawProfiles, rawTickets, rawForms, rawVotes, filters]);
 
-    const togglePublish = async (eventId: string, currentStatus: boolean) => {
+    const togglePublish = async (eventId: string, currentPublished: boolean) => {
         try {
-            await supabase.from('events').update({ is_published: !currentStatus }).eq('id', eventId);
-            setRawEvents(rawEvents.map(e => e.id === eventId ? { ...e, is_published: !currentStatus } : e));
+            const nextPublished = !currentPublished;
+            const nextStatus = nextPublished ? 'active' : 'pending';
+            await supabase.from('events').update({ is_published: nextPublished, status: nextStatus }).eq('id', eventId);
+            setRawEvents(rawEvents.map(e => e.id === eventId ? { ...e, is_published: nextPublished, status: nextStatus } : e));
+        } catch (err) {
+            alert("Erreur");
+        }
+    };
+
+    const toggleSupportStatus = async (campaignId: string, currentStatus: string) => {
+        try {
+            const newStatus = currentStatus === 'active' ? 'pending' : 'active';
+            await supabase.from('support_campaigns').update({ status: newStatus }).eq('id', campaignId);
+            setRawCampaigns(rawCampaigns.map(c => c.id === campaignId ? { ...c, status: newStatus } : c));
         } catch (err) {
             alert("Erreur");
         }
@@ -603,12 +615,20 @@ function AdminDashboardContent() {
                                             </div>
                                         </td>
                                         <td style={{ fontWeight: 'bold', color: '#059669' }}>{Number(e.collected_amount || 0).toLocaleString()} F</td>
-                                        <td><span className={`${styles.badge} ${e.is_published ? styles.badgeSuccess : styles.badgeInfo}`}>{e.is_published ? "Actif" : "Masqué"}</span></td>
+                                        <td>
+                                            <span className={styles.badge} style={{
+                                                background: e.status === 'pending' ? '#fef9c3' : (e.is_published ? '#dcfce7' : '#f1f5f9'),
+                                                color: e.status === 'pending' ? '#a16207' : (e.is_published ? '#15803d' : '#64748b'),
+                                                fontWeight: 'bold'
+                                            }}>
+                                                {e.status === 'pending' ? '⏳ En attente de validation' : (e.is_published ? '✅ En ligne' : 'Masqué')}
+                                            </span>
+                                        </td>
                                         <td>
                                             <div style={{ display: 'flex', gap: '0.4rem' }}>
                                                 <button onClick={() => { setSelectedEvent(e); setActiveModalTab('stats'); }} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#e0f2fe', color: '#0369a1' }} title="Statistiques">📊</button>
                                                 <button onClick={() => { setSelectedEvent(e); setActiveModalTab('tickets'); }} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#fef3c7', color: '#92400e' }} title="Tickets">🎟️</button>
-                                                <button onClick={() => togglePublish(e.id, e.is_published)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#f1f5f9' }} title={e.is_published ? "Masquer" : "Publier"}>{e.is_published ? "⏸️" : "▶️"}</button>
+                                                <button onClick={() => togglePublish(e.id, e.is_published)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: e.is_published ? '#fef3c7' : '#dcfce7', color: e.is_published ? '#92400e' : '#166534', fontWeight: 'bold' }} title={e.is_published ? "Masquer" : "Valider & Publier"}>{e.is_published ? "⏸️" : "✅ Valider"}</button>
                                                 <Link href={`/events/${e.slug || e.id}`} target="_blank" className={styles.badge} style={{ textDecoration: 'none', background: '#f8fafc', color: '#64748b' }} title="Voir l'évènement">🔗</Link>
                                                 {userRole !== "visualiseur" && <Link href={e.type === 'cotisation' ? `/organizer/cotisation/create?edit=${e.id}` : `/organizer/create?edit=${e.id}`} className={styles.badge} style={{ display: 'inline-block', textDecoration: 'none', background: '#fef9c3', color: '#854d0e', textAlign: 'center' }} title="Modifier">✏️</Link>}
                                                 {userRole !== "visualiseur" && <button onClick={() => deleteEvent(e.id)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#fee2e2', color: '#991b1b' }} title="Supprimer">🗑️</button>}
@@ -645,12 +665,21 @@ function AdminDashboardContent() {
                                                 <p style={{ margin: 0, fontSize: '0.7rem', color: '#64748b' }}>{c.category || 'Non classé'}</p>
                                             </td>
                                             <td>{new Date(c.created_at).toLocaleDateString('fr-FR')}</td>
-                                            <td><span className={`${styles.badge} ${c.status === 'active' ? styles.badgeSuccess : styles.badgeInfo}`}>{c.status === 'active' ? 'En ligne' : 'Brouillon'}</span></td>
+                                            <td>
+                                                <span className={styles.badge} style={{
+                                                    background: c.status === 'pending' ? '#fef9c3' : (c.status === 'active' ? '#dcfce7' : '#f1f5f9'),
+                                                    color: c.status === 'pending' ? '#a16207' : (c.status === 'active' ? '#15803d' : '#64748b'),
+                                                    fontWeight: 'bold'
+                                                }}>
+                                                    {c.status === 'pending' ? '⏳ En attente de validation' : (c.status === 'active' ? '✅ En ligne' : 'Brouillon')}
+                                                </span>
+                                            </td>
                                             <td>{c.downloads || 0}</td>
                                             <td>{c.views || 0}</td>
                                             <td>
                                                 <div style={{ display: 'flex', gap: '0.4rem' }}>
                                                     <a href={`/support/${c.slug}`} target="_blank" rel="noreferrer" className={styles.badge} style={{ textDecoration: 'none', background: '#e0f2fe', color: '#0369a1' }} title="Voir la page publique">👁️</a>
+                                                    <button onClick={() => toggleSupportStatus(c.id, c.status)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: c.status === 'active' ? '#fef3c7' : '#dcfce7', color: c.status === 'active' ? '#92400e' : '#166534', fontWeight: 'bold' }} title={c.status === 'active' ? "Désactiver" : "Valider & Publier"}>{c.status === 'active' ? "⏸️" : "✅ Valider"}</button>
                                                     {userRole !== "visualiseur" && <Link href={`/organizer/support-campaign/create?edit=${c.id}`} className={styles.badge} style={{ display: 'inline-block', textDecoration: 'none', background: '#fef9c3', color: '#854d0e', textAlign: 'center' }} title="Modifier">✏️</Link>}
                                                     {userRole !== "visualiseur" && <button onClick={() => deleteSupportCampaign(c.id)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#fee2e2', color: '#991b1b' }} title="Supprimer">🗑️</button>}
                                                 </div>
@@ -688,12 +717,20 @@ function AdminDashboardContent() {
                                                 <p style={{ margin: 0, fontSize: '0.7rem', color: '#64748b' }}>{f.organizer_id}</p>
                                             </td>
                                             <td>{new Date(f.created_at).toLocaleDateString('fr-FR')}</td>
-                                            <td><span className={`${styles.badge} ${f.status === 'active' ? styles.badgeSuccess : styles.badgeInfo}`}>{f.status === 'active' ? 'Actif' : 'Désactivé'}</span></td>
+                                            <td>
+                                                <span className={styles.badge} style={{
+                                                    background: f.status === 'pending' ? '#fef9c3' : (f.status === 'active' ? '#dcfce7' : '#f1f5f9'),
+                                                    color: f.status === 'pending' ? '#a16207' : (f.status === 'active' ? '#15803d' : '#64748b'),
+                                                    fontWeight: 'bold'
+                                                }}>
+                                                    {f.status === 'pending' ? '⏳ En attente' : (f.status === 'active' ? '✅ Actif' : 'Désactivé')}
+                                                </span>
+                                            </td>
                                             <td>{f.max_participants ? f.max_participants : 'Illimité'}</td>
                                             <td>
                                                 <div style={{ display: 'flex', gap: '0.4rem' }}>
                                                     <a href={`/f/${f.id}`} target="_blank" rel="noreferrer" className={styles.badge} style={{ textDecoration: 'none', background: '#e0f2fe', color: '#0369a1' }} title="Voir la page publique">👁️</a>
-                                                    <button onClick={() => toggleFormStatus(f.id, f.status)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#f1f5f9' }} title={f.status === 'active' ? "Désactiver" : "Activer"}>{f.status === 'active' ? "⏸️" : "▶️"}</button>
+                                                    <button onClick={() => toggleFormStatus(f.id, f.status)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: f.status === 'active' ? '#fef3c7' : '#dcfce7', color: f.status === 'active' ? '#92400e' : '#166534', fontWeight: 'bold' }} title={f.status === 'active' ? "Désactiver" : "Valider"}>{f.status === 'active' ? "⏸️" : "✅ Valider"}</button>
                                                     {userRole !== "visualiseur" && <Link href={`/organizer/forms/create?edit=${f.id}`} className={styles.badge} style={{ display: 'inline-block', textDecoration: 'none', background: '#fef9c3', color: '#854d0e', textAlign: 'center' }} title="Modifier">✏️</Link>}
                                                     {userRole !== "visualiseur" && <button onClick={() => deleteForm(f.id)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#fee2e2', color: '#991b1b' }} title="Supprimer">🗑️</button>}
                                                 </div>
@@ -733,11 +770,19 @@ function AdminDashboardContent() {
                                             <td style={{ fontWeight: 'bold' }}>{v.computedTotalVotes}</td>
                                             <td style={{ fontWeight: 'bold', color: '#047857' }}>{v.computedTotalRevenue.toLocaleString()} F</td>
                                             <td><span className={styles.badge} style={{ background: v.is_paid ? '#fef3c7' : '#e0f2fe', color: v.is_paid ? '#92400e' : '#0369a1' }}>{v.is_paid ? `Payant (${v.price_per_vote} F)` : 'Gratuit'}</span></td>
-                                            <td><span className={`${styles.badge} ${v.status === 'active' ? styles.badgeSuccess : styles.badgeInfo}`}>{v.status === 'active' ? 'En ligne' : 'Terminé'}</span></td>
+                                            <td>
+                                                <span className={styles.badge} style={{
+                                                    background: v.status === 'pending' ? '#fef9c3' : (v.status === 'active' ? '#dcfce7' : '#f1f5f9'),
+                                                    color: v.status === 'pending' ? '#a16207' : (v.status === 'active' ? '#15803d' : '#64748b'),
+                                                    fontWeight: 'bold'
+                                                }}>
+                                                    {v.status === 'pending' ? '⏳ En attente' : (v.status === 'active' ? '✅ En ligne' : 'Terminé')}
+                                                </span>
+                                            </td>
                                             <td>
                                                 <div style={{ display: 'flex', gap: '0.4rem' }}>
                                                     <a href={`/vote/${v.id}`} target="_blank" rel="noreferrer" className={styles.badge} style={{ textDecoration: 'none', background: '#e0f2fe', color: '#0369a1' }} title="Voir la page publique">👁️</a>
-                                                    <button onClick={() => toggleVoteStatus(v.id, v.status)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#f1f5f9' }} title={v.status === 'active' ? "Terminer" : "Activer"}>{v.status === 'active' ? "⏸️" : "▶️"}</button>
+                                                    <button onClick={() => toggleVoteStatus(v.id, v.status)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: v.status === 'active' ? '#fef3c7' : '#dcfce7', color: v.status === 'active' ? '#92400e' : '#166534', fontWeight: 'bold' }} title={v.status === 'active' ? "Suspendre" : "Valider & Activer"}>{v.status === 'active' ? "⏸️" : "✅ Valider"}</button>
                                                     {userRole !== "visualiseur" && <Link href={`/organizer/votes/create?edit=${v.id}`} className={styles.badge} style={{ display: 'inline-block', textDecoration: 'none', background: '#fef9c3', color: '#854d0e', textAlign: 'center' }} title="Modifier">✏️</Link>}
                                                     {userRole !== "visualiseur" && <button onClick={() => deleteVote(v.id)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#fee2e2', color: '#991b1b' }} title="Supprimer">🗑️</button>}
                                                 </div>

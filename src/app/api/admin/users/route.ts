@@ -83,11 +83,17 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    const { adminEmail, userId, newRole, newPassword } = await request.json();
+    const { adminEmail, userId, newRole, newPassword, is_approved } = await request.json();
 
     const { data: adminUser } = await supabase.from('profiles').select('role').eq('email', adminEmail).single();
-    if (!adminUser || adminUser.role !== 'super_admin') {
+    if (!adminUser || (adminUser.role !== 'super_admin' && adminUser.role !== 'admin')) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
+    if (is_approved !== undefined) {
+        const { error } = await supabase.from('profiles').update({ is_approved }).eq('id', userId);
+        if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ success: true, message: 'Statut de validation mis à jour' });
     }
 
     if (newPassword) {

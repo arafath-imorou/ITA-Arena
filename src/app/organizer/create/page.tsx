@@ -13,7 +13,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function CreateEventPage() {
     const router = useRouter();
-    const { user } = useAuth();
+    const { user, role, isApproved } = useAuth();
     const [step, setStep] = useState(1);
     const [editId, setEditId] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -177,6 +177,14 @@ export default function CreateEventPage() {
             }
         }
 
+        if (!isApproved && role !== 'super_admin' && role !== 'admin') {
+            alert("Action bloquée : Votre compte d'organisateur est en attente de validation par l'administration.");
+            setLoading(false);
+            return;
+        }
+
+        const isAutoPublished = role === 'super_admin' || role === 'admin';
+
         const submissionData = {
             title: formData.title,
             category_id: formData.category_id,
@@ -190,7 +198,8 @@ export default function CreateEventPage() {
             organizer_id: formData.organizer_id,
             ticket_categories: formData.ticket_categories,
             country: formData.country,
-            is_published: true
+            is_published: isAutoPublished,
+            status: isAutoPublished ? 'active' : 'pending'
         };
 
         if (editId) {

@@ -116,6 +116,24 @@ export default function UsersTab() {
         }
     };
 
+    const handleToggleApproval = async (userId: string, currentApproved: boolean) => {
+        try {
+            const res = await fetch('/api/admin/users', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    adminEmail: user?.email,
+                    userId,
+                    is_approved: !currentApproved
+                })
+            });
+            if (!res.ok) throw new Error('Erreur de modification du statut');
+            fetchUsers();
+        } catch (err: any) {
+            alert(err.message);
+        }
+    };
+
     if (loading) return <div>Chargement des utilisateurs...</div>;
 
     return (
@@ -170,6 +188,7 @@ export default function UsersTab() {
                             <th>Nom</th>
                             <th>Email</th>
                             <th>Rôle</th>
+                            <th>Validation Compte</th>
                             <th>Date Création</th>
                             <th>Actions</th>
                         </tr>
@@ -194,11 +213,36 @@ export default function UsersTab() {
                                         <option value="user">User</option>
                                     </select>
                                 </td>
+                                <td>
+                                    <span style={{ display: 'inline-block', padding: '0.2rem 0.5rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold', background: u.is_approved !== false ? '#dcfce7' : '#fef9c3', color: u.is_approved !== false ? '#15803d' : '#a16207' }}>
+                                        {u.is_approved !== false ? '✅ Validé' : '⏳ En attente'}
+                                    </span>
+                                </td>
                                 <td>{new Date(u.created_at).toLocaleDateString('fr-FR')}</td>
                                 <td>
-                                    {u.email !== user?.email && (
-                                        <button onClick={() => handleDeleteUser(u.id)} style={{ color: 'red', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>Supprimer</button>
-                                    )}
+                                    <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                                        {u.role !== 'super_admin' && (
+                                            <button
+                                                onClick={() => handleToggleApproval(u.id, u.is_approved !== false)}
+                                                style={{
+                                                    background: u.is_approved !== false ? '#fef3c7' : '#dcfce7',
+                                                    color: u.is_approved !== false ? '#92400e' : '#166534',
+                                                    border: 'none',
+                                                    padding: '0.35rem 0.6rem',
+                                                    borderRadius: '6px',
+                                                    cursor: 'pointer',
+                                                    fontSize: '0.78rem',
+                                                    fontWeight: 'bold'
+                                                }}
+                                                title={u.is_approved !== false ? "Suspendre l'autorisation" : "Valider le compte"}
+                                            >
+                                                {u.is_approved !== false ? '⏸️ Suspendre' : '✅ Valider'}
+                                            </button>
+                                        )}
+                                        {u.email !== user?.email && (
+                                            <button onClick={() => handleDeleteUser(u.id)} style={{ color: '#dc2626', background: '#fee2e2', border: 'none', padding: '0.35rem 0.6rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 'bold' }}>Supprimer</button>
+                                        )}
+                                    </div>
                                 </td>
                             </tr>
                         ))}

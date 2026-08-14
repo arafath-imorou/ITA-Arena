@@ -13,7 +13,7 @@ export default function OrganizerLayout({
 }) {
     const pathname = usePathname();
     const router = useRouter();
-    const { user, loading, signOut, role } = useAuth();
+    const { user, loading, signOut, role, isApproved } = useAuth();
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -257,6 +257,29 @@ export default function OrganizerLayout({
                         </div>
                     </div>
                 </header>
+
+                {!isApproved && role !== 'super_admin' && role !== 'admin' && (
+                    <div style={{
+                        background: '#fffbe6',
+                        border: '1px solid #ffe58f',
+                        padding: '1rem 1.5rem',
+                        borderRadius: '10px',
+                        margin: '1.2rem 1.5rem 0 1.5rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '1rem',
+                        color: '#8c6b00',
+                        fontSize: '0.92rem',
+                        lineHeight: 1.5,
+                        boxShadow: '0 2px 8px rgba(250, 173, 20, 0.15)'
+                    }}>
+                        <span style={{ fontSize: '1.6rem', flexShrink: 0 }}>⏳</span>
+                        <div>
+                            <strong style={{ color: '#d48806', fontSize: '0.98rem', display: 'block', marginBottom: '0.15rem' }}>Compte en attente de validation par l'administration</strong>
+                            Votre compte d'organisateur doit être validé par un administrateur ITA ARENA avant de pouvoir publier des événements et des campagnes de vote en ligne.
+                        </div>
+                    </div>
+                )}
 
                 <div className={styles.contentPadding}>
                     {children}

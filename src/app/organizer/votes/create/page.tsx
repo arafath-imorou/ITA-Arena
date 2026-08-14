@@ -8,7 +8,7 @@ import styles from "./CreateVote.module.css";
 import { v4 as uuidv4 } from "uuid";
 
 export default function CreateVotePage() {
-    const { user } = useAuth();
+    const { user, role, isApproved } = useAuth();
     const router = useRouter();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -51,22 +51,23 @@ export default function CreateVotePage() {
                     fd.append('folder', 'vote-covers-optimized');
                     fd.append('bucket', 'vote_uploads');
                     const optimRes = await fetch('/api/upload/optimize', { method: 'POST', body: fd });
-                    const optimData = await optimRes.json();
-                    if (optimRes.ok) {
-                        coverUrl = optimData.url;
-                        console.log(`Cover image optimized: ${optimData.stats?.originalKb}KB → ${optimData.stats?.optimizedKb}KB (${optimData.stats?.reduction})`);
-                    } else {
-                        // Fallback to direct upload
-                        const ext = coverImage.name.split('.').pop();
-                        const path = `${uuidv4()}.${ext}`;
-                        await supabase.storage.from('vote_uploads').upload(path, coverImage);
-                        const { data } = supabase.storage.from('vote_uploads').getPublicUrl(path);
-                        coverUrl = data.publicUrl;
-                    }
+                    const fileExt = coverImage.name.split('.').pop();
+                    const fileName = `${uuidv4()}.${fileExt}`;
+                    const { data: uploadData, error: uploadError } = await supabase.storage
+                        .from('vote_uploads')
+                        .upload(fileName, coverImage);
+                    
+                    if (uploadError) throw uploadError;
+                    const { data: publicUrlData } = supabase.storage
+                        .from('vote_uploads')
+                        .getPublicUrl(fileName);
+                    coverUrl = publicUrlData.publicUrl;
                 }
 
+                const isAutoActive = role === 'super_admin' || role === 'admin';
+
                 const { data, error } = await supabase.from('votes_campaigns').insert({
-                    organizer_id: user.id,
+                    organizer_id: user?.id,
                     title,
                     description,
                     category,
@@ -77,7 +78,7 @@ export default function CreateVotePage() {
                     price_per_vote: isPaid ? pricePerVote : 0,
                     vote_limit_per_user: voteLimit,
                     show_results: showResults,
-                    status: 'active'
+                    status: isAutoActive ? 'active' : 'pending'
                 }).select().single();
 
                 if (error) throw error;
