@@ -143,12 +143,13 @@ export default function PhotoGenerator({ frameUrl, campaignId, campaignTitle = "
             img.onload = () => {
                 setUserImage(img);
                 
-                // Auto scale to fit
-                const minScale = Math.max(
-                    CANVAS_SIZE / img.width,
-                    CANVAS_SIZE / img.height
+                // Auto scale to fit comfortably inside the frame's circle/cutout (~680px area)
+                const targetArea = CANVAS_SIZE * 0.65;
+                const initialScale = Math.max(
+                    targetArea / img.width,
+                    targetArea / img.height
                 );
-                setScale(minScale);
+                setScale(initialScale);
                 setOffset({ x: 0, y: 0 });
                 setRotation(0);
             };
