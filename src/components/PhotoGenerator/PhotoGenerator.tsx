@@ -28,11 +28,10 @@ export default function PhotoGenerator({ frameUrl, campaignId, campaignTitle = "
 
     const CANVAS_SIZE = 1080;
 
-    // Detect if this is the polio frame to automatically apply a circular mask
-    // We check both the URL (for 'polio') and the specific campaign ID just in case
-    const isPolioCampaign = frameUrl.toLowerCase().includes('polio') || campaignTitle.toLowerCase().includes('polio');
-    const isSillageCampaign = frameUrl.toLowerCase().includes('sillage') || campaignTitle.toLowerCase().includes('sillage');
-    const isPlageCampaign = campaignTitle.toLowerCase().includes('plage') || campaignTitle.toLowerCase().includes('acte');
+    // Detect legacy campaigns by ID to apply specific custom masks/offsets
+    const isPolioCampaign = campaignId === 'dd87821d-684f-4715-8e7b-e383b2550664';
+    const isSillageCampaign = campaignId === '17f27fb1-ed85-44d3-9dbd-fb026bd29d6f';
+    const isPlageCampaign = campaignId === 'de0ffa65-8b89-4398-a768-ef2d4c35d29b';
 
     // Load Frame Image
     useEffect(() => {
@@ -127,7 +126,7 @@ export default function PhotoGenerator({ frameUrl, campaignId, campaignTitle = "
             ctx.drawImage(frameImage, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
         }
 
-    }, [userImage, frameImage, scale, rotation, offset, isPolioCampaign, isSillageCampaign]);
+    }, [userImage, frameImage, scale, rotation, offset, isPolioCampaign, isSillageCampaign, isPlageCampaign]);
 
     useEffect(() => {
         drawCanvas();
