@@ -3,18 +3,26 @@ import { createClient } from '@supabase/supabase-js';
 
 // We need an isolated client to not mess up SSR if they don't have it setup correctly.
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
 
 type Props = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>;
 };
 
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const slug = params.slug;
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug;
+
+  if (!slug) {
+    return {
+      title: 'Campagne non trouvée | ITA ARENA',
+      description: 'Cette campagne de soutien n\'existe pas.'
+    };
+  }
 
   const { data: campaign } = await supabaseAdmin
     .from('support_campaigns')
