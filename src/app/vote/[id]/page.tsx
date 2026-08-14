@@ -30,6 +30,17 @@ export default function PublicVotePage() {
     const [processing, setProcessing] = useState(false);
 
     const [copiedCandId, setCopiedCandId] = useState<string | null>(null);
+    const [isDismissed, setIsDismissed] = useState(false);
+
+    const handleCloseModal = () => {
+        setSelectedCandidate(null);
+        setIsDismissed(true);
+        if (typeof window !== 'undefined' && window.history.pushState) {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('candidat');
+            window.history.pushState({}, '', url.toString());
+        }
+    };
 
     useEffect(() => {
         if (!campaignId) return;
@@ -89,7 +100,7 @@ export default function PublicVotePage() {
 
     // Auto-select candidate and open vote modal when ?candidat= parameter is present in URL
     useEffect(() => {
-        if (autoCandidateId && candidates.length > 0 && !selectedCandidate) {
+        if (autoCandidateId && candidates.length > 0 && !selectedCandidate && !isDismissed) {
             const target = autoCandidateId.trim().toLowerCase();
             const match = candidates.find(c => {
                 const candId = (c.id || '').toLowerCase();
@@ -121,7 +132,7 @@ export default function PublicVotePage() {
                 }, 200);
             }
         }
-    }, [autoCandidateId, candidates, selectedCandidate]);
+    }, [autoCandidateId, candidates, selectedCandidate, isDismissed]);
 
     const handleVoteSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -347,7 +358,7 @@ export default function PublicVotePage() {
                                     </div>
                                 )}
                                 
-                                <button onClick={() => { setSelectedCandidate(cand); setVoteCount(1); }} className={styles.voteBtn}>
+                                <button onClick={() => { setSelectedCandidate(cand); setVoteCount(1); setIsDismissed(false); }} className={styles.voteBtn}>
                                     🗳️ Voter pour ce candidat
                                 </button>
                                 <button
@@ -376,7 +387,7 @@ export default function PublicVotePage() {
 
             {/* Voting & Payment Modal */}
             {selectedCandidate && (
-                <div className={styles.modalOverlay} onClick={() => !processing && setSelectedCandidate(null)}>
+                <div className={styles.modalOverlay} onClick={() => !processing && handleCloseModal()}>
                     <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
                         {/* Candidate Card Header */}
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem', marginBottom: '0.8rem', borderBottom: '1px solid #eee', paddingBottom: '0.8rem' }}>
@@ -396,9 +407,10 @@ export default function PublicVotePage() {
                             </div>
                             <button
                                 type="button"
-                                onClick={() => setSelectedCandidate(null)}
-                                style={{ background: '#f3f4f6', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer', fontSize: '1rem', color: '#666', flexShrink: 0 }}
+                                onClick={handleCloseModal}
+                                style={{ background: '#f3f4f6', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontSize: '1.1rem', color: '#666', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 disabled={processing}
+                                title="Fermer"
                             >
                                 ✕
                             </button>
@@ -457,7 +469,7 @@ export default function PublicVotePage() {
                             </div>
 
                             <div className={styles.modalActions} style={{ marginTop: '0.5rem' }}>
-                                <button type="button" onClick={() => setSelectedCandidate(null)} className={styles.cancelBtn} disabled={processing}>
+                                <button type="button" onClick={handleCloseModal} className={styles.cancelBtn} disabled={processing}>
                                     Annuler
                                 </button>
                                 <button type="submit" className={styles.submitBtn} disabled={processing} style={{ flex: 2, background: 'linear-gradient(135deg, #F7931E 0%, #e07d06 100%)', fontWeight: 'bold', fontSize: '1.05rem' }}>
