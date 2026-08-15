@@ -33,11 +33,46 @@ export default function PhotoGenerator({ frameUrl, campaignId, campaignTitle = "
     const isSillageCampaign = campaignId === '17f27fb1-ed85-44d3-9dbd-fb026bd29d6f';
     const isPlageCampaign = campaignId === 'de0ffa65-8b89-4398-a768-ef2d4c35d29b';
 
-    // Load Frame Image
+    // Load & Clean Frame Image (removes semi-transparent haze/veil residue in cutout area)
     useEffect(() => {
         const img = new Image();
         img.crossOrigin = "anonymous";
         img.onload = () => {
+            try {
+                const offCanvas = document.createElement('canvas');
+                offCanvas.width = img.width;
+                offCanvas.height = img.height;
+                const offCtx = offCanvas.getContext('2d');
+                if (offCtx) {
+                    offCtx.drawImage(img, 0, 0);
+                    const imageData = offCtx.getImageData(0, 0, img.width, img.height);
+                    const data = imageData.data;
+                    let cleaned = false;
+                    for (let i = 3; i < data.length; i += 4) {
+                        // Any pixel with alpha < 240 is semi-transparent veil residue -> make fully transparent
+                        if (data[i] > 0 && data[i] < 240) {
+                            data[i] = 0;
+                            cleaned = true;
+                        }
+                    }
+                    if (cleaned) {
+                        offCtx.putImageData(imageData, 0, 0);
+                        const cleanImg = new Image();
+                        cleanImg.onload = () => {
+                            setFrameImage(cleanImg);
+                            setIsLoading(false);
+                        };
+                        cleanImg.onerror = () => {
+                            setFrameImage(img);
+                            setIsLoading(false);
+                        };
+                        cleanImg.src = offCanvas.toDataURL('image/png');
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.warn("Alpha cleanup fallback to original frame:", err);
+            }
             setFrameImage(img);
             setIsLoading(false);
         };
@@ -45,7 +80,6 @@ export default function PhotoGenerator({ frameUrl, campaignId, campaignTitle = "
             console.error("Failed to load frame image");
             setIsLoading(false);
         };
-        // Use the frameUrl directly to allow browser caching
         img.src = frameUrl;
     }, [frameUrl]);
 
