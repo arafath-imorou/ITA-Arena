@@ -23,7 +23,25 @@ export default function VoteResultsPage() {
             try {
                 setLoading(true);
 
-                // Fetch Campaign
+                // Try fetching via admin API first for full permissions
+                const adminRes = await fetch(`/api/admin/votes/${campaignId}`);
+                if (adminRes.ok) {
+                    const adminData = await adminRes.json();
+                    if (adminData && adminData.campaign) {
+                        setCampaign(adminData.campaign);
+                        setVotes(adminData.votes || []);
+                        const candidatesWithScores = (adminData.candidates || []).map((cand: any) => {
+                            const candVotes = (adminData.votes || []).filter((v: any) => v.candidate_id === cand.id);
+                            const totalVotes = candVotes.reduce((sum: number, v: any) => sum + (v.vote_count || 1), 0);
+                            return { ...cand, totalVotes };
+                        }).sort((a: any, b: any) => b.totalVotes - a.totalVotes);
+                        setCandidates(candidatesWithScores);
+                        setLoading(false);
+                        return;
+                    }
+                }
+
+                // Fallback to client-side supabase fetch
                 const { data: campaignData, error: campError } = await supabase
                     .from('votes_campaigns')
                     .select('*')
