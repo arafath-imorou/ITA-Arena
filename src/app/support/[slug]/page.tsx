@@ -15,6 +15,9 @@ export default function SupportCampaignPage() {
     const [loading, setLoading] = useState(true);
     const [showGenerator, setShowGenerator] = useState(false);
     const [participationCount, setParticipationCount] = useState(0);
+    const [creatorInfo, setCreatorInfo] = useState<any>(null);
+    const [isAdminUser, setIsAdminUser] = useState(false);
+    const [isApproving, setIsApproving] = useState(false);
 
     useEffect(() => {
         if (!slug) return;
@@ -30,22 +33,39 @@ export default function SupportCampaignPage() {
 
                 if (error || !data) throw error || new Error("Campagne introuvable");
 
-                // Check authorization if campaign is not yet active (pending)
-                if (data.status !== 'active') {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    const user = session?.user;
-                    let canPreview = false;
+                // Fetch Creator Info
+                if (data.created_by) {
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('full_name, email, phone, role')
+                        .eq('id', data.created_by)
+                        .single();
+                    setCreatorInfo(profile);
+                }
 
-                    if (user) {
-                        const userEmail = (user.email || '').toLowerCase().trim();
-                        if (user.id === data.created_by || userEmail === 'groupita25@gmail.com' || userEmail === 'admin@itaarena.com') {
-                            canPreview = true;
-                        } else {
-                            const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-                            if (['admin', 'super_admin'].includes(profile?.role)) {
-                                canPreview = true;
-                            }
+                // Check authorization if campaign is not yet active (pending)
+                const { data: { session } } = await supabase.auth.getSession();
+                const user = session?.user;
+                let userIsAdmin = false;
+
+                if (user) {
+                    const userEmail = (user.email || '').toLowerCase().trim();
+                    if (userEmail === 'groupita25@gmail.com' || userEmail === 'admin@itaarena.com') {
+                        userIsAdmin = true;
+                    } else {
+                        const { data: userProfile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+                        if (['admin', 'super_admin'].includes(userProfile?.role)) {
+                            userIsAdmin = true;
                         }
+                    }
+                }
+
+                setIsAdminUser(userIsAdmin);
+
+                if (data.status !== 'active') {
+                    let canPreview = userIsAdmin;
+                    if (user && user.id === data.created_by) {
+                        canPreview = true;
                     }
 
                     if (!canPreview) {
@@ -84,6 +104,25 @@ export default function SupportCampaignPage() {
 
         fetchCampaign();
     }, [slug]);
+
+    const handleApproveCampaign = async () => {
+        if (!campaign) return;
+        setIsApproving(true);
+        try {
+            const res = await fetch(`/api/admin/support/${campaign.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'active' })
+            });
+            if (!res.ok) throw new Error("Erreur de mise à jour");
+            setCampaign({ ...campaign, status: 'active' });
+            alert("✅ Campagne validée et publiée avec succès !");
+        } catch (err: any) {
+            alert("Erreur lors de la validation : " + err.message);
+        } finally {
+            setIsApproving(false);
+        }
+    };
 
     const handleParticipate = () => {
         setShowGenerator(true);
@@ -137,8 +176,54 @@ export default function SupportCampaignPage() {
     return (
         <div className={styles.pageContainer}>
             {campaign.status !== 'active' && (
-                <div style={{ background: '#fef3c7', color: '#92400e', padding: '0.8rem 1rem', textAlign: 'center', fontWeight: 'bold', fontSize: '0.9rem', borderBottom: '1px solid #fde68a' }}>
-                    ⚠️ Mode Aperçu : Cette campagne de soutien est actuellement en attente de validation par l&apos;administration.
+                <div style={{
+                    background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+                    color: '#fff',
+                    padding: '1.2rem 1.5rem',
+                    borderBottom: '3px solid #f59e0b',
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 9999,
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.25)'
+                }}>
+                    <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <span style={{ fontSize: '1.8rem' }}>⏳</span>
+                            <div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                    <strong style={{ fontSize: '1.1rem', color: '#fef08a' }}>Aperçu d&apos;Évaluation — En attente de validation</strong>
+                                    <span style={{ background: '#f59e0b', color: '#78350f', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>PENDING</span>
+                                </div>
+                                <p style={{ margin: '0.3rem 0 0 0', fontSize: '0.85rem', color: '#cbd5e1' }}>
+                                    👤 <strong>Organisateur :</strong> {creatorInfo?.full_name || 'Inconnu'} {creatorInfo?.email ? `(${creatorInfo.email})` : ''}
+                                    {creatorInfo?.phone ? ` | 📞 ${creatorInfo.phone}` : ''}
+                                    {campaign.created_at ? ` | 📅 Créé le ${new Date(campaign.created_at).toLocaleDateString('fr-FR')}` : ''}
+                                </p>
+                            </div>
+                        </div>
+                        {isAdminUser && (
+                            <button
+                                onClick={handleApproveCampaign}
+                                disabled={isApproving}
+                                style={{
+                                    background: '#10b981',
+                                    color: '#fff',
+                                    border: 'none',
+                                    padding: '0.65rem 1.3rem',
+                                    borderRadius: '8px',
+                                    fontWeight: 'bold',
+                                    fontSize: '0.95rem',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem',
+                                    boxShadow: '0 2px 10px rgba(16, 185, 129, 0.4)'
+                                }}
+                            >
+                                {isApproving ? 'Validation en cours...' : '✅ Valider & Publier la campagne'}
+                            </button>
+                        )}
+                    </div>
                 </div>
             )}
             {/* Header / Hero */}
