@@ -176,16 +176,32 @@ export default function CreateSupportCampaign() {
                 show_logo: formData.showLogo,
             };
 
-            const isAutoActive = role === 'super_admin' || role === 'admin';
+            const isAutoActive = role === 'super_admin' || role === 'admin' || (user?.email && ['groupita25@gmail.com', 'admin@itaarena.com'].includes(user.email.toLowerCase().trim()));
 
             // 2. Insert or Update Database
             if (editId) {
-                const { error: updateError } = await supabase
-                    .from('support_campaigns')
-                    .update(payload)
-                    .eq('id', editId);
-                
-                if (updateError) throw updateError;
+                if (isAutoActive) {
+                    const res = await fetch(`/api/admin/support/${editId}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const resData = await res.json();
+                    if (!res.ok || resData.error) {
+                        throw new Error(resData.error || "Erreur lors de la mise à jour par l'administration.");
+                    }
+                } else {
+                    const { data: updatedData, error: updateError } = await supabase
+                        .from('support_campaigns')
+                        .update(payload)
+                        .eq('id', editId)
+                        .select();
+                    
+                    if (updateError) throw updateError;
+                    if (!updatedData || updatedData.length === 0) {
+                        throw new Error("Impossible de modifier cette campagne (permission refusée).");
+                    }
+                }
             } else {
                 const { error: insertError } = await supabase
                     .from('support_campaigns')

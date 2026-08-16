@@ -203,12 +203,28 @@ export default function CreateEventPage() {
         };
 
         if (editId) {
-            const { error } = await supabase.from('events').update(submissionData).eq('id', editId);
-            if (error) {
-                console.error('Error updating event:', error);
-                alert("Erreur lors de la modification de l'évènement : " + error.message);
+            if (isAutoPublished) {
+                const res = await fetch(`/api/admin/events/${editId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(submissionData)
+                });
+                const resData = await res.json();
+                if (!res.ok || resData.error) {
+                    alert("Erreur lors de la modification par l'administration : " + (resData.error || "Erreur inconnue"));
+                } else {
+                    setShowSuccess(true);
+                }
             } else {
-                setShowSuccess(true);
+                const { data: updatedData, error } = await supabase.from('events').update(submissionData).eq('id', editId).select();
+                if (error) {
+                    console.error('Error updating event:', error);
+                    alert("Erreur lors de la modification de l'évènement : " + error.message);
+                } else if (!updatedData || updatedData.length === 0) {
+                    alert("Erreur : Impossible de modifier cet événement (permission refusée).");
+                } else {
+                    setShowSuccess(true);
+                }
             }
         } else {
             const finalData = { ...submissionData, slug: generateSlug(submissionData.title) };
