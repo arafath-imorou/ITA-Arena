@@ -31,3 +31,24 @@ export async function DELETE(request: Request, context: { params: Promise<{ id: 
         return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }
+
+export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
+    try {
+        const { id: formId } = await context.params;
+        if (!formId) {
+            return NextResponse.json({ error: 'ID de formulaire manquant' }, { status: 400 });
+        }
+
+        const body = await request.json();
+        const supabase = createClient(supabaseUrl, supabaseServiceKey);
+        
+        const { data, error } = await supabase.from('forms').update(body).eq('id', formId).select();
+        if (error) {
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
+        return NextResponse.json({ success: true, data });
+    } catch (err: any) {
+        return NextResponse.json({ error: err.message }, { status: 500 });
+    }
+}

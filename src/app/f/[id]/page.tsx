@@ -34,7 +34,23 @@ export default function PublicFormPage() {
 
                 // Validation: Status
                 if (formData.status !== "active") {
-                    throw new Error("Ce formulaire est actuellement fermé.");
+                    const { data: { session } } = await supabase.auth.getSession();
+                    const user = session?.user;
+                    let canPreview = false;
+                    if (user) {
+                        const userEmail = (user.email || '').toLowerCase().trim();
+                        if (user.id === formData.organizer_id || userEmail === 'groupita25@gmail.com' || userEmail === 'admin@itaarena.com') {
+                            canPreview = true;
+                        } else {
+                            const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+                            if (['admin', 'super_admin'].includes(profile?.role)) {
+                                canPreview = true;
+                            }
+                        }
+                    }
+                    if (!canPreview) {
+                        throw new Error("Ce formulaire est actuellement fermé ou en attente de validation.");
+                    }
                 }
 
                 // Validation: Dates

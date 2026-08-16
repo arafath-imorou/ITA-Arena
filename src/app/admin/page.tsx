@@ -274,20 +274,30 @@ function AdminDashboardContent() {
         try {
             const nextPublished = !currentPublished;
             const nextStatus = nextPublished ? 'active' : 'pending';
-            await supabase.from('events').update({ is_published: nextPublished, status: nextStatus }).eq('id', eventId);
+            const res = await fetch(`/api/admin/events/${eventId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ is_published: nextPublished, status: nextStatus })
+            });
+            if (!res.ok) throw new Error("Erreur de mise à jour");
             setRawEvents(rawEvents.map(e => e.id === eventId ? { ...e, is_published: nextPublished, status: nextStatus } : e));
         } catch (err) {
-            alert("Erreur");
+            alert("Erreur lors de la mise à jour de l'événement.");
         }
     };
 
     const toggleSupportStatus = async (campaignId: string, currentStatus: string) => {
         try {
             const newStatus = currentStatus === 'active' ? 'pending' : 'active';
-            await supabase.from('support_campaigns').update({ status: newStatus }).eq('id', campaignId);
+            const res = await fetch(`/api/admin/support/${campaignId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+            if (!res.ok) throw new Error("Erreur de mise à jour");
             setRawCampaigns(rawCampaigns.map(c => c.id === campaignId ? { ...c, status: newStatus } : c));
         } catch (err) {
-            alert("Erreur");
+            alert("Erreur lors de la mise à jour de la campagne.");
         }
     };
 
@@ -317,10 +327,15 @@ function AdminDashboardContent() {
     const toggleFormStatus = async (formId: string, currentStatus: string) => {
         try {
             const newStatus = currentStatus === 'active' ? 'draft' : 'active';
-            await supabase.from('forms').update({ status: newStatus }).eq('id', formId);
+            const res = await fetch(`/api/admin/forms/${formId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+            if (!res.ok) throw new Error("Erreur de mise à jour");
             setRawForms(rawForms.map(f => f.id === formId ? { ...f, status: newStatus } : f));
         } catch (err) {
-            alert("Erreur");
+            alert("Erreur lors de la mise à jour du formulaire.");
         }
     };
 
@@ -346,10 +361,15 @@ function AdminDashboardContent() {
     const toggleVoteStatus = async (voteId: string, currentStatus: string) => {
         try {
             const newStatus = currentStatus === 'active' ? 'closed' : 'active';
-            await supabase.from('votes_campaigns').update({ status: newStatus }).eq('id', voteId);
+            const res = await fetch(`/api/admin/votes/${voteId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+            if (!res.ok) throw new Error("Erreur de mise à jour");
             setRawVotes(rawVotes.map(v => v.id === voteId ? { ...v, status: newStatus } : v));
         } catch (err) {
-            alert("Erreur");
+            alert("Erreur lors de la mise à jour de l'élection.");
         }
     };
 

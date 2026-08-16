@@ -62,7 +62,27 @@ export default function PublicVotePage() {
                 ]);
 
                 if (campRes.error) throw campRes.error;
-                if (campRes.data.status !== 'active') throw new Error("Ce vote est actuellement fermé.");
+                
+                if (campRes.data.status !== 'active') {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    const user = session?.user;
+                    let canPreview = false;
+                    if (user) {
+                        const userEmail = (user.email || '').toLowerCase().trim();
+                        if (user.id === campRes.data.organizer_id || userEmail === 'groupita25@gmail.com' || userEmail === 'admin@itaarena.com') {
+                            canPreview = true;
+                        } else {
+                            const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+                            if (['admin', 'super_admin'].includes(profile?.role)) {
+                                canPreview = true;
+                            }
+                        }
+                    }
+                    if (!canPreview) {
+                        throw new Error("Ce vote est actuellement fermé ou en attente de validation.");
+                    }
+                }
+
                 if (candsRes.error) throw candsRes.error;
 
                 const campData = campRes.data;

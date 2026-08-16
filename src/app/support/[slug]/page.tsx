@@ -21,15 +21,40 @@ export default function SupportCampaignPage() {
 
         const fetchCampaign = async () => {
             try {
-                // Fetch Campaign
+                // Fetch Campaign by slug
                 const { data, error } = await supabase
                     .from('support_campaigns')
                     .select('*')
                     .eq('slug', slug)
-                    .eq('status', 'active')
                     .single();
 
-                if (error) throw error;
+                if (error || !data) throw error || new Error("Campagne introuvable");
+
+                // Check authorization if campaign is not yet active (pending)
+                if (data.status !== 'active') {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    const user = session?.user;
+                    let canPreview = false;
+
+                    if (user) {
+                        const userEmail = (user.email || '').toLowerCase().trim();
+                        if (user.id === data.created_by || userEmail === 'groupita25@gmail.com' || userEmail === 'admin@itaarena.com') {
+                            canPreview = true;
+                        } else {
+                            const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+                            if (['admin', 'super_admin'].includes(profile?.role)) {
+                                canPreview = true;
+                            }
+                        }
+                    }
+
+                    if (!canPreview) {
+                        setCampaign(null);
+                        setLoading(false);
+                        return;
+                    }
+                }
+
                 setCampaign(data);
 
                 // Increment Views
@@ -51,6 +76,7 @@ export default function SupportCampaignPage() {
 
             } catch (err) {
                 console.error("Campaign not found", err);
+                setCampaign(null);
             } finally {
                 setLoading(false);
             }
@@ -110,6 +136,11 @@ export default function SupportCampaignPage() {
 
     return (
         <div className={styles.pageContainer}>
+            {campaign.status !== 'active' && (
+                <div style={{ background: '#fef3c7', color: '#92400e', padding: '0.8rem 1rem', textAlign: 'center', fontWeight: 'bold', fontSize: '0.9rem', borderBottom: '1px solid #fde68a' }}>
+                    ⚠️ Mode Aperçu : Cette campagne de soutien est actuellement en attente de validation par l&apos;administration.
+                </div>
+            )}
             {/* Header / Hero */}
             <header className={styles.hero}>
                 <div className={styles.heroContent}>
