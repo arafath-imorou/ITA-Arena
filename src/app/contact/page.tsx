@@ -45,7 +45,7 @@ export default function ContactPage() {
                             </Link>
                         </div>
                         <div className={styles.faqIllustration}>
-                            <img src="/images/faq_illustration.png" alt="FAQ Illustration" />
+                            <img src="/images/faq_illustration.webp" alt="FAQ Illustration" loading="lazy" decoding="async" />
                         </div>
                     </div>
                 </div>

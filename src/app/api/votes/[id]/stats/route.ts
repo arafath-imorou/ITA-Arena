@@ -24,7 +24,11 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
             return NextResponse.json({ error: 'Erreur lors de la récupération des statistiques' }, { status: 500 });
         }
 
-        return NextResponse.json(votesData || []);
+        return NextResponse.json(votesData || [], {
+            headers: {
+                'Cache-Control': 'public, s-maxage=5, stale-while-revalidate=10'
+            }
+        });
     } catch (err: any) {
         console.error('API Error:', err);
         return NextResponse.json({ error: err.message }, { status: 500 });
