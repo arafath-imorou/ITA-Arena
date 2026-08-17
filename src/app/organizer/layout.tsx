@@ -250,7 +250,7 @@ export default function OrganizerLayout({
                                             <hr className={styles.dropdownDivider} />
                                         </>
                                     )}
-                                    <Link href="/profile" className={styles.dropdownItem}>Mon Profil</Link>
+                                    <Link href="/organizer/account" className={styles.dropdownItem}>Mon Profil</Link>
                                     <Link href="/organizer/account" className={styles.dropdownItem}>Paramètres</Link>
                                     <hr className={styles.dropdownDivider} />
                                     <button onClick={handleLogout} className={styles.dropdownLogoutBtn}>
