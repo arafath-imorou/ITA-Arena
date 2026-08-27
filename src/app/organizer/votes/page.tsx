@@ -17,14 +17,34 @@ export default function VotesDashboard() {
         if (!user) return;
         try {
             setLoading(true);
-            const { data, error } = await supabase
+            const { data: cData, error: cErr } = await supabase
                 .from('votes_campaigns')
-                .select('*, vote_candidates(count), votes_cast(status, vote_count, amount_paid)')
+                .select('*, vote_candidates(count)')
                 .eq('organizer_id', user.id)
                 .order('created_at', { ascending: false });
 
-            if (error) throw error;
-            setCampaigns(data || []);
+            if (cErr) throw cErr;
+
+            const campaignIds = (cData || []).map(c => c.id);
+            let validVotes: any[] = [];
+            if (campaignIds.length > 0) {
+                const { data: vData } = await supabase
+                    .from('votes_cast')
+                    .select('campaign_id, vote_count, amount_paid, status')
+                    .in('campaign_id', campaignIds)
+                    .eq('status', 'valid');
+                validVotes = vData || [];
+            }
+
+            const formatted = (cData || []).map(c => {
+                const cVotes = validVotes.filter(v => v.campaign_id === c.id);
+                return {
+                    ...c,
+                    votes_cast: cVotes
+                };
+            });
+
+            setCampaigns(formatted);
         } catch (err: any) {
             console.error("Error fetching campaigns:", err);
         } finally {

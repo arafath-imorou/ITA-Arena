@@ -239,7 +239,8 @@ function AdminDashboardContent() {
             votes = votes.filter(v => (new Date(v.created_at).getMonth() + 1).toString() === filters.month);
         }
         votes = votes.map(v => {
-            const valid = (v.votes_cast || []).filter((vc: any) => vc.status === 'valid');
+            if (v.computedTotalVotes !== undefined) return v;
+            const valid = (v.votes_cast || []).filter((vc: any) => vc.status === 'valid' || !vc.status);
             return {
                 ...v,
                 computedTotalVotes: valid.reduce((acc: any, vc: any) => acc + (vc.vote_count || 1), 0),
