@@ -16,17 +16,36 @@ export async function GET() {
 
         if (cErr) throw cErr;
 
-        // 2. Fetch all valid votes cast directly (bypassing PostgREST embedded relation limits)
-        const { data: validVotes, error: vErr } = await supabase
-            .from('votes_cast')
-            .select('campaign_id, vote_count, amount_paid')
-            .eq('status', 'valid');
+        // 2. Paginated fetch to retrieve 100% of all valid votes_cast rows (bypassing 1000 row PostgREST limit)
+        let validVotes: any[] = [];
+        let page = 0;
+        const pageSize = 1000;
+        let hasMore = true;
 
-        if (vErr) throw vErr;
+        while (hasMore) {
+            const { data: pageData, error: vErr } = await supabase
+                .from('votes_cast')
+                .select('campaign_id, vote_count, amount_paid')
+                .eq('status', 'valid')
+                .range(page * pageSize, (page + 1) * pageSize - 1);
+
+            if (vErr) throw vErr;
+
+            if (pageData && pageData.length > 0) {
+                validVotes = validVotes.concat(pageData);
+                if (pageData.length < pageSize) {
+                    hasMore = false;
+                } else {
+                    page++;
+                }
+            } else {
+                hasMore = false;
+            }
+        }
 
         // 3. Compute exact totals per campaign
         const votesWithStats = (campaigns || []).map(camp => {
-            const campVotes = (validVotes || []).filter(v => v.campaign_id === camp.id);
+            const campVotes = validVotes.filter(v => v.campaign_id === camp.id);
             const totalVotes = campVotes.reduce((sum, v) => sum + (Number(v.vote_count) || 1), 0);
             const totalRevenue = campVotes.reduce((sum, v) => sum + (Number(v.amount_paid) || 0), 0);
             

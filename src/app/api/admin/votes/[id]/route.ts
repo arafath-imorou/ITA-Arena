@@ -70,10 +70,40 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
         const { data: candidates, error: candErr } = await supabase.from('vote_candidates').select('*').eq('campaign_id', voteId);
         if (candErr) throw candErr;
 
-        const { data: votes, error: vErr } = await supabase.from('votes_cast').select('*').eq('campaign_id', voteId).eq('status', 'valid').order('created_at', { ascending: false });
-        if (vErr) throw vErr;
+        let votes: any[] = [];
+        let page = 0;
+        const pageSize = 1000;
+        let hasMore = true;
 
-        return NextResponse.json({ campaign, candidates: candidates || [], votes: votes || [] });
+        while (hasMore) {
+            const { data: pageData, error: vErr } = await supabase
+                .from('votes_cast')
+                .select('*')
+                .eq('campaign_id', voteId)
+                .eq('status', 'valid')
+                .order('created_at', { ascending: false })
+                .range(page * pageSize, (page + 1) * pageSize - 1);
+
+            if (vErr) throw vErr;
+            if (pageData && pageData.length > 0) {
+                votes = votes.concat(pageData);
+                if (pageData.length < pageSize) {
+                    hasMore = false;
+                } else {
+                    page++;
+                }
+            } else {
+                hasMore = false;
+            }
+        }
+
+        return NextResponse.json({ campaign, candidates: candidates || [], votes: votes || [] }, {
+            headers: {
+                'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            }
+        });
     } catch (err: any) {
         return NextResponse.json({ error: err.message }, { status: 500 });
     }
