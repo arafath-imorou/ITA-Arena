@@ -18,6 +18,7 @@ function CheckoutContent() {
     const [phone, setPhone] = useState("");
     const [fullName, setFullName] = useState("");
     const [paymentPhone, setPaymentPhone] = useState("");
+    const [cotisationReason, setCotisationReason] = useState("");
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const router = useRouter();
@@ -126,7 +127,7 @@ function CheckoutContent() {
                         event_id: eventId,
                         user_email: email.trim(),
                         user_phone: phone, 
-                        user_name: fullName.trim(), 
+                        user_name: cotisationReason.trim() ? `${fullName.trim()} (${cotisationReason.trim()})` : fullName.trim(), 
                         payment_phone: paymentPhone, 
                         category: t.name,
                         amount: t.price,
@@ -331,6 +332,18 @@ function CheckoutContent() {
                                 required
                             />
                         </div>
+                        {(tickets.some(t => (t.name || '').toLowerCase().includes('cotisation')) || (eventName || '').toLowerCase().includes('cotisation') || (searchParams.get("n1") || '').toLowerCase().includes('cotisation')) && (
+                            <div className={styles.inputGroup}>
+                                <label>Motif de la cotisation <span style={{ color: '#64748b', fontSize: '0.8rem', fontWeight: 'normal' }}>(Facultatif)</span></label>
+                                <input 
+                                    type="text" 
+                                    placeholder="Ex: Cotisation mensuelle septembre, Don d'appui..." 
+                                    className={styles.customInput} 
+                                    value={cotisationReason}
+                                    onChange={(e) => setCotisationReason(e.target.value)}
+                                />
+                            </div>
+                        )}
                         <div className={styles.inputGroup}>
                             <label>Numéro de téléphone</label>
                             <div className={styles.phoneInputWrap}>
