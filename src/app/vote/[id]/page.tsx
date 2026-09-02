@@ -31,6 +31,7 @@ export default function PublicVotePage() {
 
     const [copiedCandId, setCopiedCandId] = useState<string | null>(null);
     const [isDismissed, setIsDismissed] = useState(false);
+    const isExpired = campaign?.end_date ? new Date() > new Date(campaign.end_date) : false;
 
     const handleCloseModal = () => {
         setSelectedCandidate(null);
@@ -350,50 +351,63 @@ export default function PublicVotePage() {
                 </div>
             )}
 
-            <div className={styles.container}>
-                {!campaign.cover_image && (
-                    <div className={styles.noCoverHeader}>
-                        <h1>{campaign.title}</h1>
-                        {campaign.category && <span className={styles.badge}>{campaign.category}</span>}
-                    </div>
-                )}
-                
-                {campaign.description && (
-                    <div className={styles.description}>
-                        <p>{campaign.description}</p>
-                    </div>
-                )}
+            return (
+                <div className={styles.container}>
+                    {isExpired && (
+                        <div style={{ background: '#fef2f2', border: '2px solid #ef4444', color: '#991b1b', padding: '1.25rem 1.5rem', borderRadius: '1rem', textAlign: 'center', margin: '1.5rem 0', fontWeight: 'bold', fontSize: '1.05rem', boxShadow: '0 2px 8px rgba(239,68,68,0.15)' }}>
+                            🔒 VOTE CLÔTURÉ : La période de vote a pris fin le {new Date(campaign.end_date).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(':', 'h')}. Les votes ne sont plus acceptés.
+                        </div>
+                    )}
 
-                <div className={styles.candidatesGrid}>
-                    {candidates.map((cand, index) => (
-                        <div key={cand.id} id={`candidate-${cand.id}`} className={styles.candCard}>
-                            <div className={styles.candPhoto}>
-                                <img
-                                    src={cand.photo_url || '/placeholder.png'}
-                                    alt={cand.name}
-                                    className={styles.candImg}
-                                    loading={index < 4 ? 'eager' : 'lazy'}
-                                    decoding="async"
-                                    width={800}
-                                    height={800}
-                                />
-                            </div>
-                            <div className={styles.candInfo}>
-                                <h3>{cand.name} {cand.number && <span>N°{cand.number}</span>}</h3>
-                                {cand.description && <p className={styles.candDesc}>{cand.description}</p>}
-                                
-                                {campaign.show_results && cand.totalVotes !== undefined && (
-                                    <div className={styles.candScore}>
-                                        <strong>{cand.totalVotes}</strong> votes
-                                        <span style={{ marginLeft: '8px', fontSize: '0.9em', color: '#666', fontWeight: 'bold' }}>
-                                            {cand.percentage}%
-                                        </span>
-                                    </div>
-                                )}
-                                
-                                <button onClick={() => { setSelectedCandidate(cand); setVoteCount(1); setIsDismissed(false); }} className={styles.voteBtn}>
-                                    🗳️ Voter pour ce candidat
-                                </button>
+                    {!campaign.cover_image && (
+                        <div className={styles.noCoverHeader}>
+                            <h1>{campaign.title}</h1>
+                            {campaign.category && <span className={styles.badge}>{campaign.category}</span>}
+                        </div>
+                    )}
+                    
+                    {campaign.description && (
+                        <div className={styles.description}>
+                            <p>{campaign.description}</p>
+                        </div>
+                    )}
+
+                    <div className={styles.candidatesGrid}>
+                        {candidates.map((cand, index) => (
+                            <div key={cand.id} id={`candidate-${cand.id}`} className={styles.candCard}>
+                                <div className={styles.candPhoto}>
+                                    <img
+                                        src={cand.photo_url || '/placeholder.png'}
+                                        alt={cand.name}
+                                        className={styles.candImg}
+                                        loading={index < 4 ? 'eager' : 'lazy'}
+                                        decoding="async"
+                                        width={800}
+                                        height={800}
+                                    />
+                                </div>
+                                <div className={styles.candInfo}>
+                                    <h3>{cand.name} {cand.number && <span>N°{cand.number}</span>}</h3>
+                                    {cand.description && <p className={styles.candDesc}>{cand.description}</p>}
+                                    
+                                    {campaign.show_results && cand.totalVotes !== undefined && (
+                                        <div className={styles.candScore}>
+                                            <strong>{cand.totalVotes}</strong> votes
+                                            <span style={{ marginLeft: '8px', fontSize: '0.9em', color: '#666', fontWeight: 'bold' }}>
+                                                {cand.percentage}%
+                                            </span>
+                                        </div>
+                                    )}
+                                    
+                                    {isExpired ? (
+                                        <button disabled className={styles.voteBtn} style={{ background: '#94a3b8', opacity: 0.6, cursor: 'not-allowed' }}>
+                                            🔒 Votes clos
+                                        </button>
+                                    ) : (
+                                        <button onClick={() => { setSelectedCandidate(cand); setVoteCount(1); setIsDismissed(false); }} className={styles.voteBtn}>
+                                            🗳️ Voter pour ce candidat
+                                        </button>
+                                    )}
                                 <button
                                     onClick={() => copyLink(cand.id)}
                                     style={{

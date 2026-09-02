@@ -112,20 +112,28 @@ export default function FeaturedEvents() {
                     const { data, error } = await query;
                         
                     if (error) throw error;
-                    dbData = (data || []).map(item => ({
-                        id: item.id,
-                        title: item.title,
-                        image_url: item.cover_image || "https://placehold.co/600x400/F7931E/FFFFFF?text=Vote",
-                        category_id: item.category || "Vote",
-                        organizer_name: item.profiles?.email?.split('@')[0] || "Organisateur",
-                        date: item.end_date ? `Fermeture le ${new Date(item.end_date).toLocaleDateString('fr-FR')}` : "En cours",
-                        location: "En ligne",
-                        slug: item.id, // Using ID since votes don't have slugs
-                        likes_count: 0,
-                        downloads: 0,
-                        total_capacity: 0,
-                        sold_count: 0,
-                    }));
+                    dbData = (data || []).map(item => {
+                        const endDateObj = item.end_date ? new Date(item.end_date) : null;
+                        const isClosed = endDateObj ? new Date() > endDateObj : false;
+                        const formattedDate = endDateObj 
+                            ? `${isClosed ? 'Clôturé le' : 'Fermeture le'} ${endDateObj.toLocaleDateString('fr-FR')} à ${endDateObj.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }).replace(':', 'h')}` 
+                            : "En cours";
+                        return {
+                            id: item.id,
+                            title: item.title,
+                            image_url: item.cover_image || "https://placehold.co/600x400/F7931E/FFFFFF?text=Vote",
+                            category_id: item.category || "Vote",
+                            organizer_name: item.profiles?.email?.split('@')[0] || "Organisateur",
+                            date: formattedDate,
+                            location: "En ligne",
+                            slug: item.id,
+                            likes_count: 0,
+                            downloads: 0,
+                            total_capacity: 0,
+                            sold_count: 0,
+                            is_closed: isClosed
+                        };
+                    });
                 } else if (mode === 'forms') {
                     const { data, error } = await supabase
                         .from('forms')
