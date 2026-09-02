@@ -56,9 +56,14 @@ function CotisationsListContent() {
                                     <span>📅 Fin: {item.date.replace("Jusqu'au ", "")}</span>
                                 </div>
                             </div>
-                            <div className={styles.eventActions}>
+                            <div className={styles.eventActions} style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                <Link href={`/organizer/cotisations/${item.id}/stats`} className={styles.editBtn} style={{ background: '#e0f2fe', color: '#0369a1', borderColor: '#bae6fd', fontWeight: 'bold' }}>
+                                    👁️ Cotisants & Statistiques
+                                </Link>
+                                <Link href={`/events/${item.slug || item.id}`} target="_blank" className={styles.editBtn} style={{ color: '#475569' }}>
+                                    🔗 Page
+                                </Link>
                                 <Link href={`/organizer/cotisation/create?edit=${item.id}`} className={styles.editBtn}>Modifier</Link>
-                                <button className={styles.editBtn} style={{ color: '#e53e3e', borderColor: '#fed7d7' }}>Supprimer</button>
                             </div>
                         </div>
                     ))

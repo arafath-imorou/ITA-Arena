@@ -55,3 +55,42 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
         return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }
+
+export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
+    try {
+        const { id: eventId } = await context.params;
+        if (!eventId) {
+            return NextResponse.json({ error: 'Missing event ID' }, { status: 400 });
+        }
+
+        const supabase = createClient(supabaseUrl, supabaseServiceKey);
+        
+        const { data: eventData, error: eErr } = await supabase
+            .from('events')
+            .select('*, organizer:profiles(full_name, email, phone)')
+            .eq('id', eventId)
+            .single();
+
+        if (eErr) throw eErr;
+
+        const { data: ticketsData, error: tErr } = await supabase
+            .from('tickets')
+            .select('*')
+            .eq('event_id', eventId)
+            .eq('status', 'valid')
+            .order('created_at', { ascending: false });
+
+        if (tErr) throw tErr;
+
+        return NextResponse.json({
+            event: eventData,
+            tickets: ticketsData || []
+        }, {
+            headers: {
+                'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate'
+            }
+        });
+    } catch (err: any) {
+        return NextResponse.json({ error: err.message }, { status: 500 });
+    }
+}

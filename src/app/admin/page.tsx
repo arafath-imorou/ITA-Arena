@@ -616,63 +616,114 @@ function AdminDashboardContent() {
             </div>
 
             <div className={styles.dashboardContent}>
-                {(filters.type === 'all' || filters.type === 'event' || filters.type === 'cotisation') && (
+                {(filters.type === 'all' || filters.type === 'event') && (
                     <div className={styles.section}>
-                        <h3>Performances ({filteredEvents.length})</h3>
-                    <div className={styles.tableWrapper}>
-                        <table className={styles.table}>
-                            <thead>
-                                <tr>
-                                    <th>Projet</th>
-                                    <th>Ventes</th>
-                                    <th>Progression</th>
-                                    <th>Revenu</th>
-                                    <th>Statut</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredEvents.map(e => (
-                                    <tr key={e.id}>
-                                        <td>
-                                            <strong>{e.title}</strong>
-                                            <p style={{ margin: 0, fontSize: '0.7rem', color: '#64748b' }}>{e.profiles?.full_name || 'Inconnu'}</p>
-                                        </td>
-                                        <td>{e.sold_count} / {e.total_capacity}</td>
-                                        <td>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                <div style={{ flex: 1, minWidth: '40px', height: '6px', background: '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}>
-                                                    <div style={{ width: `${Math.min(e.percent, 100)}%`, height: '100%', background: '#ff5a1f' }}></div>
-                                                </div>
-                                                <span style={{ fontSize: '0.7rem', fontWeight: 'bold' }}>{e.percent}%</span>
-                                            </div>
-                                        </td>
-                                        <td style={{ fontWeight: 'bold', color: '#059669' }}>{Number(e.collected_amount || 0).toLocaleString()} F</td>
-                                        <td>
-                                            <span className={styles.badge} style={{
-                                                background: e.status === 'pending' ? '#fef9c3' : (e.is_published ? '#dcfce7' : '#f1f5f9'),
-                                                color: e.status === 'pending' ? '#a16207' : (e.is_published ? '#15803d' : '#64748b'),
-                                                fontWeight: 'bold'
-                                            }}>
-                                                {e.status === 'pending' ? '⏳ En attente de validation' : (e.is_published ? '✅ En ligne' : 'Masqué')}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div style={{ display: 'flex', gap: '0.4rem' }}>
-                                                <button onClick={() => { setSelectedEvent(e); setActiveModalTab('stats'); }} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#e0f2fe', color: '#0369a1' }} title="Statistiques">📊</button>
-                                                <button onClick={() => { setSelectedEvent(e); setActiveModalTab('tickets'); }} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#fef3c7', color: '#92400e' }} title="Tickets">🎟️</button>
-                                                <button onClick={() => togglePublish(e.id, e.is_published)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: e.is_published ? '#fef3c7' : '#dcfce7', color: e.is_published ? '#92400e' : '#166534', fontWeight: 'bold' }} title={e.is_published ? "Masquer" : "Valider & Publier"}>{e.is_published ? "⏸️" : "✅ Valider"}</button>
-                                                <Link href={`/events/${e.slug || e.id}`} target="_blank" className={styles.badge} style={{ textDecoration: 'none', background: '#f8fafc', color: '#64748b' }} title="Voir l'évènement">🔗</Link>
-                                                {userRole !== "visualiseur" && <Link href={e.type === 'cotisation' ? `/organizer/cotisation/create?edit=${e.id}` : `/organizer/create?edit=${e.id}`} className={styles.badge} style={{ display: 'inline-block', textDecoration: 'none', background: '#fef9c3', color: '#854d0e', textAlign: 'center' }} title="Modifier">✏️</Link>}
-                                                {userRole !== "visualiseur" && <button onClick={() => deleteEvent(e.id)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#fee2e2', color: '#991b1b' }} title="Supprimer">🗑️</button>}
-                                            </div>
-                                        </td>
+                        <h3>Événements Billetterie ({filteredEvents.filter(e => e.type !== 'cotisation').length})</h3>
+                        <div className={styles.tableWrapper}>
+                            <table className={styles.table}>
+                                <thead>
+                                    <tr>
+                                        <th>Projet</th>
+                                        <th>Ventes</th>
+                                        <th>Progression</th>
+                                        <th>Revenu</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {filteredEvents.filter(e => e.type !== 'cotisation').map(e => (
+                                        <tr key={e.id}>
+                                            <td>
+                                                <strong>{e.title}</strong>
+                                                <p style={{ margin: 0, fontSize: '0.7rem', color: '#64748b' }}>{e.profiles?.full_name || 'Inconnu'}</p>
+                                            </td>
+                                            <td>{e.sold_count} / {e.total_capacity}</td>
+                                            <td>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                    <div style={{ flex: 1, minWidth: '40px', height: '6px', background: '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}>
+                                                        <div style={{ width: `${Math.min(e.percent, 100)}%`, height: '100%', background: '#ff5a1f' }}></div>
+                                                    </div>
+                                                    <span style={{ fontSize: '0.7rem', fontWeight: 'bold' }}>{e.percent}%</span>
+                                                </div>
+                                            </td>
+                                            <td style={{ fontWeight: 'bold', color: '#059669' }}>{Number(e.collected_amount || 0).toLocaleString()} F</td>
+                                            <td>
+                                                <span className={styles.badge} style={{
+                                                    background: e.status === 'pending' ? '#fef9c3' : (e.is_published ? '#dcfce7' : '#f1f5f9'),
+                                                    color: e.status === 'pending' ? '#a16207' : (e.is_published ? '#15803d' : '#64748b'),
+                                                    fontWeight: 'bold'
+                                                }}>
+                                                    {e.status === 'pending' ? '⏳ En attente de validation' : (e.is_published ? '✅ En ligne' : 'Masqué')}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div style={{ display: 'flex', gap: '0.4rem' }}>
+                                                    <button onClick={() => { setSelectedEvent(e); setActiveModalTab('stats'); }} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#e0f2fe', color: '#0369a1' }} title="Statistiques">📊</button>
+                                                    <button onClick={() => { setSelectedEvent(e); setActiveModalTab('tickets'); }} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#fef3c7', color: '#92400e' }} title="Tickets">🎟️</button>
+                                                    <button onClick={() => togglePublish(e.id, e.is_published)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: e.is_published ? '#fef3c7' : '#dcfce7', color: e.is_published ? '#92400e' : '#166534', fontWeight: 'bold' }} title={e.is_published ? "Masquer" : "Valider & Publier"}>{e.is_published ? "⏸️" : "✅ Valider"}</button>
+                                                    <Link href={`/events/${e.slug || e.id}`} target="_blank" className={styles.badge} style={{ textDecoration: 'none', background: '#f8fafc', color: '#64748b' }} title="Voir l'évènement">🔗</Link>
+                                                    {userRole !== "visualiseur" && <Link href={`/organizer/create?edit=${e.id}`} className={styles.badge} style={{ display: 'inline-block', textDecoration: 'none', background: '#fef9c3', color: '#854d0e', textAlign: 'center' }} title="Modifier">✏️</Link>}
+                                                    {userRole !== "visualiseur" && <button onClick={() => deleteEvent(e.id)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#fee2e2', color: '#991b1b' }} title="Supprimer">🗑️</button>}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
+                )}
+
+                {(filters.type === 'all' || filters.type === 'cotisation') && (
+                    <div className={styles.section} style={{ marginTop: '2rem' }}>
+                        <h3>💰 Cotisations & Collectes ({filteredEvents.filter(e => e.type === 'cotisation').length})</h3>
+                        <div className={styles.tableWrapper}>
+                            <table className={styles.table}>
+                                <thead>
+                                    <tr>
+                                        <th>Cotisation</th>
+                                        <th>Organisateur</th>
+                                        <th>Cotisants</th>
+                                        <th>Montant Récolté</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredEvents.filter(e => e.type === 'cotisation').map(c => (
+                                        <tr key={c.id}>
+                                            <td>
+                                                <strong>{c.title}</strong>
+                                                <p style={{ margin: 0, fontSize: '0.7rem', color: '#64748b' }}>Objectif: {c.target_amount ? `${Number(c.target_amount).toLocaleString()} F CFA` : 'Libre'}</p>
+                                            </td>
+                                            <td>{c.profiles?.full_name || 'Organisateur'}</td>
+                                            <td>{c.sold_count || 0} cotisants</td>
+                                            <td style={{ fontWeight: 'bold', color: '#059669' }}>{Number(c.collected_amount || 0).toLocaleString()} F CFA</td>
+                                            <td>
+                                                <span className={styles.badge} style={{
+                                                    background: c.status === 'pending' ? '#fef9c3' : (c.is_published ? '#dcfce7' : '#f1f5f9'),
+                                                    color: c.status === 'pending' ? '#a16207' : (c.is_published ? '#15803d' : '#64748b'),
+                                                    fontWeight: 'bold'
+                                                }}>
+                                                    {c.status === 'pending' ? '⏳ En attente' : (c.is_published ? '✅ En ligne' : 'Masqué')}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div style={{ display: 'flex', gap: '0.4rem' }}>
+                                                    <Link href={`/organizer/cotisations/${c.id}/stats`} className={styles.badge} style={{ textDecoration: 'none', background: '#e0f2fe', color: '#0369a1', fontWeight: 'bold' }} title="Voir les cotisants et statistiques">👁️</Link>
+                                                    <button onClick={() => togglePublish(c.id, c.is_published)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: c.is_published ? '#fef3c7' : '#dcfce7', color: c.is_published ? '#92400e' : '#166534', fontWeight: 'bold' }} title={c.is_published ? "Masquer" : "Valider & Publier"}>{c.is_published ? "⏸️" : "✅ Valider"}</button>
+                                                    <Link href={`/events/${c.slug || c.id}`} target="_blank" className={styles.badge} style={{ textDecoration: 'none', background: '#f8fafc', color: '#64748b' }} title="Voir la page publique">🔗</Link>
+                                                    {userRole !== "visualiseur" && <Link href={`/organizer/cotisation/create?edit=${c.id}`} className={styles.badge} style={{ display: 'inline-block', textDecoration: 'none', background: '#fef9c3', color: '#854d0e', textAlign: 'center' }} title="Modifier">✏️</Link>}
+                                                    {userRole !== "visualiseur" && <button onClick={() => deleteEvent(c.id)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: '#fee2e2', color: '#991b1b' }} title="Supprimer">🗑️</button>}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 )}
 
                 {(filters.type === 'all' || filters.type === 'support') && (
