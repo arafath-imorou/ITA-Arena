@@ -46,9 +46,15 @@ function CheckoutContent() {
         }
     }
 
-    // Fallback for old URL format or default
-    if (tickets.length === 0 && !searchParams.get("event")) {
-        tickets.push({ name: "Pass Standard", price: 10000, qty: 1 });
+    // Fallback for old URL format or single price/cotisation events
+    if (tickets.length === 0) {
+        const fallbackPrice = parseInt(searchParams.get("p1") || searchParams.get("price") || "0");
+        const fallbackQty = parseInt(searchParams.get("q1") || "1") || 1;
+        tickets.push({
+            name: searchParams.get("n1") || "Cotisation / Ticket",
+            price: isNaN(fallbackPrice) ? 0 : fallbackPrice,
+            qty: fallbackQty
+        });
     }
 
     const total = tickets.reduce((acc, t) => acc + t.price * t.qty, 0);

@@ -64,13 +64,38 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                 const soldCount = ticketsData?.length || 0;
 
                 // Calculate total capacity from categories
-                let totalCapacity = 0;
-                if (data.ticket_categories && Array.isArray(data.ticket_categories)) {
-                    totalCapacity = data.ticket_categories.reduce((acc: number, cat: any) => acc + Number(cat.stock || cat.capacity || 0), 0);
+                let categories = data.ticket_categories;
+                if (!categories || !Array.isArray(categories) || categories.length === 0) {
+                    const rawPrice = data.price?.toString() || "0";
+                    let numericPrice = 0;
+                    if (rawPrice.toLowerCase().includes("gratuit") || rawPrice.toLowerCase().includes("libre")) {
+                        numericPrice = 0;
+                    } else {
+                        numericPrice = parseFloat(rawPrice.replace(/[^0-9.]/g, '')) || 0;
+                    }
+                    categories = [
+                        {
+                            name: isCotisation ? "Cotisation" : "Entrée",
+                            price: numericPrice,
+                            stock: 1000,
+                            description: ""
+                        }
+                    ];
                 }
+
+                let totalCapacity = 0;
+                totalCapacity = categories.reduce((acc: number, cat: any) => acc + Number(cat.stock || cat.capacity || 0), 0);
+
+                // Auto-initialize quantity of 1 for default category selection
+                const initialQtys: Record<string, number> = {};
+                categories.forEach((cat: any) => {
+                    initialQtys[cat.name] = 1;
+                });
+                setQuantities(initialQtys);
 
                 setItem({
                     ...data,
+                    ticket_categories: categories,
                     image: data.image_url,
                     collected_amount: collectedAmount,
                     sold_count: soldCount,
@@ -404,7 +429,7 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                                             window.location.href = `/checkout?${params.toString()}`;
                                         }}
                                     >
-                                        ACHETER TICKETS
+                                        {isCotisation ? "PAYER MA COTISATION" : "ACHETER TICKETS"}
                                     </button>
                                 )}
                                 {showPastEventMessage && (
