@@ -10,14 +10,13 @@ import { supabase } from "@/lib/supabase";
 
 export default function EventDetailClient({ slug }: { slug: string }) {
     const { mode } = useMode();
-    const isCotisation = mode === 'cotisations';
-
     const [quantities, setQuantities] = useState<{ [key: string]: number }>({
         regular: 0,
         vip: 0,
         vvip: 0
     });
     const [item, setItem] = useState<any>(null);
+    const isCotisation = mode === 'cotisations' || item?.type === 'cotisation';
     const [loading, setLoading] = useState(true);
     const [donationAmount, setDonationAmount] = useState<string>('');
     const [showPastEventMessage, setShowPastEventMessage] = useState(false);
@@ -255,7 +254,7 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                                     })
                                 ) : (
                                     <span>
-                                        {item.price}{item.price !== "Gratuit" && !item.price.includes("F CFA") ? " F CFA" : ""}
+                                        {isCotisation ? "Libre (Montant à saisir)" : `${item.price}${item.price !== "Gratuit" && !item.price.includes("F CFA") ? " F CFA" : ""}`}
                                     </span>
                                 )}
                             </div>
@@ -317,21 +316,29 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                     <div className={styles.actionCard}>
                         {isCotisation ? (
                             <>
-                                <h3>Faire un don</h3>
-                                <p className={styles.actionSub}>Soutenez cette noble cause</p>
+                                <h3>Payer ma cotisation</h3>
+                                <p className={styles.actionSub}>Saisissez le montant de votre cotisation</p>
                                 <div className={styles.amountInputWrap}>
                                     <span className={styles.currencyLabel}>F CFA</span>
                                     <input 
                                         type="number" 
-                                        placeholder="Montant libre" 
+                                        min="100"
+                                        step="100"
+                                        placeholder="Montant (ex: 5000)" 
                                         className={styles.amountInput} 
                                         value={donationAmount}
                                         onChange={(e) => setDonationAmount(e.target.value)}
                                     />
                                 </div>
+                                <div className={styles.totalRow} style={{ marginTop: '1rem', marginBottom: '1.5rem' }}>
+                                    <span>Total à payer</span>
+                                    <span className={styles.totalVal}>
+                                        {new Intl.NumberFormat('fr-FR').format(Number(donationAmount) || 0)} F CFA
+                                    </span>
+                                </div>
                                 <button 
                                     className={styles.ctaBtn}
-                                    disabled={!donationAmount || Number(donationAmount) <= 0}
+                                    disabled={!donationAmount || Number(donationAmount) < 100}
                                     onClick={() => {
                                         const isPast = checkIsPastEvent(item.date);
                                         if (isPast) {
@@ -343,11 +350,11 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                                         params.set("event", item.title);
                                         params.set("q1", "1");
                                         params.set("p1", donationAmount);
-                                        params.set("n1", "Contribution");
+                                        params.set("n1", "Cotisation");
                                         window.location.href = `/checkout?${params.toString()}`;
                                     }}
                                 >
-                                    🤝 SOUTENIR LE PROJET
+                                    💳 PAYER MA COTISATION
                                 </button>
                                 {showPastEventMessage && (
                                     <div style={{ marginTop: '1rem', background: '#f8fafc', color: '#334155', padding: '1rem', borderRadius: '0.75rem', fontSize: '0.9rem', textAlign: 'center', border: '1px solid #e2e8f0' }}>
