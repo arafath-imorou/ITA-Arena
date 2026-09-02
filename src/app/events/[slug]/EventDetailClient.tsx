@@ -318,17 +318,22 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                             <>
                                 <h3>Payer ma cotisation</h3>
                                 <p className={styles.actionSub}>Saisissez le montant de votre cotisation</p>
-                                <div className={styles.amountInputWrap}>
-                                    <span className={styles.currencyLabel}>F CFA</span>
-                                    <input 
-                                        type="number" 
-                                        min="100"
-                                        step="100"
-                                        placeholder="Montant (ex: 5000)" 
-                                        className={styles.amountInput} 
-                                        value={donationAmount}
-                                        onChange={(e) => setDonationAmount(e.target.value)}
-                                    />
+                                <div style={{ marginTop: '1.25rem' }}>
+                                    <label style={{ display: 'block', fontSize: '0.95rem', fontWeight: 800, color: '#1e293b', marginBottom: '0.4rem' }}>
+                                        Montant de la cotisation (FCFA) :
+                                    </label>
+                                    <div className={styles.amountInputWrap}>
+                                        <span className={styles.currencyLabel}>F CFA</span>
+                                        <input 
+                                            type="number" 
+                                            min="100"
+                                            step="100"
+                                            placeholder="Ex: 5000" 
+                                            className={styles.amountInput} 
+                                            value={donationAmount}
+                                            onChange={(e) => setDonationAmount(e.target.value)}
+                                        />
+                                    </div>
                                 </div>
                                 <div className={styles.totalRow} style={{ marginTop: '1rem', marginBottom: '1.5rem' }}>
                                     <span>Total à payer</span>
