@@ -13,27 +13,52 @@ export async function POST(request: Request) {
         const eventType = payload.name;
         const entity = payload.entity;
 
-        if (eventType === 'transaction.approved' && entity && entity.status === 'approved') {
-            const transactionId = entity.id;
-            const customMetadata = entity.custom_metadata;
+        let customMetadata = entity?.custom_metadata || payload?.custom_metadata;
+        if (typeof customMetadata === 'string') {
+            try {
+                customMetadata = JSON.parse(customMetadata);
+            } catch (e) {
+                console.warn('Webhook: Unable to parse stringified custom_metadata');
+            }
+        }
 
-            if (customMetadata && customMetadata.vote_id) {
-                const voteId = customMetadata.vote_id;
-                
-                // Update the vote
+        if (eventType === 'transaction.approved' && entity && (entity.status === 'approved' || entity.status === 'successful')) {
+            const transactionId = entity.id;
+            const voteId = customMetadata?.vote_id;
+
+            if (voteId) {
                 const { error } = await supabase.from('votes_cast')
                     .update({
-                        transaction_id: transactionId,
+                        transaction_id: transactionId ? transactionId.toString() : null,
                         status: 'valid'
                     })
-                    .eq('id', voteId)
-                    .eq('status', 'pending'); // Only update if pending
+                    .eq('id', voteId);
 
                 if (error) {
-                    console.error('Webhook: Error updating vote', error);
+                    console.error('Webhook: Error updating vote by vote_id', error);
                 } else {
                     console.log(`Webhook: Vote ${voteId} validated via FedaPay webhook.`);
                 }
+            } else if (transactionId) {
+                await supabase.from('votes_cast')
+                    .update({ status: 'valid' })
+                    .eq('transaction_id', transactionId.toString());
+                console.log(`Webhook: Vote transaction ${transactionId} validated.`);
+            }
+        } else if (['transaction.canceled', 'transaction.refunded'].includes(eventType) || (entity && ['canceled', 'refunded'].includes(entity.status))) {
+            const transactionId = entity?.id;
+            const voteId = customMetadata?.vote_id;
+
+            if (voteId) {
+                await supabase.from('votes_cast')
+                    .update({ status: 'cancelled' })
+                    .eq('id', voteId);
+                console.log(`Webhook: Vote ${voteId} marked as cancelled.`);
+            } else if (transactionId) {
+                await supabase.from('votes_cast')
+                    .update({ status: 'cancelled' })
+                    .eq('transaction_id', transactionId.toString());
+                console.log(`Webhook: Transaction ${transactionId} marked as cancelled.`);
             }
         }
 

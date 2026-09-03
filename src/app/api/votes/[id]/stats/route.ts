@@ -13,18 +13,37 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
 
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
         
-        const { data: votesData, error } = await supabase
-            .from('votes_cast')
-            .select('candidate_id, vote_count')
-            .eq('campaign_id', campaignId)
-            .eq('status', 'valid');
+        let allVotes: any[] = [];
+        let page = 0;
+        const pageSize = 1000;
+        let hasMore = true;
 
-        if (error) {
-            console.error('Error fetching vote stats:', error);
-            return NextResponse.json({ error: 'Erreur lors de la récupération des statistiques' }, { status: 500 });
+        while (hasMore) {
+            const { data: pageData, error } = await supabase
+                .from('votes_cast')
+                .select('candidate_id, vote_count')
+                .eq('campaign_id', campaignId)
+                .eq('status', 'valid')
+                .range(page * pageSize, (page + 1) * pageSize - 1);
+
+            if (error) {
+                console.error('Error fetching vote stats chunk:', error);
+                break;
+            }
+
+            if (pageData && pageData.length > 0) {
+                allVotes = allVotes.concat(pageData);
+                if (pageData.length < pageSize) {
+                    hasMore = false;
+                } else {
+                    page++;
+                }
+            } else {
+                hasMore = false;
+            }
         }
 
-        return NextResponse.json(votesData || [], {
+        return NextResponse.json(allVotes, {
             headers: {
                 'Cache-Control': 'public, s-maxage=5, stale-while-revalidate=10'
             }
