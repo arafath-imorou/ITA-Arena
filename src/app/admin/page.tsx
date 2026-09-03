@@ -50,7 +50,7 @@ function AdminDashboardContent() {
         try {
             const { data: profilesData } = await supabase.from('profiles').select('*');
             const { data: eventsData } = await supabase.from('events_with_stats').select('*').order('created_at', { ascending: false });
-            const { data: ticketsData } = await supabase.from('tickets').select('*').eq('status', 'valid').order('created_at', { ascending: false });
+            const { data: ticketsData } = await supabase.from('tickets').select('*').in('status', ['valid', 'checked-in', 'used']).order('created_at', { ascending: false });
             const { data: campaignsData } = await supabase.from('support_campaigns').select('*').order('created_at', { ascending: false });
             const { data: formsData } = await supabase.from('forms').select('*').order('created_at', { ascending: false });
             
@@ -115,7 +115,7 @@ function AdminDashboardContent() {
 
         // 1. Prepare Events with computed stats
         let events = rawEvents.map(e => {
-            const eventTickets = rawTickets.filter(t => t.event_id === e.id && (t.status === 'valid' || !t.status));
+            const eventTickets = rawTickets.filter(t => t.event_id === e.id && (['valid', 'checked-in', 'used'].includes(t.status) || !t.status));
             
             // For category breakdown, we still need to filter tickets
             let categoriesWithStats: any[] = [];

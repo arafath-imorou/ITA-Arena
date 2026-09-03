@@ -77,7 +77,7 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
             .from('tickets')
             .select('*')
             .eq('event_id', eventId)
-            .eq('status', 'valid')
+            .in('status', ['valid', 'checked-in', 'used'])
             .order('created_at', { ascending: false });
 
         if (tErr) throw tErr;
