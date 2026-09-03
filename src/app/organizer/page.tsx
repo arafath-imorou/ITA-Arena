@@ -40,6 +40,7 @@ function DashboardContent() {
                     const { data: tData } = await supabase
                         .from('tickets')
                         .select('*')
+                        .eq('status', 'valid')
                         .in('event_id', eventIds);
                     const tickets = tData || [];
                     setRawTickets(tickets);

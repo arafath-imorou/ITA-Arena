@@ -115,7 +115,7 @@ function AdminDashboardContent() {
 
         // 1. Prepare Events with computed stats
         let events = rawEvents.map(e => {
-            const eventTickets = rawTickets.filter(t => t.event_id === e.id);
+            const eventTickets = rawTickets.filter(t => t.event_id === e.id && (t.status === 'valid' || !t.status));
             
             // For category breakdown, we still need to filter tickets
             let categoriesWithStats: any[] = [];
