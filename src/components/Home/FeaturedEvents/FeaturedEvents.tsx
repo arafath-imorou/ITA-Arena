@@ -414,24 +414,23 @@ export default function FeaturedEvents() {
                                                     TERMINÉ
                                                 </div>
                                             )}
-                                        </div>
-
                                         <Link 
-                                            href={isPast ? "#" : (mode === 'support' ? `/support/${item.slug}` : (mode === 'forms' ? `/f/${item.slug}` : (mode === 'votes' ? `/vote/${item.slug}` : `/events/${item.slug || item.id}`)))} 
+                                            href={(isPast || item.is_closed) ? "#" : (mode === 'support' ? `/support/${item.slug}` : (mode === 'forms' ? `/f/${item.slug}` : (mode === 'votes' ? `/vote/${item.slug}` : `/events/${item.slug || item.id}`)))} 
                                             className={styles.buyBtn}
-                                            style={(isSoldOut || isPast) ? { background: '#ccc', pointerEvents: 'none' } : {}}
+                                            style={(isSoldOut || isPast || item.is_closed) ? { background: '#94a3b8', pointerEvents: 'none', color: '#ffffff', opacity: 0.75 } : {}}
                                             onClick={(e) => {
-                                                if (isPast) {
+                                                if (isPast || item.is_closed) {
                                                     e.preventDefault();
-                                                    alert("Cet événement est déjà terminé. Nous espérons vous revoir très bientôt pour de nouvelles aventures ! ✨");
+                                                    alert(item.is_closed ? "Cet événement est fermé. Les réservations ne sont plus acceptées." : "Cet événement est déjà terminé. Nous espérons vous revoir très bientôt pour de nouvelles aventures ! ✨");
                                                 }
                                             }}
                                         >
-                                            {isSoldOut ? (item.is_closed ? "FERMÉ" : "ÉPUISÉ") : (mode === 'support' ? "Soutenir" : (mode === 'forms' ? "S'inscrire" : (mode === 'votes' ? "Voter" : (mode === 'cotisations' ? "Cotiser" : "Réserver"))))}
+                                            {item.is_closed ? "FERMÉ" : (isSoldOut ? "ÉPUISÉ" : (isPast ? "TERMINÉ" : (mode === 'support' ? "Soutenir" : (mode === 'forms' ? "S'inscrire" : (mode === 'votes' ? "Voter" : (mode === 'cotisations' ? "Cotiser" : "Réserver"))))))}
                                         </Link>
                                     </div>
                                 </div>
-                            );
+                            </div>
+                        );
                         })}
                     </div>
                 ) : (

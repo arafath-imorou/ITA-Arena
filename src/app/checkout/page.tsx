@@ -25,11 +25,18 @@ function CheckoutContent() {
 
     const eventId = searchParams.get("id"); // No more hardcoded ID fallback
     
+    const [isClosedEvent, setIsClosedEvent] = useState(false);
+
     useEffect(() => {
+        if (eventId) {
+            supabase.from('events').select('is_closed').eq('id', eventId).single().then(({ data }) => {
+                if (data?.is_closed) {
+                    setIsClosedEvent(true);
+                }
+            });
+        }
         if (!eventId && step === 1) {
             console.error("Missing event ID in checkout");
-            // alert("Une erreur est survenue : l'identifiant de l'événement est manquant.");
-            // router.push("/");
         }
     }, [eventId, router, step]);
 
@@ -76,6 +83,11 @@ function CheckoutContent() {
     };
 
     const handlePayment = async () => {
+        if (isClosedEvent) {
+            alert("Cet événement est fermé. Les réservations ne sont plus acceptées.");
+            return;
+        }
+
         if (!email || !fullName.trim()) {
             alert("Veuillez renseigner votre nom et votre email.");
             return;
