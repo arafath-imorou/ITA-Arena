@@ -105,7 +105,7 @@ export default function FeaturedEvents() {
             try {
                 let dbData;
                 if (mode === 'votes') {
-                    let query = supabase.from('votes_campaigns').select('*, profiles(email)').eq('status', 'active');
+                    let query = supabase.from('votes_campaigns').select('*, profiles(email)').in('status', ['active', 'closed']);
                     if (activeCategory !== 'all') {
                         query = query.eq('category', activeCategory);
                     }
@@ -114,7 +114,7 @@ export default function FeaturedEvents() {
                     if (error) throw error;
                     dbData = (data || []).map(item => {
                         const endDateObj = item.end_date ? new Date(item.end_date) : null;
-                        const isClosed = endDateObj ? new Date() > endDateObj : false;
+                        const isClosed = item.status === 'closed' || (endDateObj ? new Date() > endDateObj : false);
                         const formattedDate = endDateObj 
                             ? `${isClosed ? 'Clôturé le' : 'Fermeture le'} ${endDateObj.toLocaleDateString('fr-FR')} à ${endDateObj.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }).replace(':', 'h')}` 
                             : "En cours";
@@ -414,19 +414,19 @@ export default function FeaturedEvents() {
                                                     TERMINÉ
                                                 </div>
                                             )}
-                                        <Link 
-                                            href={(isPast || item.is_closed) ? "#" : (mode === 'support' ? `/support/${item.slug}` : (mode === 'forms' ? `/f/${item.slug}` : (mode === 'votes' ? `/vote/${item.slug}` : `/events/${item.slug || item.id}`)))} 
-                                            className={styles.buyBtn}
-                                            style={(isSoldOut || isPast || item.is_closed) ? { background: '#94a3b8', pointerEvents: 'none', color: '#ffffff', opacity: 0.75 } : {}}
-                                            onClick={(e) => {
-                                                if (isPast || item.is_closed) {
-                                                    e.preventDefault();
-                                                    alert(item.is_closed ? "Cet événement est fermé. Les réservations ne sont plus acceptées." : "Cet événement est déjà terminé. Nous espérons vous revoir très bientôt pour de nouvelles aventures ! ✨");
-                                                }
-                                            }}
-                                        >
-                                            {item.is_closed ? "FERMÉ" : (isSoldOut ? "ÉPUISÉ" : (isPast ? "TERMINÉ" : (mode === 'support' ? "Soutenir" : (mode === 'forms' ? "S'inscrire" : (mode === 'votes' ? "Voter" : (mode === 'cotisations' ? "Cotiser" : "Réserver"))))))}
-                                        </Link>
+                                            <Link 
+                                                href={mode === 'votes' ? `/vote/${item.slug}` : (isPast || item.is_closed ? "#" : (mode === 'support' ? `/support/${item.slug}` : (mode === 'forms' ? `/f/${item.slug}` : `/events/${item.slug || item.id}`)))} 
+                                                className={styles.buyBtn}
+                                                style={mode === 'votes' && item.is_closed ? { background: '#0A2E73', color: '#ffffff' } : ((isSoldOut || isPast || item.is_closed) ? { background: '#94a3b8', pointerEvents: 'none', color: '#ffffff', opacity: 0.75 } : {})}
+                                                onClick={(e) => {
+                                                    if (mode !== 'votes' && (isPast || item.is_closed)) {
+                                                        e.preventDefault();
+                                                        alert(item.is_closed ? "Cet événement est fermé. Les réservations ne sont plus acceptées." : "Cet événement est déjà terminé. Nous espérons vous revoir très bientôt pour de nouvelles aventures ! ✨");
+                                                    }
+                                                }}
+                                            >
+                                                {item.is_closed ? (mode === 'votes' ? "Voir les résultats" : "FERMÉ") : (isSoldOut ? "ÉPUISÉ" : (isPast ? "TERMINÉ" : (mode === 'support' ? "Soutenir" : (mode === 'forms' ? "S'inscrire" : (mode === 'votes' ? "Voter" : (mode === 'cotisations' ? "Cotiser" : "Réserver"))))))}
+                                            </Link>
                                     </div>
                                 </div>
                             </div>

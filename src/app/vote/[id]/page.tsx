@@ -31,7 +31,7 @@ export default function PublicVotePage() {
 
     const [copiedCandId, setCopiedCandId] = useState<string | null>(null);
     const [isDismissed, setIsDismissed] = useState(false);
-    const isExpired = campaign?.end_date ? new Date() > new Date(campaign.end_date) : false;
+    const isExpired = campaign?.status === 'closed' || (campaign?.end_date ? new Date() > new Date(campaign.end_date) : false);
     const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
 
     useEffect(() => {
@@ -88,7 +88,7 @@ export default function PublicVotePage() {
 
                 if (campRes.error) throw campRes.error;
                 
-                if (campRes.data.status !== 'active') {
+                if (!['active', 'closed'].includes(campRes.data.status)) {
                     const { data: { session } } = await supabase.auth.getSession();
                     const user = session?.user;
                     let canPreview = false;
