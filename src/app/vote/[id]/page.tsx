@@ -32,6 +32,30 @@ export default function PublicVotePage() {
     const [copiedCandId, setCopiedCandId] = useState<string | null>(null);
     const [isDismissed, setIsDismissed] = useState(false);
     const isExpired = campaign?.end_date ? new Date() > new Date(campaign.end_date) : false;
+    const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
+
+    useEffect(() => {
+        if (!campaign?.end_date) return;
+
+        const calculateTime = () => {
+            const diff = new Date(campaign.end_date).getTime() - new Date().getTime();
+            if (diff <= 0) {
+                setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / 1000 / 60) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            setTimeLeft({ days, hours, minutes, seconds });
+        };
+
+        calculateTime();
+        const interval = setInterval(calculateTime, 1000);
+        return () => clearInterval(interval);
+    }, [campaign?.end_date]);
 
     const handleCloseModal = () => {
         setSelectedCandidate(null);
@@ -356,6 +380,68 @@ export default function PublicVotePage() {
                     {isExpired && (
                         <div style={{ background: '#fef2f2', border: '2px solid #ef4444', color: '#991b1b', padding: '1.25rem 1.5rem', borderRadius: '1rem', textAlign: 'center', margin: '1.5rem 0', fontWeight: 'bold', fontSize: '1.05rem', boxShadow: '0 2px 8px rgba(239,68,68,0.15)' }}>
                             🔒 VOTE CLÔTURÉ : La période de vote a pris fin le {new Date(campaign.end_date).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(':', 'h')}. Les votes ne sont plus acceptés.
+                        </div>
+                    )}
+
+                    {campaign?.end_date && !isExpired && timeLeft && (
+                        <div style={{
+                            background: 'linear-gradient(135deg, #0A2E73 0%, #1e3a8a 100%)',
+                            color: '#ffffff',
+                            padding: '1.25rem 1.5rem',
+                            borderRadius: '1.25rem',
+                            boxShadow: '0 8px 25px rgba(10, 46, 115, 0.25)',
+                            margin: '1.25rem 0',
+                            textAlign: 'center'
+                        }}>
+                            <div style={{
+                                fontSize: '0.85rem',
+                                fontWeight: 800,
+                                textTransform: 'uppercase',
+                                letterSpacing: '1px',
+                                color: '#FF5A1F',
+                                marginBottom: '0.85rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.5rem'
+                            }}>
+                                <span>⏳</span> FIN DES VOTES DANS :
+                            </div>
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                gap: '0.75rem',
+                                flexWrap: 'wrap'
+                            }}>
+                                <div style={{ background: 'rgba(255, 255, 255, 0.12)', backdropFilter: 'blur(8px)', padding: '0.6rem 1rem', borderRadius: '0.85rem', minWidth: '70px' }}>
+                                    <span style={{ fontSize: '1.6rem', fontWeight: 900, display: 'block', lineHeight: '1.1', color: '#ffffff' }}>
+                                        {String(timeLeft.days).padStart(2, '0')}
+                                    </span>
+                                    <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: '#cbd5e1' }}>Jours</span>
+                                </div>
+                                <span style={{ fontSize: '1.5rem', fontWeight: 900, color: '#FF5A1F' }}>:</span>
+                                <div style={{ background: 'rgba(255, 255, 255, 0.12)', backdropFilter: 'blur(8px)', padding: '0.6rem 1rem', borderRadius: '0.85rem', minWidth: '70px' }}>
+                                    <span style={{ fontSize: '1.6rem', fontWeight: 900, display: 'block', lineHeight: '1.1', color: '#ffffff' }}>
+                                        {String(timeLeft.hours).padStart(2, '0')}
+                                    </span>
+                                    <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: '#cbd5e1' }}>Heures</span>
+                                </div>
+                                <span style={{ fontSize: '1.5rem', fontWeight: 900, color: '#FF5A1F' }}>:</span>
+                                <div style={{ background: 'rgba(255, 255, 255, 0.12)', backdropFilter: 'blur(8px)', padding: '0.6rem 1rem', borderRadius: '0.85rem', minWidth: '70px' }}>
+                                    <span style={{ fontSize: '1.6rem', fontWeight: 900, display: 'block', lineHeight: '1.1', color: '#ffffff' }}>
+                                        {String(timeLeft.minutes).padStart(2, '0')}
+                                    </span>
+                                    <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: '#cbd5e1' }}>Minutes</span>
+                                </div>
+                                <span style={{ fontSize: '1.5rem', fontWeight: 900, color: '#FF5A1F' }}>:</span>
+                                <div style={{ background: 'rgba(255, 90, 31, 0.25)', backdropFilter: 'blur(8px)', border: '1px solid #FF5A1F', padding: '0.6rem 1rem', borderRadius: '0.85rem', minWidth: '70px' }}>
+                                    <span style={{ fontSize: '1.6rem', fontWeight: 900, display: 'block', lineHeight: '1.1', color: '#FF5A1F' }}>
+                                        {String(timeLeft.seconds).padStart(2, '0')}
+                                    </span>
+                                    <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: '#ffd3c2' }}>Secondes</span>
+                                </div>
+                            </div>
                         </div>
                     )}
 
