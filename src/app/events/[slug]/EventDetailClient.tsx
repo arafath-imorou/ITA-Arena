@@ -19,7 +19,7 @@ export default function EventDetailClient({ slug }: { slug: string }) {
     const isCotisation = mode === 'cotisations' || item?.type === 'cotisation';
     const [loading, setLoading] = useState(true);
     const [cotisationType, setCotisationType] = useState<'periodic' | 'don'>('periodic');
-    const [periodicOption, setPeriodicOption] = useState<'mensuel' | 'trimestriel' | 'annuel'>('mensuel');
+    const [periodicOption, setPeriodicOption] = useState<'mensuel' | 'trimestriel' | 'semestriel' | 'annuel'>('mensuel');
     const [donationAmount, setDonationAmount] = useState<string>('500');
     const [showPastEventMessage, setShowPastEventMessage] = useState(false);
 
@@ -451,6 +451,40 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                                             <span style={{ fontWeight: 900, fontSize: '1rem', color: '#FF5A1F' }}>1 500 F CFA</span>
                                         </div>
 
+                                        {/* Semestriel */}
+                                        <div 
+                                            onClick={() => {
+                                                setPeriodicOption('semestriel');
+                                                setDonationAmount('3000');
+                                            }}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                padding: '0.75rem 0.85rem',
+                                                borderRadius: '0.75rem',
+                                                border: periodicOption === 'semestriel' ? '2px solid #FF5A1F' : '1px solid #cbd5e1',
+                                                background: periodicOption === 'semestriel' ? '#fff7ed' : '#ffffff',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                                <div style={{
+                                                    width: '16px',
+                                                    height: '16px',
+                                                    borderRadius: '50%',
+                                                    border: periodicOption === 'semestriel' ? '5px solid #FF5A1F' : '2px solid #94a3b8',
+                                                    background: '#ffffff'
+                                                }} />
+                                                <div>
+                                                    <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#0f172a' }}>Semestriel</div>
+                                                    <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Tous les 6 mois</div>
+                                                </div>
+                                            </div>
+                                            <span style={{ fontWeight: 900, fontSize: '1rem', color: '#FF5A1F' }}>3 000 F CFA</span>
+                                        </div>
+
                                         {/* Annuel */}
                                         <div 
                                             onClick={() => {
@@ -524,6 +558,7 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                                         if (cotisationType === 'periodic') {
                                             if (periodicOption === 'mensuel') nameLabel = "Cotisation Mensuelle";
                                             else if (periodicOption === 'trimestriel') nameLabel = "Cotisation Trimestrielle";
+                                            else if (periodicOption === 'semestriel') nameLabel = "Cotisation Semestrielle";
                                             else if (periodicOption === 'annuel') nameLabel = "Cotisation Annuelle";
                                         } else {
                                             nameLabel = "Don libre";
