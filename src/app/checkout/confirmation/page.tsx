@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import styles from "./Confirmation.module.css";
 import Link from "next/link";
 import { downloadTicket } from "@/lib/ticketUtils";
+import { downloadCotisationInvoice } from "@/lib/invoiceUtils";
 import QRCode from "qrcode";
 
 function ConfirmationContent() {
@@ -149,17 +150,29 @@ function ConfirmationContent() {
                             </div>
                         </div>
 
-                        <button className={styles.downloadBtnSmall} onClick={() => downloadSingleTicket(t)}>
-                            📥 Télécharger PDF
-                        </button>
+                        {event?.type === 'cotisation' ? (
+                            <button className={styles.downloadBtnSmall} style={{ background: '#0A2E73', color: 'white' }} onClick={() => downloadCotisationInvoice(t, event)}>
+                                📄 Télécharger Facture PDF
+                            </button>
+                        ) : (
+                            <button className={styles.downloadBtnSmall} onClick={() => downloadSingleTicket(t)}>
+                                📥 Télécharger PDF
+                            </button>
+                        )}
                     </div>
                 ))}
             </div>
 
             <div className={styles.footerActions}>
-                <button className={styles.downloadAllBtn} onClick={downloadAllTickets}>
-                    📥 Télécharger tous les tickets ({tickets.length})
-                </button>
+                {event?.type === 'cotisation' ? (
+                    <button className={styles.downloadAllBtn} style={{ background: '#0A2E73' }} onClick={() => downloadCotisationInvoice(tickets[0], event)}>
+                        📄 Télécharger ma Facture PDF
+                    </button>
+                ) : (
+                    <button className={styles.downloadAllBtn} onClick={downloadAllTickets}>
+                        📥 Télécharger tous les tickets ({tickets.length})
+                    </button>
+                )}
                 <Link href="/" className={styles.homeBtn}>Retour à l'accueil</Link>
             </div>
         </div>

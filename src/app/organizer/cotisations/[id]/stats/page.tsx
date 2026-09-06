@@ -6,6 +6,8 @@ import BackButton from "@/components/BackButton";
 import HomeButton from "@/components/HomeButton";
 import styles from "./CotisationStats.module.css";
 
+import { downloadCotisationInvoice } from "@/lib/invoiceUtils";
+
 export default function CotisationStatsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id: cotisationId } = use(params);
     const [data, setData] = useState<{ event: any; tickets: any[] } | null>(null);
@@ -208,6 +210,7 @@ export default function CotisationStatsPage({ params }: { params: Promise<{ id: 
                                     <th style={{ padding: '0.85rem', color: '#475569', fontWeight: 700 }}>Montant Versé</th>
                                     <th style={{ padding: '0.85rem', color: '#475569', fontWeight: 700 }}>Date</th>
                                     <th style={{ padding: '0.85rem', color: '#475569', fontWeight: 700 }}>Statut</th>
+                                    <th style={{ padding: '0.85rem', color: '#475569', fontWeight: 700 }}>Facture</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -242,11 +245,28 @@ export default function CotisationStatsPage({ params }: { params: Promise<{ id: 
                                                     ✅ Validé
                                                 </span>
                                             </td>
+                                            <td style={{ padding: '0.85rem' }}>
+                                                <button
+                                                    onClick={() => downloadCotisationInvoice(t, event)}
+                                                    style={{
+                                                        background: '#0A2E73',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        padding: '0.35rem 0.75rem',
+                                                        borderRadius: '0.4rem',
+                                                        fontWeight: 700,
+                                                        fontSize: '0.75rem',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    📄 Facture PDF
+                                                </button>
+                                            </td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={7} style={{ padding: '3rem 1rem', textAlign: 'center', color: '#94a3b8' }}>
+                                        <td colSpan={8} style={{ padding: '3rem 1rem', textAlign: 'center', color: '#94a3b8' }}>
                                             Aucun cotisant trouvé pour le moment.
                                         </td>
                                     </tr>

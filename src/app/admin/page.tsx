@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { downloadTicket } from "@/lib/ticketUtils";
+import { downloadCotisationInvoice } from "@/lib/invoiceUtils";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import UsersTab from "./UsersTab";
@@ -1062,6 +1063,7 @@ function AdminDashboardContent() {
                                                 <th>Email</th>
                                                 <th>Téléphone</th>
                                                 <th>Catégorie</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -1072,11 +1074,28 @@ function AdminDashboardContent() {
                                                     <td>{t.user_email || 'N/A'}</td>
                                                     <td>{t.user_phone || 'N/A'}</td>
                                                     <td>{t.category}</td>
+                                                    <td>
+                                                        {selectedEvent.type === 'cotisation' ? (
+                                                            <button
+                                                                onClick={() => downloadCotisationInvoice(t, selectedEvent)}
+                                                                style={{ background: '#0A2E73', color: 'white', border: 'none', padding: '0.25rem 0.5rem', borderRadius: '0.3rem', fontSize: '0.7rem', cursor: 'pointer', fontWeight: 'bold' }}
+                                                            >
+                                                                📄 Facture
+                                                            </button>
+                                                        ) : (
+                                                            <button
+                                                                onClick={() => downloadTicket(t, selectedEvent)}
+                                                                style={{ background: '#FF5A1F', color: 'white', border: 'none', padding: '0.25rem 0.5rem', borderRadius: '0.3rem', fontSize: '0.7rem', cursor: 'pointer', fontWeight: 'bold' }}
+                                                            >
+                                                                📥 Ticket
+                                                            </button>
+                                                        )}
+                                                    </td>
                                                 </tr>
                                             ))}
                                             {rawTickets.filter(t => t.event_id === selectedEvent.id).length === 0 && (
                                                 <tr>
-                                                    <td colSpan={5} style={{ textAlign: 'center', padding: '1rem', color: '#64748b' }}>
+                                                    <td colSpan={6} style={{ textAlign: 'center', padding: '1rem', color: '#64748b' }}>
                                                         Aucun participant.
                                                     </td>
                                                 </tr>
