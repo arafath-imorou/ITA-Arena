@@ -18,7 +18,9 @@ export default function EventDetailClient({ slug }: { slug: string }) {
     const [item, setItem] = useState<any>(null);
     const isCotisation = mode === 'cotisations' || item?.type === 'cotisation';
     const [loading, setLoading] = useState(true);
-    const [donationAmount, setDonationAmount] = useState<string>('');
+    const [cotisationType, setCotisationType] = useState<'periodic' | 'don'>('periodic');
+    const [periodicOption, setPeriodicOption] = useState<'mensuel' | 'trimestriel' | 'annuel'>('mensuel');
+    const [donationAmount, setDonationAmount] = useState<string>('500');
     const [showPastEventMessage, setShowPastEventMessage] = useState(false);
 
     const checkIsPastEvent = (dateStr: string) => {
@@ -316,25 +318,193 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                     <div className={styles.actionCard}>
                         {isCotisation ? (
                             <>
-                                <h3>Payer ma cotisation</h3>
-                                <p className={styles.actionSub}>Saisissez le montant de votre cotisation</p>
-                                <div style={{ marginTop: '1.25rem' }}>
-                                    <label style={{ display: 'block', fontSize: '0.95rem', fontWeight: 800, color: '#1e293b', marginBottom: '0.4rem' }}>
-                                        Montant de la cotisation (FCFA) :
-                                    </label>
-                                    <div className={styles.amountInputWrap}>
-                                        <span className={styles.currencyLabel}>F CFA</span>
-                                        <input 
-                                            type="number" 
-                                            min="100"
-                                            step="100"
-                                            placeholder="Ex: 5000" 
-                                            className={styles.amountInput} 
-                                            value={donationAmount}
-                                            onChange={(e) => setDonationAmount(e.target.value)}
-                                        />
-                                    </div>
+                                <h3>Cotisation / Don</h3>
+                                <p className={styles.actionSub}>Choisissez votre formule de contribution</p>
+
+                                {/* Tabs selection between Périodique and Don */}
+                                <div style={{
+                                    display: 'flex',
+                                    background: '#f1f5f9',
+                                    padding: '0.25rem',
+                                    borderRadius: '0.75rem',
+                                    margin: '1.25rem 0 1rem 0',
+                                    gap: '0.25rem'
+                                }}>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setCotisationType('periodic');
+                                            setDonationAmount('500');
+                                            setPeriodicOption('mensuel');
+                                        }}
+                                        style={{
+                                            flex: 1,
+                                            padding: '0.65rem 0.4rem',
+                                            borderRadius: '0.6rem',
+                                            border: 'none',
+                                            fontWeight: 800,
+                                            fontSize: '0.8rem',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease',
+                                            background: cotisationType === 'periodic' ? '#0A2E73' : 'transparent',
+                                            color: cotisationType === 'periodic' ? '#ffffff' : '#64748b',
+                                            boxShadow: cotisationType === 'periodic' ? '0 2px 8px rgba(10,46,115,0.2)' : 'none'
+                                        }}
+                                    >
+                                        🔄 Périodique
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setCotisationType('don');
+                                            setDonationAmount('');
+                                        }}
+                                        style={{
+                                            flex: 1,
+                                            padding: '0.65rem 0.4rem',
+                                            borderRadius: '0.6rem',
+                                            border: 'none',
+                                            fontWeight: 800,
+                                            fontSize: '0.8rem',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease',
+                                            background: cotisationType === 'don' ? '#0A2E73' : 'transparent',
+                                            color: cotisationType === 'don' ? '#ffffff' : '#64748b',
+                                            boxShadow: cotisationType === 'don' ? '0 2px 8px rgba(10,46,115,0.2)' : 'none'
+                                        }}
+                                    >
+                                        🎁 Don libre
+                                    </button>
                                 </div>
+
+                                {cotisationType === 'periodic' ? (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1.25rem' }}>
+                                        <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '0.2rem' }}>
+                                            Choisissez le rythme de votre cotisation :
+                                        </label>
+                                        
+                                        {/* Mensuel */}
+                                        <div 
+                                            onClick={() => {
+                                                setPeriodicOption('mensuel');
+                                                setDonationAmount('500');
+                                            }}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                padding: '0.75rem 0.85rem',
+                                                borderRadius: '0.75rem',
+                                                border: periodicOption === 'mensuel' ? '2px solid #FF5A1F' : '1px solid #cbd5e1',
+                                                background: periodicOption === 'mensuel' ? '#fff7ed' : '#ffffff',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                                <div style={{
+                                                    width: '16px',
+                                                    height: '16px',
+                                                    borderRadius: '50%',
+                                                    border: periodicOption === 'mensuel' ? '5px solid #FF5A1F' : '2px solid #94a3b8',
+                                                    background: '#ffffff'
+                                                }} />
+                                                <div>
+                                                    <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#0f172a' }}>Mensuel</div>
+                                                    <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Chaque mois</div>
+                                                </div>
+                                            </div>
+                                            <span style={{ fontWeight: 900, fontSize: '1rem', color: '#FF5A1F' }}>500 F CFA</span>
+                                        </div>
+
+                                        {/* Trimestriel */}
+                                        <div 
+                                            onClick={() => {
+                                                setPeriodicOption('trimestriel');
+                                                setDonationAmount('1500');
+                                            }}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                padding: '0.75rem 0.85rem',
+                                                borderRadius: '0.75rem',
+                                                border: periodicOption === 'trimestriel' ? '2px solid #FF5A1F' : '1px solid #cbd5e1',
+                                                background: periodicOption === 'trimestriel' ? '#fff7ed' : '#ffffff',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                                <div style={{
+                                                    width: '16px',
+                                                    height: '16px',
+                                                    borderRadius: '50%',
+                                                    border: periodicOption === 'trimestriel' ? '5px solid #FF5A1F' : '2px solid #94a3b8',
+                                                    background: '#ffffff'
+                                                }} />
+                                                <div>
+                                                    <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#0f172a' }}>Trimestriel</div>
+                                                    <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Tous les 3 mois</div>
+                                                </div>
+                                            </div>
+                                            <span style={{ fontWeight: 900, fontSize: '1rem', color: '#FF5A1F' }}>1 500 F CFA</span>
+                                        </div>
+
+                                        {/* Annuel */}
+                                        <div 
+                                            onClick={() => {
+                                                setPeriodicOption('annuel');
+                                                setDonationAmount('6000');
+                                            }}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                padding: '0.75rem 0.85rem',
+                                                borderRadius: '0.75rem',
+                                                border: periodicOption === 'annuel' ? '2px solid #FF5A1F' : '1px solid #cbd5e1',
+                                                background: periodicOption === 'annuel' ? '#fff7ed' : '#ffffff',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                                <div style={{
+                                                    width: '16px',
+                                                    height: '16px',
+                                                    borderRadius: '50%',
+                                                    border: periodicOption === 'annuel' ? '5px solid #FF5A1F' : '2px solid #94a3b8',
+                                                    background: '#ffffff'
+                                                }} />
+                                                <div>
+                                                    <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#0f172a' }}>Annuel</div>
+                                                    <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Pour 1 an (12 mois)</div>
+                                                </div>
+                                            </div>
+                                            <span style={{ fontWeight: 900, fontSize: '1rem', color: '#FF5A1F' }}>6 000 F CFA</span>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div style={{ marginTop: '1rem', marginBottom: '1.25rem' }}>
+                                        <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 800, color: '#1e293b', marginBottom: '0.4rem' }}>
+                                            Montant de votre don libre (FCFA) :
+                                        </label>
+                                        <div className={styles.amountInputWrap}>
+                                            <span className={styles.currencyLabel}>F CFA</span>
+                                            <input 
+                                                type="number" 
+                                                min="100"
+                                                step="100"
+                                                placeholder="Saisissez votre montant" 
+                                                className={styles.amountInput} 
+                                                value={donationAmount}
+                                                onChange={(e) => setDonationAmount(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div className={styles.totalRow} style={{ marginTop: '1rem', marginBottom: '1.5rem' }}>
                                     <span>Total à payer</span>
                                     <span className={styles.totalVal}>
@@ -350,16 +520,25 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                                             setShowPastEventMessage(true);
                                             return;
                                         }
+                                        let nameLabel = "Cotisation";
+                                        if (cotisationType === 'periodic') {
+                                            if (periodicOption === 'mensuel') nameLabel = "Cotisation Mensuelle";
+                                            else if (periodicOption === 'trimestriel') nameLabel = "Cotisation Trimestrielle";
+                                            else if (periodicOption === 'annuel') nameLabel = "Cotisation Annuelle";
+                                        } else {
+                                            nameLabel = "Don libre";
+                                        }
+
                                         const params = new URLSearchParams();
                                         params.set("id", item.id);
                                         params.set("event", item.title);
                                         params.set("q1", "1");
                                         params.set("p1", donationAmount);
-                                        params.set("n1", "Cotisation");
+                                        params.set("n1", nameLabel);
                                         window.location.href = `/checkout?${params.toString()}`;
                                     }}
                                 >
-                                    💳 PAYER MA COTISATION
+                                    💳 PAYER {cotisationType === 'don' ? 'MON DON' : 'MA COTISATION'}
                                 </button>
                                 {showPastEventMessage && (
                                     <div style={{ marginTop: '1rem', background: '#f8fafc', color: '#334155', padding: '1rem', borderRadius: '0.75rem', fontSize: '0.9rem', textAlign: 'center', border: '1px solid #e2e8f0' }}>
