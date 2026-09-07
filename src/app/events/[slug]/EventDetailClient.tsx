@@ -309,7 +309,7 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                                 <h4>{item.organizer?.name || "Organisateur ITA"}</h4>
                                 <p>{item.organizer?.is_verified ? "Organisation vérifiée" : "Organisateur certifié"}</p>
                             </div>
-                            <Link href="#" className={styles.followLink}>Voir le profil</Link>
+                            <Link href={`/p/${item.organizer_id}`} className={styles.followLink}>Voir le profil</Link>
                         </div>
                     </section>
                 </div>

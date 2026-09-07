@@ -1,0 +1,145 @@
+﻿.page {
+    min-height: 100vh;
+    background-color: #f8fafc;
+}
+
+.header {
+    background-color: #0a2e73;
+    color: white;
+    padding-bottom: 3rem;
+}
+
+.profileHeader {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: white;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatarPlaceholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: bold;
+    color: #0a2e73;
+}
+
+.profileInfo h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.role {
+    font-size: 1.1rem;
+    color: #ff5a1f;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.location, .sector {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin-bottom: 0.2rem;
+}
+
+.sectionTitle {
+    font-size: 2rem;
+    color: #0a2e73;
+    margin-bottom: 2rem;
+}
+
+.eventsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.eventCard {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.eventCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.eventImage {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: #ff5a1f;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.eventContent {
+    padding: 1.5rem;
+}
+
+.eventContent h3 {
+    font-size: 1.25rem;
+    color: #0a2e73;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
+.date, .location {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.emptyState {
+    background: white;
+    padding: 3rem;
+    text-align: center;
+    border-radius: 12px;
+    color: #64748b;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .profileHeader {
+        flex-direction: column;
+        text-align: center;
+    }
+    .profileInfo h1 {
+        font-size: 2rem;
+    }
+}
