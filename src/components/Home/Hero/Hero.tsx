@@ -9,8 +9,8 @@ export default function Hero() {
                 <div className={styles.heroText}>
                     <span className={styles.badge}>La scène digitale des grands événements</span>
                     <h1 className={styles.heroTitle}>
-                        Plus qu’une billetterie, <br />
-                        <span>une expérience événementielle</span>
+                        La scène digitale<br />
+                        <span>des grands événements</span>
                     </h1>
                     <p className={styles.heroSubTitle}>
                         La plateforme tout-en-un des événements et communautés.
