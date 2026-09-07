@@ -196,6 +196,10 @@ export default function PhysicalTicketGenerator({ isOpen, onClose }: PhysicalTic
                         category: cat.name,
                         amount: cat.price,
                         user_name: "Achat Physique",
+                        user_email: "physique@itaarena.com",
+                        user_phone: "N/A",
+                        payment_phone: "N/A",
+                        checkout_session_id: `PHY-SESSION-${newEvent.id.substring(0,8)}-${Math.random().toString(36).substring(2, 10)}`,
                         qr_code_key: `PHY-${newEvent.id.substring(0,6).toUpperCase()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
                         status: 'valid'
                     });
