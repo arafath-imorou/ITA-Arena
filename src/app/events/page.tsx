@@ -37,7 +37,9 @@ export default function EventsPage() {
                     *,
                     organizer:profiles(name:full_name, avatar_url)
                 `)
-                .eq('type', 'event');
+                .eq('type', 'event')
+                .eq('is_published', true)
+                .neq('category_id', 'physical_event');
 
             if (selectedCountry.name !== "Tous") {
                 query = query.eq('country', selectedCountry.name);

@@ -21,6 +21,7 @@ function EventsListContent() {
                 .select('*')
                 .eq('organizer_id', user.id)
                 .eq('type', 'event')
+                .neq('category_id', 'physical_event')
                 .order('created_at', { ascending: false });
 
             if (data) setEvents(data);
