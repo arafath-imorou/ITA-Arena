@@ -212,7 +212,7 @@ function AdminDashboardContent() {
         }
 
         // Lists for filters
-        const organizers = rawProfiles.filter(p => p.role === 'organizer' || rawEvents.some(e => e.organizer_id === p.id));
+        const organizers = rawProfiles;
         const organizersWithStats = organizers.map(org => {
             const orgEvents = events.filter(e => e.organizer_id === org.id);
             const totalRevenue = orgEvents.reduce((acc, e) => acc + (e.collected_amount || 0), 0);
@@ -906,7 +906,7 @@ function AdminDashboardContent() {
             ) : (
                 <div className={styles.section}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                        <h3>Liste des Organisateurs ({organizersList.length})</h3>
+                        <h3>Liste des Organisateurs & Utilisateurs ({organizersList.length})</h3>
                     </div>
                     <div className={styles.tableWrapper}>
                         <table className={styles.table}>

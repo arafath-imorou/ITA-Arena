@@ -19,8 +19,8 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    // List users
-    const { data: users, error } = await supabase.from('profiles').select('*').in('role', ['super_admin', 'admin', 'organisateur', 'organizer', 'visualiseur']).eq('company_name', 'ITA_ARENA').order('created_at', { ascending: false });
+    // List users (all registered profiles)
+    const { data: users, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
     
     if (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
