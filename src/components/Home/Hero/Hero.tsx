@@ -21,10 +21,10 @@ export default function Hero() {
                         <Link href="/about" className="btn btn-outline" style={{ borderColor: 'white', color: 'white', padding: '8px 16px', fontSize: '0.85rem' }}>
                             Qui sommes nous ?
                         </Link>
-                        <Link href="#solutions" className="btn btn-outline" style={{ borderColor: 'white', color: 'white', padding: '8px 16px', fontSize: '0.85rem' }}>
+                        <Link href="/#solutions" className="btn btn-outline" style={{ borderColor: 'white', color: 'white', padding: '8px 16px', fontSize: '0.85rem' }}>
                             Nos Solutions
                         </Link>
-                        <Link href="#explore" className="btn btn-outline" style={{ borderColor: 'white', color: 'white', padding: '8px 16px', fontSize: '0.85rem' }}>
+                        <Link href="/#explore" className="btn btn-outline" style={{ borderColor: 'white', color: 'white', padding: '8px 16px', fontSize: '0.85rem' }}>
                             Nos évènements en cours
                         </Link>
                     </div>
