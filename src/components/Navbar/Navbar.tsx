@@ -102,7 +102,7 @@ export default function Navbar() {
             </div>
 
             <Link href={user ? "/organizer/create-hub" : "/signin"} className={styles.publishBtn} onClick={() => setIsMobileMenuOpen(false)}>
-              Publier un événement
+              Créer un événement
             </Link>
             
             <div className={styles.profileMenu} onClick={() => setShowDropdown(!showDropdown)}>
