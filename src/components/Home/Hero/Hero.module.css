@@ -45,9 +45,10 @@
 }
 
 .heroTitle {
-    font-size: clamp(2rem, 8vw, 4.5rem);
+    font-size: clamp(2rem, 6vw, 3.8rem);
     line-height: 1.1;
     margin-bottom: 1.5rem;
+    white-space: nowrap;
 }
 
 .heroTitle span {
