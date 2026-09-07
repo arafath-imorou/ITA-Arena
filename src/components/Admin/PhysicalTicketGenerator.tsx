@@ -178,6 +178,7 @@ export default function PhysicalTicketGenerator({ isOpen, onClose }: PhysicalTic
                     time: formData.time,
                     image_url: formData.image_url,
                     type: 'event',
+                    category_id: 'physical_event',
                     organizer_id: userId, // Required for Row-Level Security
                     is_published: false,
                     status: 'active'

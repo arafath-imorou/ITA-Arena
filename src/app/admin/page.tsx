@@ -24,12 +24,13 @@ function AdminDashboardContent() {
     const [rawTickets, setRawTickets] = useState<any[]>([]);
     const [rawForms, setRawForms] = useState<any[]>([]);
     const [rawVotes, setRawVotes] = useState<any[]>([]);
+    const [rawPhysicalEvents, setRawPhysicalEvents] = useState<any[]>([]);
     const [isAdmin, setIsAdmin] = useState(false);
     const [userRole, setUserRole] = useState("");
     const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
     const [selectedUserProfile, setSelectedUserProfile] = useState<any | null>(null);
     const [activeModalTab, setActiveModalTab] = useState<'stats' | 'tickets' | 'participants'>('stats');
-    const [mainTab, setMainTab] = useState<'overview' | 'organizers' | 'users'>('overview');
+    const [mainTab, setMainTab] = useState<'overview' | 'organizers' | 'users' | 'physical_events'>('overview');
     const [isManualModalOpen, setIsManualModalOpen] = useState(false);
     const [manualTicket, setManualTicket] = useState({
         user_name: '',
@@ -59,6 +60,9 @@ function AdminDashboardContent() {
             const { data: campaignsData } = await supabase.from('support_campaigns').select('*').order('created_at', { ascending: false });
             const { data: formsData } = await supabase.from('forms').select('*').order('created_at', { ascending: false });
             
+            // Get physical events separately (they are unpublished so they don't show in events_with_stats view)
+            const { data: physicalEvents } = await supabase.from('events').select('*').or('category_id.eq.physical_event,description.ilike.Event physique généré par%').order('created_at', { ascending: false });
+
             // On utilise l'API pour contourner le RLS et obtenir les votes_cast pour le super admin
             const resVotes = await fetch('/api/admin/votes');
             const votesData = resVotes.ok ? await resVotes.json() : [];
@@ -69,6 +73,7 @@ function AdminDashboardContent() {
             setRawCampaigns(campaignsData || []);
             setRawForms(formsData || []);
             setRawVotes(votesData || []);
+            setRawPhysicalEvents(physicalEvents || []);
         } catch (err) {
             console.error("Admin Data Error:", err);
         } finally {
@@ -490,6 +495,19 @@ function AdminDashboardContent() {
                 >
                     Organisateurs
                 </button>
+                {userRole === 'super_admin' && (
+                    <button 
+                        onClick={() => setMainTab('physical_events')} 
+                        style={{ 
+                            background: 'none', border: 'none', padding: '1rem 2rem', fontSize: '1.1rem', fontWeight: 'bold', cursor: 'pointer',
+                            color: mainTab === 'physical_events' ? '#0a2e73' : '#64748b',
+                            borderBottom: mainTab === 'physical_events' ? '3px solid #ff5a1f' : '3px solid transparent',
+                            marginBottom: '-2px'
+                        }}
+                    >
+                        🎟️ Billetterie Physique
+                    </button>
+                )}
                 {userRole === 'super_admin' && (
                     <button 
                         onClick={() => setMainTab('users')} 
@@ -938,6 +956,68 @@ function AdminDashboardContent() {
                 </div>
             </div>
             </>
+            ) : mainTab === 'physical_events' ? (
+                <div className={styles.section}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                        <h3>Billetterie Physique ({rawPhysicalEvents.length})</h3>
+                        <button 
+                            onClick={() => setIsTicketGeneratorOpen(true)}
+                            style={{ background: '#ff5a1f', color: 'white', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+                        >
+                            🎟️ Générer des tickets
+                        </button>
+                    </div>
+                    <div className={styles.tableWrapper}>
+                        <table className={styles.table}>
+                            <thead>
+                                <tr>
+                                    <th>Événement</th>
+                                    <th>Lieu</th>
+                                    <th>Date et Heure</th>
+                                    <th>Généré le</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {rawPhysicalEvents.length === 0 ? (
+                                    <tr><td colSpan={5} style={{ textAlign: 'center', padding: '2rem' }}>Aucun événement physique généré.</td></tr>
+                                ) : (
+                                    rawPhysicalEvents.map(evt => (
+                                        <tr key={evt.id}>
+                                            <td><strong>{evt.title}</strong></td>
+                                            <td>{evt.location || 'N/A'}</td>
+                                            <td>{evt.date} à {evt.time}</td>
+                                            <td>{new Date(evt.created_at).toLocaleDateString('fr-FR')}</td>
+                                            <td>
+                                                <button 
+                                                    style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', background: '#0a2e73', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                                                    onClick={() => {
+                                                        const eventTickets = rawTickets.filter(t => t.event_id === evt.id);
+                                                        const catMap: any = {};
+                                                        let totalRevenue = 0;
+                                                        eventTickets.forEach(t => {
+                                                            if (!catMap[t.category]) catMap[t.category] = { name: t.category || 'Standard', price: t.amount || 0, sold: 0, capacity: 0, revenue: 0, percent: 100 };
+                                                            catMap[t.category].sold++;
+                                                            catMap[t.category].capacity++;
+                                                            catMap[t.category].revenue += Number(t.amount || 0);
+                                                            totalRevenue += Number(t.amount || 0);
+                                                        });
+                                                        const categoriesWithStats = Object.values(catMap);
+                                                        const statEvt = { ...evt, total_capacity: eventTickets.length, sold_count: eventTickets.length, collected_amount: totalRevenue, categoriesWithStats, percent: 100 };
+                                                        setSelectedEvent(statEvt);
+                                                        setActiveModalTab('participants');
+                                                    }}
+                                                >
+                                                    Gérer les tickets
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             ) : (
                 <div className={styles.section}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
