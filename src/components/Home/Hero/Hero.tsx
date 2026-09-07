@@ -7,7 +7,6 @@ export default function Hero() {
             <div className={styles.heroOverlay}></div>
             <div className={`container ${styles.heroContent}`}>
                 <div className={styles.heroText}>
-                    <span className={styles.badge}>La scène digitale des grands événements</span>
                     <h1 className={styles.heroTitle}>
                         La scène digitale<br />
                         <span>des grands événements</span>
