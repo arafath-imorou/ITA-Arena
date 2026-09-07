@@ -17,6 +17,7 @@ export default function PhysicalTicketGenerator({ isOpen, onClose }: PhysicalTic
         title: '',
         organizer: '',
         date: '',
+        time: '',
         location: '',
         image_url: ''
     });
@@ -104,7 +105,7 @@ export default function PhysicalTicketGenerator({ isOpen, onClose }: PhysicalTic
         doc.setFontSize(9);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(80, 80, 80);
-        doc.text(`Date: ${eventData.date}`, x + 10, currentY);
+        doc.text(`Date: ${eventData.date} à ${eventData.time}`, x + 10, currentY);
         currentY += 5;
         doc.text(`Lieu: ${eventData.location}`, x + 10, currentY);
         currentY += 5;
@@ -174,7 +175,7 @@ export default function PhysicalTicketGenerator({ isOpen, onClose }: PhysicalTic
                     description: `Event physique généré par ${formData.organizer}`,
                     location: formData.location,
                     date: formData.date,
-                    time: "00:00",
+                    time: formData.time,
                     image_url: formData.image_url,
                     type: 'event',
                     organizer_id: userId, // Required for Row-Level Security
@@ -284,8 +285,12 @@ export default function PhysicalTicketGenerator({ isOpen, onClose }: PhysicalTic
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                         <div>
                             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Date et Heure</label>
-                            <input type="text" required placeholder="Ex: 25 Déc. 2026 à 20h" style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ccc' }}
-                                value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} />
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <input type="date" required style={{ flex: 1, padding: '0.8rem', borderRadius: '8px', border: '1px solid #ccc' }}
+                                    value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} />
+                                <input type="time" required style={{ flex: 1, padding: '0.8rem', borderRadius: '8px', border: '1px solid #ccc' }}
+                                    value={formData.time} onChange={e => setFormData({ ...formData, time: e.target.value })} />
+                            </div>
                         </div>
                         <div>
                             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Lieu</label>
