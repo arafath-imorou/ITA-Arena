@@ -101,7 +101,7 @@ export default function Navbar() {
                 <Link href="/#explore" className={styles.mobileLinkItem} onClick={() => setIsMobileMenuOpen(false)}>Nos évènements en cours</Link>
             </div>
 
-            <Link href={user ? "/organizer/create" : "/signin"} className={styles.publishBtn} onClick={() => setIsMobileMenuOpen(false)}>
+            <Link href={user ? "/organizer/create-hub" : "/signin"} className={styles.publishBtn} onClick={() => setIsMobileMenuOpen(false)}>
               Publier un événement
             </Link>
             
