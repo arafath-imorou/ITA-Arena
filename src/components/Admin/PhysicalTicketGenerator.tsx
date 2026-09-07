@@ -159,6 +159,14 @@ export default function PhysicalTicketGenerator({ isOpen, onClose }: PhysicalTic
         e.preventDefault();
         setLoading(true);
         try {
+            // Get current user ID to satisfy RLS
+            const { data: { session } } = await supabase.auth.getSession();
+            const userId = session?.user?.id;
+
+            if (!userId) {
+                throw new Error("Vous devez être connecté pour générer des tickets.");
+            }
+
             const { data: newEvent, error: eventError } = await supabase
                 .from('events')
                 .insert({
@@ -169,6 +177,7 @@ export default function PhysicalTicketGenerator({ isOpen, onClose }: PhysicalTic
                     time: "00:00",
                     image_url: formData.image_url,
                     type: 'event',
+                    organizer_id: userId, // Required for Row-Level Security
                     is_published: false,
                     status: 'active'
                 })
