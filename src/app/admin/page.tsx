@@ -25,6 +25,7 @@ function AdminDashboardContent() {
     const [isAdmin, setIsAdmin] = useState(false);
     const [userRole, setUserRole] = useState("");
     const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
+    const [selectedUserProfile, setSelectedUserProfile] = useState<any | null>(null);
     const [activeModalTab, setActiveModalTab] = useState<'stats' | 'tickets' | 'participants'>('stats');
     const [mainTab, setMainTab] = useState<'overview' | 'organizers' | 'users'>('overview');
     const [isManualModalOpen, setIsManualModalOpen] = useState(false);
@@ -426,6 +427,22 @@ function AdminDashboardContent() {
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Erreur lors du changement de mot de passe');
             alert('Mot de passe mis à jour avec succès !');
+        } catch (err: any) {
+            alert(err.message);
+        }
+    };
+
+    const handleDeleteUser = async (userId: string, userNameOrEmail: string) => {
+        if (!confirm(`Êtes-vous sûr de vouloir supprimer définitivement le compte de (${userNameOrEmail}) ?`)) return;
+        try {
+            const res = await fetch(`/api/admin/users?adminEmail=${user?.email}&userId=${userId}`, {
+                method: 'DELETE'
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Erreur lors de la suppression du compte');
+            alert("Compte utilisateur supprimé avec succès.");
+            setRawProfiles(prev => prev.filter(p => p.id !== userId));
+            if (selectedUserProfile?.id === userId) setSelectedUserProfile(null);
         } catch (err: any) {
             alert(err.message);
         }
@@ -912,12 +929,13 @@ function AdminDashboardContent() {
                         <table className={styles.table}>
                             <thead>
                                 <tr>
-                                    <th>Organisateur / Entreprise</th>
+                                    <th>Organisateur / Nom</th>
                                     <th>Contact</th>
                                     <th>Type</th>
                                     <th>Projets</th>
                                     <th>Tickets Vendus</th>
                                     <th>Revenu Total</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -932,14 +950,6 @@ function AdminDashboardContent() {
                                         <td>
                                             <div style={{ fontSize: '0.85rem' }}>📧 {org.email}</div>
                                             {org.phone && <div style={{ fontSize: '0.85rem' }}>📱 {org.phone}</div>}
-                                            {userRole !== 'visualiseur' && (
-                                                <button 
-                                                    onClick={() => handleResetPassword(org.id)}
-                                                    style={{ marginTop: '0.5rem', fontSize: '0.75rem', padding: '0.2rem 0.5rem', background: '#fef3c7', color: '#d97706', border: '1px solid #fcd34d', borderRadius: '4px', cursor: 'pointer' }}
-                                                >
-                                                    🔑 Changer mot de passe
-                                                </button>
-                                            )}
                                         </td>
                                         <td>
                                             <span className={styles.badge} style={{ background: '#e0f2fe', color: '#0369a1' }}>
@@ -949,12 +959,44 @@ function AdminDashboardContent() {
                                         <td><strong>{org.eventCount}</strong></td>
                                         <td>{org.totalTickets}</td>
                                         <td style={{ fontWeight: 'bold', color: '#059669' }}>{org.totalRevenue.toLocaleString()} F</td>
+                                        <td>
+                                            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                                                <button 
+                                                    onClick={() => setSelectedUserProfile(org)}
+                                                    className={styles.badge}
+                                                    style={{ border: 'none', background: '#e0f2fe', color: '#0369a1', cursor: 'pointer', fontWeight: 'bold' }}
+                                                    title="Voir tous les détails du compte"
+                                                >
+                                                    👁️ Voir
+                                                </button>
+                                                {userRole !== 'visualiseur' && (
+                                                    <button 
+                                                        onClick={() => handleResetPassword(org.id)}
+                                                        className={styles.badge}
+                                                        style={{ border: 'none', background: '#fef3c7', color: '#d97706', cursor: 'pointer', fontWeight: 'bold' }}
+                                                        title="Changer le mot de passe"
+                                                    >
+                                                        🔑 Pass
+                                                    </button>
+                                                )}
+                                                {(userRole === 'super_admin' || userRole === 'admin') && org.email !== user?.email && (
+                                                    <button 
+                                                        onClick={() => handleDeleteUser(org.id, org.full_name || org.email)}
+                                                        className={styles.badge}
+                                                        style={{ border: 'none', background: '#fee2e2', color: '#991b1b', cursor: 'pointer', fontWeight: 'bold' }}
+                                                        title="Supprimer ce compte"
+                                                    >
+                                                        🗑️ Supprimer
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </td>
                                     </tr>
                                 ))}
                                 {organizersList.length === 0 && (
                                     <tr>
-                                        <td colSpan={6} style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
-                                            Aucun organisateur trouvé.
+                                        <td colSpan={7} style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                                            Aucun utilisateur trouvé.
                                         </td>
                                     </tr>
                                 )}
@@ -1309,6 +1351,123 @@ function AdminDashboardContent() {
                                     {isSavingManual ? 'Enregistrement...' : 'Enregistrer'}
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal Détails Utilisateur / Profil */}
+            {selectedUserProfile && (
+                <div className={styles.modalOverlay} onClick={() => setSelectedUserProfile(null)}>
+                    <div className={styles.modalContent} onClick={e => e.stopPropagation()} style={{ maxWidth: '650px' }}>
+                        <button 
+                            onClick={() => setSelectedUserProfile(null)} 
+                            style={{ position: 'absolute', top: '1rem', right: '1rem', border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }}
+                        >
+                            ×
+                        </button>
+
+                        <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
+                            <h2 style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#0a2e73', margin: 0 }}>
+                                👤 Détails du Compte Utilisateur
+                            </h2>
+                            <p style={{ margin: '0.25rem 0 0 0', color: '#64748b', fontSize: '0.85rem' }}>
+                                Compte enregistré sur la plateforme ITA ARENA
+                            </p>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
+                            <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '8px' }}>
+                                <h4 style={{ margin: '0 0 0.75rem 0', color: '#0a2e73', fontSize: '0.95rem' }}>📌 Informations Générales</h4>
+                                <p style={{ margin: '0.4rem 0', fontSize: '0.85rem' }}>
+                                    <strong>Nom complet :</strong> {selectedUserProfile.full_name || (selectedUserProfile.first_name ? `${selectedUserProfile.first_name || ''} ${selectedUserProfile.last_name || ''}`.trim() : 'Non renseigné')}
+                                </p>
+                                <p style={{ margin: '0.4rem 0', fontSize: '0.85rem' }}>
+                                    <strong>Email :</strong> <a href={`mailto:${selectedUserProfile.email}`} style={{ color: '#0284c7' }}>{selectedUserProfile.email}</a>
+                                </p>
+                                <p style={{ margin: '0.4rem 0', fontSize: '0.85rem' }}>
+                                    <strong>Téléphone :</strong> {selectedUserProfile.phone || 'Non renseigné'}
+                                </p>
+                                <p style={{ margin: '0.4rem 0', fontSize: '0.85rem' }}>
+                                    <strong>Rôle :</strong> <span className={styles.badge} style={{ background: '#e0f2fe', color: '#0369a1' }}>{selectedUserProfile.role || 'user'}</span>
+                                </p>
+                                <p style={{ margin: '0.4rem 0', fontSize: '0.85rem' }}>
+                                    <strong>Date d'inscription :</strong> {new Date(selectedUserProfile.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                </p>
+                            </div>
+
+                            <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '8px' }}>
+                                <h4 style={{ margin: '0 0 0.75rem 0', color: '#0a2e73', fontSize: '0.95rem' }}>🏢 Profil & Localisation</h4>
+                                <p style={{ margin: '0.4rem 0', fontSize: '0.85rem' }}>
+                                    <strong>Type de compte :</strong> {selectedUserProfile.user_type === 'entreprise' ? '🏢 Entreprise / Association' : '👤 Particulier'}
+                                </p>
+                                {selectedUserProfile.company_name && (
+                                    <p style={{ margin: '0.4rem 0', fontSize: '0.85rem' }}>
+                                        <strong>Entreprise / Orga :</strong> {selectedUserProfile.company_name}
+                                    </p>
+                                )}
+                                {selectedUserProfile.founder_name && (
+                                    <p style={{ margin: '0.4rem 0', fontSize: '0.85rem' }}>
+                                        <strong>Fondateur / Dirigeant :</strong> {selectedUserProfile.founder_name}
+                                    </p>
+                                )}
+                                {selectedUserProfile.business_sector && (
+                                    <p style={{ margin: '0.4rem 0', fontSize: '0.85rem' }}>
+                                        <strong>Secteur d'activité :</strong> {selectedUserProfile.business_sector}
+                                    </p>
+                                )}
+                                {selectedUserProfile.profession && (
+                                    <p style={{ margin: '0.4rem 0', fontSize: '0.85rem' }}>
+                                        <strong>Profession :</strong> {selectedUserProfile.profession}
+                                    </p>
+                                )}
+                                <p style={{ margin: '0.4rem 0', fontSize: '0.85rem' }}>
+                                    <strong>Ville & Pays :</strong> {[selectedUserProfile.city, selectedUserProfile.country].filter(Boolean).join(', ') || 'Non précisé'}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div style={{ marginTop: '1.25rem', background: '#eff6ff', padding: '1rem', borderRadius: '8px' }}>
+                            <h4 style={{ margin: '0 0 0.5rem 0', color: '#1e40af', fontSize: '0.95rem' }}>📊 Activité sur ITA Arena</h4>
+                            <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+                                <div>
+                                    <span style={{ fontSize: '0.75rem', color: '#475569' }}>Projets créés :</span>
+                                    <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#0f172a' }}>{selectedUserProfile.eventCount || 0}</div>
+                                </div>
+                                <div>
+                                    <span style={{ fontSize: '0.75rem', color: '#475569' }}>Tickets / Cotisations :</span>
+                                    <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#0f172a' }}>{selectedUserProfile.totalTickets || 0}</div>
+                                </div>
+                                <div>
+                                    <span style={{ fontSize: '0.75rem', color: '#475569' }}>Chiffre d'affaires collecté :</span>
+                                    <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#059669' }}>{(selectedUserProfile.totalRevenue || 0).toLocaleString()} F CFA</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', flexWrap: 'wrap' }}>
+                            {userRole !== 'visualiseur' && (
+                                <button
+                                    onClick={() => handleResetPassword(selectedUserProfile.id)}
+                                    style={{ padding: '0.5rem 1rem', background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+                                >
+                                    🔑 Changer mot de passe
+                                </button>
+                            )}
+                            {(userRole === 'super_admin' || userRole === 'admin') && selectedUserProfile.email !== user?.email && (
+                                <button
+                                    onClick={() => handleDeleteUser(selectedUserProfile.id, selectedUserProfile.full_name || selectedUserProfile.email)}
+                                    style={{ padding: '0.5rem 1rem', background: '#fee2e2', color: '#991b1b', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+                                >
+                                    🗑️ Supprimer le compte
+                                </button>
+                            )}
+                            <button 
+                                onClick={() => setSelectedUserProfile(null)}
+                                style={{ padding: '0.5rem 1rem', background: '#0a2e73', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+                            >
+                                Fermer
+                            </button>
                         </div>
                     </div>
                 </div>

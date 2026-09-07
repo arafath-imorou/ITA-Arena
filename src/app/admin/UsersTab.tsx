@@ -10,6 +10,7 @@ export default function UsersTab() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [isCreating, setIsCreating] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<any | null>(null);
     
     // Form state
     const [email, setEmail] = useState('');
@@ -220,7 +221,39 @@ export default function UsersTab() {
                                 </td>
                                 <td>{new Date(u.created_at).toLocaleDateString('fr-FR')}</td>
                                 <td>
-                                    <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                                    <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                                        <button
+                                            onClick={() => setSelectedUser(u)}
+                                            style={{
+                                                background: '#e0f2fe',
+                                                color: '#0369a1',
+                                                border: 'none',
+                                                padding: '0.35rem 0.6rem',
+                                                borderRadius: '6px',
+                                                cursor: 'pointer',
+                                                fontSize: '0.78rem',
+                                                fontWeight: 'bold'
+                                            }}
+                                            title="Voir les détails du compte"
+                                        >
+                                            👁️ Voir
+                                        </button>
+                                        <button
+                                            onClick={() => handleResetPassword(u.id)}
+                                            style={{
+                                                background: '#fef3c7',
+                                                color: '#d97706',
+                                                border: '1px solid #fcd34d',
+                                                padding: '0.35rem 0.6rem',
+                                                borderRadius: '6px',
+                                                cursor: 'pointer',
+                                                fontSize: '0.78rem',
+                                                fontWeight: 'bold'
+                                            }}
+                                            title="Changer le mot de passe"
+                                        >
+                                            🔑 Pass
+                                        </button>
                                         {u.role !== 'super_admin' && (
                                             <button
                                                 onClick={() => handleToggleApproval(u.id, u.is_approved !== false)}
@@ -240,7 +273,7 @@ export default function UsersTab() {
                                             </button>
                                         )}
                                         {u.email !== user?.email && (
-                                            <button onClick={() => handleDeleteUser(u.id)} style={{ color: '#dc2626', background: '#fee2e2', border: 'none', padding: '0.35rem 0.6rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 'bold' }}>Supprimer</button>
+                                            <button onClick={() => handleDeleteUser(u.id)} style={{ color: '#dc2626', background: '#fee2e2', border: 'none', padding: '0.35rem 0.6rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 'bold' }}>🗑️ Supprimer</button>
                                         )}
                                     </div>
                                 </td>
@@ -249,6 +282,72 @@ export default function UsersTab() {
                     </tbody>
                 </table>
             </div>
+
+            {/* Modal Détails Utilisateur */}
+            {selectedUser && (
+                <div className={styles.modalOverlay} onClick={() => setSelectedUser(null)}>
+                    <div className={styles.modalContent} onClick={e => e.stopPropagation()} style={{ maxWidth: '600px' }}>
+                        <button 
+                            onClick={() => setSelectedUser(null)} 
+                            style={{ position: 'absolute', top: '1rem', right: '1rem', border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer' }}
+                        >
+                            ×
+                        </button>
+
+                        <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#0a2e73', margin: 0 }}>
+                                👤 Fiche Utilisateur Complexe
+                            </h2>
+                            <p style={{ margin: '0.25rem 0 0 0', color: '#64748b', fontSize: '0.85rem' }}>
+                                Compte ITA Arena #{selectedUser.id?.slice(0, 8)}
+                            </p>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+                            <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '8px' }}>
+                                <h4 style={{ margin: '0 0 0.5rem 0', color: '#0a2e73' }}>Contact & Identité</h4>
+                                <p style={{ margin: '0.3rem 0', fontSize: '0.85rem' }}><strong>Nom complet :</strong> {selectedUser.full_name || (selectedUser.first_name ? `${selectedUser.first_name} ${selectedUser.last_name || ''}` : 'Non renseigné')}</p>
+                                <p style={{ margin: '0.3rem 0', fontSize: '0.85rem' }}><strong>Email :</strong> {selectedUser.email}</p>
+                                <p style={{ margin: '0.3rem 0', fontSize: '0.85rem' }}><strong>Téléphone :</strong> {selectedUser.phone || 'Non renseigné'}</p>
+                                <p style={{ margin: '0.3rem 0', fontSize: '0.85rem' }}><strong>Rôle :</strong> {selectedUser.role}</p>
+                                <p style={{ margin: '0.3rem 0', fontSize: '0.85rem' }}><strong>Date d'inscription :</strong> {new Date(selectedUser.created_at).toLocaleDateString('fr-FR')}</p>
+                            </div>
+
+                            <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '8px' }}>
+                                <h4 style={{ margin: '0 0 0.5rem 0', color: '#0a2e73' }}>Profil & Organisation</h4>
+                                <p style={{ margin: '0.3rem 0', fontSize: '0.85rem' }}><strong>Type :</strong> {selectedUser.user_type === 'entreprise' ? '🏢 Entreprise' : '👤 Particulier'}</p>
+                                {selectedUser.company_name && <p style={{ margin: '0.3rem 0', fontSize: '0.85rem' }}><strong>Entreprise :</strong> {selectedUser.company_name}</p>}
+                                {selectedUser.founder_name && <p style={{ margin: '0.3rem 0', fontSize: '0.85rem' }}><strong>Dirigeant :</strong> {selectedUser.founder_name}</p>}
+                                {selectedUser.profession && <p style={{ margin: '0.3rem 0', fontSize: '0.85rem' }}><strong>Profession :</strong> {selectedUser.profession}</p>}
+                                <p style={{ margin: '0.3rem 0', fontSize: '0.85rem' }}><strong>Localisation :</strong> {[selectedUser.city, selectedUser.country].filter(Boolean).join(', ') || 'Non précisé'}</p>
+                            </div>
+                        </div>
+
+                        <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                            <button 
+                                onClick={() => { setSelectedUser(null); handleResetPassword(selectedUser.id); }}
+                                style={{ padding: '0.5rem 1rem', background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+                            >
+                                🔑 Mot de passe
+                            </button>
+                            {selectedUser.email !== user?.email && (
+                                <button 
+                                    onClick={() => { setSelectedUser(null); handleDeleteUser(selectedUser.id); }}
+                                    style={{ padding: '0.5rem 1rem', background: '#fee2e2', color: '#991b1b', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+                                >
+                                    🗑️ Supprimer
+                                </button>
+                            )}
+                            <button 
+                                onClick={() => setSelectedUser(null)}
+                                style={{ padding: '0.5rem 1rem', background: '#0a2e73', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+                            >
+                                Fermer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
