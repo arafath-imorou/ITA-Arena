@@ -1,8 +1,8 @@
-﻿import { supabase } from "@/lib/supabase";
-import Link from "next/link";
-import BackButton from "@/components/BackButton";
-import styles from "./Profile.module.css";
-import { notFound } from "next/navigation";
+import { supabase } from '@/lib/supabase';
+import Link from 'next/link';
+import BackButton from '@/components/BackButton';
+import styles from './Profile.module.css';
+import { notFound } from 'next/navigation';
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
     const { data: profile } = await supabase
@@ -11,11 +11,11 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
         .eq('id', params.id)
         .single();
     
-    if (!profile) return { title: "Profil introuvable" };
+    if (!profile) return { title: 'Profil introuvable' };
     
     return {
-        title: ${profile.company_name || profile.full_name || 'Organisateur'} | ITA Arena,
-        description: \Découvrez les événements de \.\
+        title: `${profile.company_name || profile.full_name || 'Organisateur'} | ITA Arena`,
+        description: `Découvrez les événements de ${profile.company_name || profile.full_name || 'cet organisateur'}.`
     };
 }
 
@@ -55,7 +55,7 @@ export default async function ProfilePage({ params }: { params: { id: string } }
                             )}
                         </div>
                         <div className={styles.profileInfo}>
-                            <h1>{profile.company_name || profile.full_name || "Organisateur"}</h1>
+                            <h1>{profile.company_name || profile.full_name || 'Organisateur'}</h1>
                             <p className={styles.role}>Organisateur certifié</p>
                             {profile.city && profile.country && (
                                 <p className={styles.location}>📍 {profile.city}, {profile.country}</p>
@@ -74,8 +74,8 @@ export default async function ProfilePage({ params }: { params: { id: string } }
                 {events && events.length > 0 ? (
                     <div className={styles.eventsGrid}>
                         {events.map((evt: any) => (
-                            <Link href={\/events/\\} key={evt.id} className={styles.eventCard}>
-                                <div className={styles.eventImage} style={{ backgroundImage: \url(\)\ }}>
+                            <Link href={`/events/${evt.slug || evt.id}`} key={evt.id} className={styles.eventCard}>
+                                <div className={styles.eventImage} style={{ backgroundImage: `url(${evt.image_url || 'https://placehold.co/600x400/F7931E/FFFFFF?text=Evenement'})` }}>
                                     <span className={styles.badge}>{evt.category_id}</span>
                                 </div>
                                 <div className={styles.eventContent}>
