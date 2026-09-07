@@ -116,7 +116,7 @@ export default function PhysicalTicketGenerator({ isOpen, onClose }: PhysicalTic
         doc.setFontSize(11);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(247, 147, 30); // Orange ITA Arena
-        doc.text(`${ticket.category.toUpperCase()} - ${Number(ticket.price).toLocaleString()} F CFA`, x + width/2, currentY, { align: "center" });
+        doc.text(`${ticket.category.toUpperCase()} - ${Number(ticket.amount).toLocaleString()} F CFA`, x + width/2, currentY, { align: "center" });
 
         // QR Code
         const qrDataUrl = await QRCode.toDataURL(ticket.qr_code_key, { margin: 1, width: 150 });
@@ -193,7 +193,6 @@ export default function PhysicalTicketGenerator({ isOpen, onClose }: PhysicalTic
                     ticketsToInsert.push({
                         event_id: newEvent.id,
                         category: cat.name,
-                        price: cat.price,
                         amount: cat.price,
                         user_name: "Achat Physique",
                         qr_code_key: `PHY-${newEvent.id.substring(0,6).toUpperCase()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
