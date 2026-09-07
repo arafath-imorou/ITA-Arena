@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import jsPDF from 'jspdf';
 import QRCode from 'qrcode';
+import { v4 as uuidv4 } from 'uuid';
 
 interface PhysicalTicketGeneratorProps {
     isOpen: boolean;
@@ -199,7 +200,7 @@ export default function PhysicalTicketGenerator({ isOpen, onClose }: PhysicalTic
                         user_email: "physique@itaarena.com",
                         user_phone: "N/A",
                         payment_phone: "N/A",
-                        checkout_session_id: `PHY-SESSION-${newEvent.id.substring(0,8)}-${Math.random().toString(36).substring(2, 10)}`,
+                        checkout_session_id: uuidv4(),
                         qr_code_key: `PHY-${newEvent.id.substring(0,6).toUpperCase()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
                         status: 'valid'
                     });
