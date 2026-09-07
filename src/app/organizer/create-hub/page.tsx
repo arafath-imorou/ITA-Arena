@@ -84,9 +84,6 @@ export default function CreateHub() {
             <div className={styles.grid}>
                 {options.map((opt, idx) => (
                     <Link key={idx} href={opt.href} className={styles.card}>
-                        <div className={styles.iconWrapper} style={{ backgroundColor: opt.color, color: opt.textColor }}>
-                            {opt.icon}
-                        </div>
                         <h2 className={styles.cardTitle}>{opt.title}</h2>
                         <p className={styles.cardDesc}>{opt.description}</p>
                         <div className={styles.arrowBtn}>
