@@ -67,19 +67,39 @@ export default function CreateCotisationPage() {
 
     useEffect(() => {
         async function fetchCategories() {
-            const { data, error } = await supabase
-                .from('categories')
-                .select('*')
-                .eq('type', 'cotisation');
-            
-            if (error) {
-                console.error("Error fetching categories:", error);
-            } else if (data) {
-                setCategories(data);
-                if (!formData.category_id && data.length > 0) {
-                    setFormData(prev => ({ ...prev, category_id: data[0].id }));
+            const defaultCotisationCategories = [
+                { id: 'Solidarité', label: 'Action Sociale & Solidarité' },
+                { id: 'Projet', label: 'Projet & Entreprise' },
+                { id: 'Santé', label: 'Santé & Médical' },
+                { id: 'Scolarité', label: 'Scolarité & Études' },
+                { id: 'Communauté', label: 'Communauté & Association' },
+                { id: 'Urgence', label: 'Urgence & Secours' },
+                { id: 'Voyage', label: 'Voyage & Groupe' },
+                { id: 'Célébrations', label: 'Fête & Célébration' },
+                { id: 'Autre', label: 'Autre' }
+            ];
+
+            try {
+                const { data, error } = await supabase
+                    .from('categories')
+                    .select('*')
+                    .eq('type', 'cotisation');
+                
+                if (!error && data && data.length > 0) {
+                    const formatted = data.map((c: any) => ({
+                        id: c.id || c.name || c.label,
+                        label: c.label || c.name || c.id
+                    }));
+                    setCategories(formatted);
+                    setFormData(prev => ({ ...prev, category_id: prev.category_id || formatted[0].id }));
+                    return;
                 }
+            } catch (err) {
+                console.error("Error fetching categories:", err);
             }
+
+            setCategories(defaultCotisationCategories);
+            setFormData(prev => ({ ...prev, category_id: prev.category_id || defaultCotisationCategories[0].id }));
         }
         fetchCategories();
     }, []);
@@ -213,7 +233,7 @@ export default function CreateCotisationPage() {
                                         onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
                                     >
                                         {categories.map(cat => (
-                                            <option key={cat.id} value={cat.id}>{cat.label}</option>
+                                            <option key={cat.id} value={cat.id}>{cat.label || cat.name || cat.id}</option>
                                         ))}
                                     </select>
                                 </div>

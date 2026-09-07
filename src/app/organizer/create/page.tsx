@@ -104,24 +104,42 @@ export default function CreateEventPage() {
 
     useEffect(() => {
         async function fetchCategories() {
-            const { data, error } = await supabase
-                .from('categories')
-                .select('*')
-                .eq('type', 'event');
-            
-            if (error) {
-                console.error("Error fetching categories:", error);
-                alert("Erreur catégories : " + error.message);
-            } else if (data) {
-                console.log("Categories loaded:", data);
-                if (data.length === 0) {
-                    alert("Aucune catégorie trouvée dans la base de données.");
+            const defaultEventCategories = [
+                { id: 'Concert', label: 'Concert & Spectacle' },
+                { id: 'Festival', label: 'Festival & Culture' },
+                { id: 'Soirée', label: 'Soirée & Gala' },
+                { id: 'Conférence', label: 'Conférence & Séminaire' },
+                { id: 'Formation', label: 'Formation & Atelier' },
+                { id: 'Sport', label: 'Sport & Compétition' },
+                { id: 'Tourisme', label: 'Tourisme & Voyage' },
+                { id: 'Mariage', label: 'Mariage & Réception' },
+                { id: 'Humour', label: 'Humour & Stand-up' },
+                { id: 'Cinéma', label: 'Cinéma & Projection' },
+                { id: 'Autre', label: 'Autre' }
+            ];
+
+            try {
+                const { data, error } = await supabase
+                    .from('categories')
+                    .select('*')
+                    .eq('type', 'event');
+                
+                if (!error && data && data.length > 0) {
+                    const formatted = data.map((c: any) => ({
+                        id: c.id || c.name || c.label,
+                        label: c.label || c.name || c.id
+                    }));
+                    setCategories(formatted);
+                    setFormData(prev => ({ ...prev, category_id: prev.category_id || formatted[0].id }));
+                    return;
                 }
-                setCategories(data);
-                if (!formData.category_id && data.length > 0) {
-                    setFormData(prev => ({ ...prev, category_id: data[0].id }));
-                }
+            } catch (err) {
+                console.error("Error fetching categories:", err);
             }
+
+            // Fallback default event categories
+            setCategories(defaultEventCategories);
+            setFormData(prev => ({ ...prev, category_id: prev.category_id || defaultEventCategories[0].id }));
         }
         fetchCategories();
     }, []);
@@ -371,7 +389,7 @@ function Step1_Description({ onNext, formData, setFormData, onFileClick, uploadi
                             onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
                         >
                             {categories.map(cat => (
-                                <option key={cat.id} value={cat.id}>{cat.label}</option>
+                                <option key={cat.id} value={cat.id}>{cat.label || cat.name || cat.id}</option>
                             ))}
                         </select>
                     </div>
