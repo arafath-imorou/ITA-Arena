@@ -11,7 +11,8 @@ import { downloadCotisationInvoice } from "@/lib/invoiceUtils";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import UsersTab from "./UsersTab";
-import PhysicalTicketGenerator from "@/components/Admin/PhysicalTicketGenerator";
+import dynamic from "next/dynamic";
+const PhysicalTicketGenerator = dynamic(() => import("@/components/Admin/PhysicalTicketGenerator"), { ssr: false });
 
 function AdminDashboardContent() {
     const { user } = useAuth();
