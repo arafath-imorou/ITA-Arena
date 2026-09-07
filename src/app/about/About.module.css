@@ -1,9 +1,8 @@
 /* ═══════════════════════════════════════════════
-   ITA ARENA — About Page Premium CSS v3.0
-   Chic, compact, tight spacing
+   ITA ARENA — About Page Premium CSS v4.0
+   No icons · Bigger fonts · Justified text
 ═══════════════════════════════════════════════ */
 
-/* ─── Base Wrapper ─── */
 .aboutWrapper {
     background-color: #f8f9fc;
     min-height: 100vh;
@@ -16,7 +15,7 @@
     padding: 0 2rem;
 }
 
-/* ─── Nav Bar ─── */
+/* ─── Nav ─── */
 .navBar {
     position: absolute;
     top: 1.25rem;
@@ -29,7 +28,7 @@
 /* ═══ HERO ═══ */
 .hero {
     position: relative;
-    min-height: 75vh;
+    min-height: 72vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -49,30 +48,30 @@
     z-index: 2;
     text-align: center;
     color: white;
-    max-width: 720px;
-    padding: 1.5rem 2rem;
+    max-width: 740px;
+    padding: 2rem;
 }
 
 .heroBadge {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.18);
     color: rgba(255, 255, 255, 0.85);
-    padding: 6px 16px;
+    padding: 7px 18px;
     border-radius: 50px;
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 2px;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
     animation: fadeDown 0.7s ease both;
 }
 
 .heroBadgeDot {
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     background: #FF5A1F;
     border-radius: 50%;
     animation: pulse 2s infinite;
@@ -84,11 +83,11 @@
 }
 
 .heroTitle {
-    font-size: clamp(2.4rem, 5.5vw, 4rem);
+    font-size: clamp(2.6rem, 6vw, 4.5rem);
     font-weight: 900;
     line-height: 1.1;
-    letter-spacing: -1.5px;
-    margin-bottom: 1rem;
+    letter-spacing: -2px;
+    margin-bottom: 1.25rem;
     animation: fadeUp 0.8s 0.1s ease both;
 }
 
@@ -100,11 +99,11 @@
 }
 
 .heroSubtitle {
-    font-size: 1.05rem;
-    opacity: 0.8;
-    max-width: 520px;
-    margin: 0 auto 2rem;
-    line-height: 1.65;
+    font-size: 1.15rem;
+    opacity: 0.82;
+    max-width: 540px;
+    margin: 0 auto 2.25rem;
+    line-height: 1.7;
     animation: fadeUp 0.8s 0.2s ease both;
 }
 
@@ -119,37 +118,29 @@
 .heroCta {
     background: linear-gradient(135deg, #FF5A1F, #ff8c00);
     color: white;
-    padding: 0.8rem 2rem;
+    padding: 0.85rem 2.25rem;
     border-radius: 50px;
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     text-decoration: none;
     transition: all 0.3s ease;
     box-shadow: 0 6px 20px rgba(255, 90, 31, 0.35);
 }
-
-.heroCta:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 30px rgba(255, 90, 31, 0.45);
-}
+.heroCta:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(255, 90, 31, 0.45); }
 
 .heroCtaOutline {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255,255,255,0.08);
     backdrop-filter: blur(10px);
-    border: 1.5px solid rgba(255, 255, 255, 0.35);
+    border: 1.5px solid rgba(255,255,255,0.35);
     color: white;
-    padding: 0.8rem 2rem;
+    padding: 0.85rem 2.25rem;
     border-radius: 50px;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     text-decoration: none;
     transition: all 0.3s ease;
 }
-
-.heroCtaOutline:hover {
-    background: rgba(255, 255, 255, 0.16);
-    transform: translateY(-2px);
-}
+.heroCtaOutline:hover { background: rgba(255,255,255,0.16); transform: translateY(-2px); }
 
 .heroScrollIndicator {
     position: absolute;
@@ -158,7 +149,6 @@
     transform: translateX(-50%);
     z-index: 2;
 }
-
 .heroScrollIndicator span {
     display: block;
     width: 1.5px;
@@ -167,7 +157,6 @@
     margin: 0 auto;
     animation: scrollLine 2s ease-in-out infinite;
 }
-
 @keyframes scrollLine {
     0% { transform: scaleY(0); transform-origin: top; }
     50% { transform: scaleY(1); transform-origin: top; }
@@ -178,8 +167,7 @@
 /* ═══ STATS ═══ */
 .statsSection {
     background: white;
-    padding: 0;
-    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 20px rgba(0,0,0,0.06);
     position: relative;
     z-index: 10;
 }
@@ -191,104 +179,87 @@
 
 .statCard {
     text-align: center;
-    padding: 2rem 1rem;
+    padding: 2.25rem 1rem;
     border-right: 1px solid #f0f0f0;
     transition: background 0.25s ease;
 }
-
-.statCard:last-child {
-    border-right: none;
-}
-
-.statCard:hover {
-    background: #fafbff;
-}
+.statCard:last-child { border-right: none; }
+.statCard:hover { background: #fafbff; }
 
 .statNumber {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
     font-weight: 900;
     color: #0A2E73;
     line-height: 1;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.35rem;
 }
-
-.statNumber span {
-    color: #FF5A1F;
-}
+.statNumber span { color: #FF5A1F; }
 
 .statLabel {
-    font-size: 0.78rem;
+    font-size: 0.82rem;
     color: #999;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-/* ═══ SHARED SECTION ELEMENTS ═══ */
+/* ═══ SHARED ═══ */
 .sectionLabel {
     display: inline-block;
     color: #FF5A1F;
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 800;
     letter-spacing: 3px;
     margin-bottom: 0.6rem;
 }
-
 .sectionLabelLight {
     display: inline-block;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.72rem;
+    color: rgba(255,255,255,0.6);
+    font-size: 0.75rem;
     font-weight: 800;
     letter-spacing: 3px;
     margin-bottom: 0.6rem;
 }
-
 .sectionHeader {
     text-align: center;
-    margin-bottom: 2.5rem;
+    margin-bottom: 3rem;
 }
-
 .sectionHeading {
-    font-size: clamp(1.7rem, 3vw, 2.4rem);
+    font-size: clamp(1.9rem, 3.5vw, 2.7rem);
     font-weight: 900;
     color: #0A2E73;
-    letter-spacing: -0.8px;
-    margin-bottom: 0.5rem;
+    letter-spacing: -1px;
+    margin-bottom: 0.75rem;
 }
-
 .sectionHeadingLight {
-    font-size: clamp(1.7rem, 3vw, 2.4rem);
+    font-size: clamp(1.9rem, 3.5vw, 2.7rem);
     font-weight: 900;
     color: white;
-    letter-spacing: -0.8px;
-    margin-bottom: 0.5rem;
+    letter-spacing: -1px;
+    margin-bottom: 0.75rem;
 }
-
 .sectionSubtext {
-    font-size: 1rem;
+    font-size: 1.05rem;
     color: #777;
     max-width: 520px;
     margin: 0 auto;
-    line-height: 1.65;
+    line-height: 1.7;
 }
-
 .sectionSubtextLight {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.65);
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.65);
     max-width: 520px;
     margin: 0 auto;
-    line-height: 1.65;
+    line-height: 1.7;
 }
-
 .textAccent { color: #FF5A1F; }
 
 /* ═══ MISSION ═══ */
 .missionSection {
-    padding: 5rem 0;
+    padding: 5.5rem 0;
     background: white;
     position: relative;
 }
-
 .missionSection::before {
     content: '';
     position: absolute;
@@ -299,41 +270,38 @@
 
 .missionLayout {
     display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 4rem;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 4.5rem;
     align-items: center;
 }
 
-.missionLeft .sectionLabel {
-    display: block;
-    margin-bottom: 0.6rem;
-}
+.missionLeft .sectionLabel { display: block; margin-bottom: 0.75rem; }
 
 .missionHeading {
-    font-size: clamp(1.7rem, 3vw, 2.4rem);
+    font-size: clamp(1.9rem, 3.5vw, 2.7rem);
     font-weight: 900;
     color: #0A2E73;
-    letter-spacing: -0.8px;
-    margin-bottom: 1.25rem;
+    letter-spacing: -1px;
+    margin-bottom: 1.5rem;
     line-height: 1.15;
 }
 
 .missionText {
-    font-size: 0.97rem;
+    font-size: 1.05rem;
     color: #555;
-    line-height: 1.75;
-    margin-bottom: 1rem;
+    line-height: 1.8;
+    margin-bottom: 1.1rem;
+    text-align: justify;
 }
 
 .missionHighlight {
     display: flex;
     gap: 1.25rem;
-    margin-top: 1.5rem;
-    padding: 1.25rem 1.5rem;
+    margin-top: 1.75rem;
+    padding: 1.4rem 1.5rem;
     background: #f8f9fc;
     border-radius: 12px;
 }
-
 .missionHighlightBar {
     width: 3px;
     min-height: 100%;
@@ -341,13 +309,13 @@
     border-radius: 2px;
     flex-shrink: 0;
 }
-
 .missionHighlight p {
-    font-size: 0.97rem;
-    font-weight: 600;
+    font-size: 1.05rem;
+    font-weight: 700;
     color: #1A1A1A;
     line-height: 1.7;
     margin: 0;
+    text-align: justify;
 }
 
 .missionRight {
@@ -358,7 +326,7 @@
 
 .missionVisual {
     width: 100%;
-    max-width: 320px;
+    max-width: 300px;
     aspect-ratio: 1;
     background: linear-gradient(135deg, #0A2E73 0%, #1a4aa3 100%);
     border-radius: 24px;
@@ -368,7 +336,6 @@
     position: relative;
     box-shadow: 0 24px 60px rgba(10, 46, 115, 0.22);
 }
-
 .missionVisual::before {
     content: '';
     position: absolute;
@@ -384,18 +351,26 @@
     padding: 2rem;
 }
 
-.missionIcon {
-    color: rgba(255, 255, 255, 0.75);
-    margin-bottom: 1rem;
+.missionVisualLogo {
+    font-size: 3.5rem;
+    font-weight: 900;
+    letter-spacing: -2px;
+    line-height: 1;
+    color: white;
 }
-
-.missionVisualText {
-    font-size: 0.85rem;
-    opacity: 0.65;
+.missionVisualSub {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 5px;
+    color: rgba(255,255,255,0.6);
     margin-bottom: 1.25rem;
-    line-height: 1.5;
 }
-
+.missionVisualText {
+    font-size: 0.78rem;
+    opacity: 0.55;
+    margin-bottom: 1.25rem;
+    line-height: 1.6;
+}
 .missionVisualTag {
     display: inline-block;
     background: rgba(255, 90, 31, 0.25);
@@ -411,7 +386,7 @@
 
 /* ═══ VISION ═══ */
 .visionSection {
-    padding: 5rem 0;
+    padding: 5.5rem 0;
     background: #f8f9fc;
 }
 
@@ -423,148 +398,124 @@
 
 .visionCard {
     background: white;
-    padding: 2rem;
+    padding: 2.25rem 2rem;
     border-radius: 16px;
     border: 1px solid #e8ecf4;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    gap: 1.25rem;
-    align-items: flex-start;
+    border-left: 4px solid transparent;
 }
-
 .visionCard:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
     box-shadow: 0 16px 40px rgba(10, 46, 115, 0.1);
-    border-color: #0A2E73;
+    border-left-color: #FF5A1F;
 }
 
-.visionCardIcon {
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
-    background: linear-gradient(135deg, #f0f4ff, #e5edff);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #0A2E73;
-}
-
-.visionCard h3 {
-    font-size: 1.05rem;
+.visionCardContent h3 {
+    font-size: 1.2rem;
     font-weight: 800;
-    color: #1A1A1A;
-    margin-bottom: 0.4rem;
+    color: #0A2E73;
+    margin-bottom: 0.6rem;
 }
-
-.visionCard p {
-    font-size: 0.88rem;
-    color: #777;
-    line-height: 1.65;
+.visionCardContent p {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.75;
     margin: 0;
+    text-align: justify;
 }
 
 /* ═══ FEATURES ═══ */
 .featuresSection {
-    padding: 5rem 0;
+    padding: 5.5rem 0;
     background: linear-gradient(135deg, #0A2E73 0%, #0d3a8e 100%);
     position: relative;
     overflow: hidden;
 }
-
 .featuresSection::before {
     content: '';
     position: absolute;
     top: -150px; right: -150px;
     width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(255, 90, 31, 0.12), transparent 70%);
+    background: radial-gradient(circle, rgba(255,90,31,0.12), transparent 70%);
     border-radius: 50%;
 }
 
 .featuresGrid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    gap: 1.1rem;
 }
 
 .featureCard {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 1.75rem 1.5rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 2rem 1.75rem;
     border-radius: 16px;
     color: white;
     transition: all 0.3s ease;
 }
-
 .featureCard:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255,255,255,0.1);
     border-color: rgba(255, 90, 31, 0.4);
     transform: translateY(-4px);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.2);
 }
 
-.featureCardIcon {
-    width: 44px;
-    height: 44px;
-    background: rgba(255, 90, 31, 0.12);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #FF8C5A;
-    margin-bottom: 1rem;
+.featureCardNum {
+    font-size: 2rem;
+    font-weight: 900;
+    color: rgba(255, 90, 31, 0.4);
+    line-height: 1;
+    margin-bottom: 0.75rem;
+    letter-spacing: -1px;
 }
 
 .featureCard h3 {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.6rem;
     color: white;
 }
-
 .featureCard p {
-    font-size: 0.85rem;
-    opacity: 0.65;
-    line-height: 1.65;
-    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    opacity: 0.7;
+    line-height: 1.7;
+    margin-bottom: 1.25rem;
+    text-align: justify;
 }
-
 .featureCardTag {
     display: inline-block;
     background: rgba(255, 90, 31, 0.15);
     border: 1px solid rgba(255, 90, 31, 0.25);
     color: #ffb08c;
-    padding: 3px 10px;
+    padding: 4px 12px;
     border-radius: 50px;
-    font-size: 0.7rem;
-    font-weight: 600;
+    font-size: 0.72rem;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 /* ═══ VALUES ═══ */
 .valuesSection {
-    padding: 5rem 0;
+    padding: 5.5rem 0;
     background: white;
 }
 
 .valuesGrid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
+    gap: 1.1rem;
 }
 
 .valueCard {
-    padding: 2rem 1.5rem;
+    padding: 2.25rem 1.75rem;
     border-radius: 18px;
-    border: 1.5px solid #f0f0f0;
-    text-align: center;
+    border: 1.5px solid #ededf0;
     transition: all 0.35s ease;
     position: relative;
     overflow: hidden;
 }
-
 .valueCard::before {
     content: '';
     position: absolute;
@@ -573,7 +524,6 @@
     opacity: 0;
     transition: opacity 0.35s ease;
 }
-
 .valueCard:hover::before { opacity: 1; }
 .valueCard:hover {
     border-color: transparent;
@@ -582,69 +532,51 @@
 }
 
 .valueNumber {
-    position: absolute;
-    top: 1rem; right: 1rem;
-    font-size: 2rem;
-    font-weight: 900;
-    color: #f0f4ff;
-    line-height: 1;
-    z-index: 1;
-    transition: color 0.35s ease;
-}
-.valueCard:hover .valueNumber { color: rgba(255,255,255,0.1); }
-
-.valueIcon {
     position: relative;
     z-index: 1;
-    width: 60px; height: 60px;
-    background: linear-gradient(135deg, #f0f4ff, #e5edff);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-    color: #0A2E73;
-    transition: all 0.35s ease;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #FF5A1F;
+    letter-spacing: 2px;
+    margin-bottom: 0.75rem;
+    transition: color 0.35s ease;
 }
-.valueCard:hover .valueIcon {
-    background: rgba(255,255,255,0.15);
-    color: white;
-}
+.valueCard:hover .valueNumber { color: rgba(255, 90, 31, 0.7); }
 
 .valueCard h3 {
     position: relative; z-index: 1;
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     font-weight: 800;
     color: #1A1A1A;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.6rem;
     transition: color 0.35s ease;
 }
 .valueCard:hover h3 { color: white; }
 
 .valueCard p {
     position: relative; z-index: 1;
-    font-size: 0.85rem;
-    color: #888;
-    line-height: 1.6;
+    font-size: 0.95rem;
+    color: #777;
+    line-height: 1.7;
     margin: 0;
     transition: color 0.35s ease;
+    text-align: justify;
 }
 .valueCard:hover p { color: rgba(255,255,255,0.75); }
 
 /* ═══ INNOVATE ═══ */
 .innovateSection {
-    padding: 5rem 0;
+    padding: 5.5rem 0;
     background: #0d0d0d;
     position: relative;
     overflow: hidden;
 }
-
 .innovateSection::before {
     content: '';
     position: absolute;
     bottom: -200px; left: -150px;
     width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(10, 46, 115, 0.35), transparent 65%);
+    background: radial-gradient(circle, rgba(10,46,115,0.35), transparent 65%);
     border-radius: 50%;
 }
 
@@ -664,27 +596,26 @@
     color: #FF8C5A;
     padding: 5px 14px;
     border-radius: 50px;
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 2px;
     margin-bottom: 1.25rem;
     text-transform: uppercase;
 }
-
 .innovateTitle {
-    font-size: clamp(1.7rem, 3vw, 2.4rem);
+    font-size: clamp(1.9rem, 3.5vw, 2.7rem);
     font-weight: 900;
     color: white;
-    letter-spacing: -0.8px;
+    letter-spacing: -1px;
     margin-bottom: 1.25rem;
     line-height: 1.2;
 }
-
 .innovateText {
-    font-size: 0.93rem;
-    color: rgba(255, 255, 255, 0.55);
-    line-height: 1.75;
+    font-size: 1rem;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.8;
     margin-bottom: 0.75rem;
+    text-align: justify;
 }
 
 .innovateFeature {
@@ -692,15 +623,14 @@
     gap: 1rem;
     align-items: flex-start;
     padding: 1.1rem 1.25rem;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
     border-radius: 12px;
     margin-bottom: 0.75rem;
     transition: all 0.25s ease;
 }
-
 .innovateFeature:hover {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255,255,255,0.06);
     border-color: rgba(255, 90, 31, 0.25);
 }
 
@@ -714,65 +644,60 @@
     justify-content: center;
     color: white;
     font-weight: 900;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
 }
-
 .innovateFeature strong {
     display: block;
     color: white;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     margin-bottom: 0.15rem;
 }
-
 .innovateFeature p {
-    color: rgba(255, 255, 255, 0.45);
-    font-size: 0.8rem;
+    color: rgba(255,255,255,0.45);
+    font-size: 0.83rem;
     margin: 0;
     line-height: 1.5;
 }
 
 /* ═══ CTA ═══ */
 .ctaSection {
-    padding: 6rem 0;
+    padding: 6.5rem 0;
     background: linear-gradient(135deg, #0A2E73 0%, #071a4a 100%);
     position: relative;
     overflow: hidden;
     text-align: center;
 }
-
 .ctaGlow {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     width: 600px; height: 600px;
-    background: radial-gradient(circle, rgba(255, 90, 31, 0.15), transparent 65%);
+    background: radial-gradient(circle, rgba(255,90,31,0.15), transparent 65%);
     border-radius: 50%;
 }
-
 .ctaContent { position: relative; z-index: 1; }
 
 .ctaBadge {
     display: inline-block;
-    background: rgba(255, 90, 31, 0.15);
-    border: 1px solid rgba(255, 90, 31, 0.35);
+    background: rgba(255,90,31,0.15);
+    border: 1px solid rgba(255,90,31,0.35);
     color: #FF8C5A;
     padding: 5px 16px;
     border-radius: 50px;
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     font-weight: 800;
     letter-spacing: 2.5px;
     margin-bottom: 1.5rem;
 }
 
 .ctaTitle {
-    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-size: clamp(2.2rem, 5.5vw, 4rem);
     font-weight: 900;
     color: white;
     letter-spacing: -1.5px;
     line-height: 1.1;
-    margin-bottom: 1rem;
+    margin-bottom: 1.1rem;
 }
-
 .ctaTitle span {
     background: linear-gradient(90deg, #FF5A1F, #ff8c00);
     -webkit-background-clip: text;
@@ -781,11 +706,11 @@
 }
 
 .ctaText {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.65);
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.65);
     max-width: 520px;
     margin: 0 auto 2.5rem;
-    line-height: 1.75;
+    line-height: 1.8;
 }
 
 .ctaButtons {
@@ -798,35 +723,30 @@
 .ctaBtn {
     background: linear-gradient(135deg, #FF5A1F, #ff8c00);
     color: white;
-    padding: 0.85rem 2.25rem;
+    padding: 0.9rem 2.5rem;
     border-radius: 50px;
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     text-decoration: none;
     transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(255, 90, 31, 0.35);
+    box-shadow: 0 6px 20px rgba(255,90,31,0.35);
 }
-
-.ctaBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 14px 35px rgba(255, 90, 31, 0.45);
-}
+.ctaBtn:hover { transform: translateY(-2px); box-shadow: 0 14px 35px rgba(255,90,31,0.45); }
 
 .ctaBtnOutline {
     background: transparent;
-    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    border: 1.5px solid rgba(255,255,255,0.25);
     color: white;
-    padding: 0.85rem 2.25rem;
+    padding: 0.9rem 2.5rem;
     border-radius: 50px;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     text-decoration: none;
     transition: all 0.3s ease;
 }
-
 .ctaBtnOutline:hover {
-    border-color: rgba(255, 255, 255, 0.5);
-    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.06);
     transform: translateY(-2px);
 }
 
@@ -835,7 +755,6 @@
     from { opacity: 0; transform: translateY(24px); }
     to { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes fadeDown {
     from { opacity: 0; transform: translateY(-16px); }
     to { opacity: 1; transform: translateY(0); }
@@ -850,12 +769,11 @@
 @media (max-width: 768px) {
     .statsGrid { grid-template-columns: repeat(2, 1fr); }
     .statCard { border-right: none; border-bottom: 1px solid #f0f0f0; }
-    .missionLayout, .innovateLayout { grid-template-columns: 1fr; gap: 2rem; }
+    .missionLayout, .innovateLayout { grid-template-columns: 1fr; gap: 2.5rem; }
     .missionRight { display: none; }
     .visionGrid { grid-template-columns: 1fr; }
     .featuresGrid { grid-template-columns: 1fr; }
     .valuesGrid { grid-template-columns: repeat(2, 1fr); }
-    .heroTitle { font-size: 2.4rem; }
     .heroActions, .ctaButtons { flex-direction: column; align-items: center; }
     .navBar { position: fixed; top: 1rem; left: 1rem; }
 }
