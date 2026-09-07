@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import jsPDF from 'jspdf';
 import QRCode from 'qrcode';
 import { v4 as uuidv4 } from 'uuid';
+import { getCategoryColor, getOverlayedImage } from '@/lib/ticketUtils';
 
 interface PhysicalTicketGeneratorProps {
     isOpen: boolean;
@@ -72,65 +73,120 @@ export default function PhysicalTicketGenerator({ isOpen, onClose }: PhysicalTic
         setCategories(categories.filter((_, i) => i !== index));
     };
 
-    const drawTicket = async (doc: jsPDF, x: number, y: number, width: number, height: number, ticket: any, eventData: any, bgBase64: string | null) => {
-        // Draw border
-        doc.setDrawColor(200, 200, 200);
-        doc.rect(x, y, width, height);
-
-        // Draw background image on the top half (or top 45%)
-        const imgHeight = height * 0.45;
-        if (bgBase64) {
-            try {
-                doc.addImage(bgBase64, 'JPEG', x, y, width, imgHeight);
-            } catch (e) {
-                doc.setFillColor(240, 240, 240);
-                doc.rect(x, y, width, imgHeight, 'F');
-            }
+    const drawTicket = async (doc: jsPDF, offsetX: number, offsetY: number, ticket: any, eventData: any, stripVisualBase64: string | null) => {
+        const colors = getCategoryColor(ticket.category);
+        
+        // Background Header (Left Strip)
+        if (stripVisualBase64) {
+            doc.addImage(stripVisualBase64, "JPEG", offsetX, offsetY, 40, 80);
         } else {
-            doc.setFillColor(240, 240, 240);
-            doc.rect(x, y, width, imgHeight, 'F');
+            doc.setFillColor(colors.bg[0], colors.bg[1], colors.bg[2]);
+            doc.rect(offsetX, offsetY, 40, 80, "F");
         }
-        
-        let currentY = y + imgHeight + 8;
-        
-        // Title
-        doc.setTextColor(30, 30, 30);
-        doc.setFontSize(13);
-        doc.setFont("helvetica", "bold");
-        const titleLines = doc.splitTextToSize(eventData.title.toUpperCase(), width - 10);
-        doc.text(titleLines, x + width/2, currentY, { align: "center" });
-        
-        currentY += (titleLines.length * 5.5) + 4;
 
-        // Details (Date, Location, Organizer)
+        doc.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        const titleLines = doc.splitTextToSize(eventData.title.toUpperCase(), 60);
+        doc.text(titleLines, offsetX + 15, offsetY + 40, { angle: 90, align: "center" });
+
+        // Main Content
+        doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]); // Main accent color
+        doc.setFont("helvetica", "bold");
+        
+        // Wrap Title to avoid overlap with Ticket No
+        const rawTitle = eventData.title.toUpperCase();
+        const isLongTitle = rawTitle.length > 20;
+        doc.setFontSize(isLongTitle ? 13 : 15);
+        const mainTitleLines = doc.splitTextToSize(rawTitle, 58);
+        doc.text(mainTitleLines, offsetX + 45, offsetY + 12);
+        
         doc.setFontSize(9);
         doc.setFont("helvetica", "normal");
-        doc.setTextColor(80, 80, 80);
-        doc.text(`Date: ${eventData.date} à ${eventData.time}`, x + 10, currentY);
-        currentY += 5;
-        doc.text(`Lieu: ${eventData.location}`, x + 10, currentY);
-        currentY += 5;
-        doc.text(`Org: ${eventData.organizer}`, x + 10, currentY);
+        doc.setTextColor(80, 80, 80); // Softer grey for date
+        
+        let dateStr = "Date à préciser";
+        if (eventData.date) {
+            dateStr = eventData.date;
+            if (eventData.time) {
+                dateStr += ` à ${eventData.time}`;
+            }
+        }
+        
+        const titleOffset = Math.min(mainTitleLines.length * 6, 15);
+        doc.text(dateStr, offsetX + 45, offsetY + 12 + titleOffset);
 
-        // Category & Price
-        currentY += 9;
-        doc.setFontSize(11);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(247, 147, 30); // Orange ITA Arena
-        doc.text(`${ticket.category.toUpperCase()} - ${Number(ticket.amount).toLocaleString()} F CFA`, x + width/2, currentY, { align: "center" });
-
-        // QR Code
-        const qrDataUrl = await QRCode.toDataURL(ticket.qr_code_key, { margin: 1, width: 150 });
-        const qrSize = 32;
-        const qrX = x + (width - qrSize) / 2;
-        const qrY = currentY + 4;
-        doc.addImage(qrDataUrl, 'PNG', qrX, qrY, qrSize, qrSize);
-
-        // Ticket ID / Serial
-        doc.setFontSize(7);
-        doc.setFont("helvetica", "normal");
+        // QR Code Section
+        const qrDataUrl = await QRCode.toDataURL(ticket.qr_code_key, {
+            margin: 1,
+            width: 400,
+            color: { dark: '#1a1a1a', light: '#ffffff' }
+        });
+        doc.addImage(qrDataUrl, "PNG", offsetX + 110, offsetY + 25, 40, 40);
         doc.setTextColor(150, 150, 150);
-        doc.text(`ID: ${ticket.qr_code_key}`, x + width/2, qrY + qrSize + 4, { align: "center" });
+        doc.setFontSize(7);
+        doc.text("SCANNEZ A L'ENTREE", offsetX + 130, offsetY + 68, { align: "center" });
+
+        // Category and Price
+        doc.setTextColor(120, 120, 120); // Labels in grey
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "normal");
+        doc.text("CATEGORIE", offsetX + 45, offsetY + 42);
+        
+        doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]); // Values in category color
+        doc.setFont("helvetica", "bold");
+        const catName = ticket.category.toUpperCase();
+        
+        const isLongCat = catName.length > 12;
+        doc.setFontSize(isLongCat ? 9 : 11);
+        const catLines = doc.splitTextToSize(catName, 32); 
+        doc.text(catLines, offsetX + 45, offsetY + 47);
+
+        doc.setTextColor(120, 120, 120);
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "normal");
+        doc.text("PRIX", offsetX + 82, offsetY + 42);
+        
+        doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]);
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text(`${Number(ticket.amount).toLocaleString()} F CFA`, offsetX + 82, offsetY + 47);
+
+        // Buyer
+        doc.setTextColor(120, 120, 120);
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "normal");
+        doc.text("ACHETEUR", offsetX + 45, offsetY + 60);
+        
+        doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]);
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        const buyerName = (ticket.user_name || ticket.user_email || "Client").toUpperCase();
+        const buyerLines = doc.splitTextToSize(buyerName, 55);
+        doc.text(buyerLines, offsetX + 45, offsetY + 65);
+
+        // Dotted Separator
+        doc.setDrawColor(200, 200, 200);
+        doc.setLineDashPattern([1, 1], 0);
+        doc.line(offsetX + 105, offsetY + 0, offsetX + 105, offsetY + 80);
+        
+        // Ticket Number
+        doc.setTextColor(255, 90, 31); // Keep Orange for Ticket No as it's the brand color
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "normal");
+        doc.text("TICKET N", offsetX + 130, offsetY + 12, { align: "center" });
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text(`#${String(ticket.ticket_number || 0).padStart(5, '0')}`, offsetX + 130, offsetY + 19, { align: "center" });
+
+        doc.setTextColor(200, 200, 200);
+        doc.setFontSize(8);
+        doc.text("ITA Arena", offsetX + 75, offsetY + 75, { align: "center" });
+        
+        // Draw standard border to cut out
+        doc.setDrawColor(200, 200, 200);
+        doc.setLineDashPattern([0, 0], 0); // solid border
+        doc.rect(offsetX, offsetY, 160, 80);
     };
 
     const getBase64Image = async (url: string): Promise<string | null> => {
@@ -221,28 +277,36 @@ export default function PhysicalTicketGenerator({ isOpen, onClose }: PhysicalTic
                 format: 'a4'
             });
 
-            const bgBase64 = formData.image_url ? await getBase64Image(formData.image_url) : null;
+            // Group tickets by category to optimize image loading
+            let currentStripBase64: string | null = null;
+            let currentCategoryStr: string | null = null;
             
             const pageWidth = 210;
             const pageHeight = 297;
-            const cols = 2;
-            const rows = 2;
-            const ticketW = pageWidth / cols;
-            const ticketH = pageHeight / rows;
-
+            const ticketW = 160;
+            const ticketH = 80;
+            const offsetX = (pageWidth - ticketW) / 2; // Center horizontally (25mm)
+            const marginY = 15;
+            const gapY = 10;
+            
             for (let i = 0; i < insertedTickets.length; i++) {
-                if (i > 0 && i % 4 === 0) {
+                if (i > 0 && i % 3 === 0) {
                     doc.addPage();
                 }
                 
-                const posOnPage = i % 4;
-                const col = posOnPage % 2; // 0 or 1
-                const row = Math.floor(posOnPage / 2); // 0 or 1
-                
-                const x = col * ticketW;
-                const y = row * ticketH;
+                const posOnPage = i % 3;
+                const offsetY = marginY + (posOnPage * (ticketH + gapY));
 
-                await drawTicket(doc, x, y, ticketW, ticketH, insertedTickets[i], formData, bgBase64);
+                const currentTicket = insertedTickets[i];
+                
+                // Fetch the background image colored specifically for this ticket's category
+                if (currentCategoryStr !== currentTicket.category) {
+                    currentCategoryStr = currentTicket.category;
+                    const c = getCategoryColor(currentCategoryStr!);
+                    currentStripBase64 = formData.image_url ? await getOverlayedImage(formData.image_url, 400, 800, c.bg) : null;
+                }
+
+                await drawTicket(doc, offsetX, offsetY, currentTicket, formData, currentStripBase64);
             }
 
             doc.save(`Tickets_Physiques_${formData.title.replace(/\s+/g, '_')}.pdf`);

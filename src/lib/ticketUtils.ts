@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import QRCode from "qrcode";
 
-const getCategoryColor = (cat: string) => {
+export const getCategoryColor = (cat: string) => {
     const c = cat.toLowerCase();
     if (c.includes('vvip')) return { bg: [88, 28, 135], text: [255, 255, 255] }; // Purple
     if (c.includes('vip')) return { bg: [180, 83, 9], text: [255, 255, 255] }; // Amber/Gold
@@ -11,7 +11,7 @@ const getCategoryColor = (cat: string) => {
     return { bg: [26, 26, 26], text: [255, 255, 255] }; // Default Dark
 };
 
-const getOverlayedImage = async (url: string, width: number, height: number, overlayColor: number[]): Promise<string | null> => {
+export const getOverlayedImage = async (url: string, width: number, height: number, overlayColor: number[]): Promise<string | null> => {
     if (typeof window === 'undefined') return null;
     try {
         return await new Promise((resolve, reject) => {
