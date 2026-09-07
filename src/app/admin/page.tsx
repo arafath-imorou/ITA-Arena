@@ -11,6 +11,7 @@ import { downloadCotisationInvoice } from "@/lib/invoiceUtils";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import UsersTab from "./UsersTab";
+import PhysicalTicketGenerator from "@/components/Admin/PhysicalTicketGenerator";
 
 function AdminDashboardContent() {
     const { user } = useAuth();
@@ -37,6 +38,7 @@ function AdminDashboardContent() {
         amount: 0
     });
     const [isSavingManual, setIsSavingManual] = useState(false);
+    const [isTicketGeneratorOpen, setIsTicketGeneratorOpen] = useState(false);
 
     // Filter states
     const [filters, setFilters] = useState({
@@ -500,7 +502,22 @@ function AdminDashboardContent() {
                         ⚙️ Utilisateurs
                     </button>
                 )}
+                {userRole === 'super_admin' && (
+                    <button 
+                        onClick={() => setIsTicketGeneratorOpen(true)} 
+                        style={{ 
+                            background: '#ff5a1f', color: 'white', border: 'none', padding: '0.6rem 1.2rem', 
+                            fontSize: '0.95rem', fontWeight: 'bold', cursor: 'pointer', borderRadius: '8px',
+                            marginLeft: 'auto', alignSelf: 'center', display: 'flex', alignItems: 'center', gap: '0.5rem',
+                            boxShadow: '0 4px 6px rgba(255, 90, 31, 0.2)'
+                        }}
+                    >
+                        🎟️ Générer des tickets physiques
+                    </button>
+                )}
             </div>
+
+            <PhysicalTicketGenerator isOpen={isTicketGeneratorOpen} onClose={() => setIsTicketGeneratorOpen(false)} />
 
             {mainTab === 'users' && userRole === 'super_admin' ? (<UsersTab />) : mainTab === 'overview' ? (
                 <>
