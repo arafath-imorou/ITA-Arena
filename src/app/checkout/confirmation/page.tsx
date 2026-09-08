@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import styles from "./Confirmation.module.css";
 import Link from "next/link";
-import { downloadTicket } from "@/lib/ticketUtils";
+import { downloadTicket, downloadBulkTicketsPDF } from "@/lib/ticketUtils";
 import { downloadCotisationInvoice } from "@/lib/invoiceUtils";
 import QRCode from "qrcode";
 
@@ -72,11 +72,8 @@ function ConfirmationContent() {
     };
 
     const downloadAllTickets = async () => {
-        for (const ticket of tickets) {
-            await downloadSingleTicket(ticket);
-            // Small delay to avoid browser blocking multiple downloads
-            await new Promise(r => setTimeout(r, 500));
-        }
+        if (!event) return;
+        await downloadBulkTicketsPDF(tickets, event);
     };
 
     if (loading) return (

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { downloadTicket } from "@/lib/ticketUtils";
+import { downloadTicket, downloadBulkTicketsPDF } from "@/lib/ticketUtils";
 import { downloadCotisationInvoice } from "@/lib/invoiceUtils";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -1269,10 +1269,7 @@ function AdminDashboardContent() {
                                         <button 
                                             onClick={async () => {
                                                 const eventTickets = rawTickets.filter(t => t.event_id === selectedEvent.id);
-                                                for (const t of eventTickets) {
-                                                    await downloadTicket(t, selectedEvent);
-                                                    await new Promise(r => setTimeout(r, 500));
-                                                }
+                                                await downloadBulkTicketsPDF(eventTickets, selectedEvent);
                                             }}
                                             className={styles.badge}
                                             style={{ background: '#ff5a1f', color: 'white', border: 'none', cursor: 'pointer' }}
