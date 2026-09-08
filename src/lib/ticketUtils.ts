@@ -201,3 +201,170 @@ export const downloadTicket = async (ticket: any, event: any) => {
         doc.save(`Ticket_ITA_${ticket.ticket_number}.pdf`);
     }
 };
+
+
+export const drawTicketOnDoc = async (doc: jsPDF, offsetX: number, offsetY: number, ticket: any, eventData: any, stripVisualBase64: string | null) => {
+    const colors = getCategoryColor(ticket.category);
+    
+    // Background Header (Left Strip)
+    if (stripVisualBase64) {
+        doc.addImage(stripVisualBase64, "JPEG", offsetX, offsetY, 40, 80);
+    } else {
+        doc.setFillColor(colors.bg[0], colors.bg[1], colors.bg[2]);
+        doc.rect(offsetX, offsetY, 40, 80, "F");
+    }
+
+    doc.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    const titleLines = doc.splitTextToSize((eventData.title || "").toUpperCase(), 60);
+    doc.text(titleLines, offsetX + 15, offsetY + 40, { angle: 90, align: "center" });
+
+    // Main Content
+    doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]); // Main accent color
+    doc.setFont("helvetica", "bold");
+    
+    const rawTitle = (eventData.title || "").toUpperCase();
+    const isLongTitle = rawTitle.length > 20;
+    doc.setFontSize(isLongTitle ? 13 : 15);
+    const mainTitleLines = doc.splitTextToSize(rawTitle, 58);
+    doc.text(mainTitleLines, offsetX + 45, offsetY + 12);
+    
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(80, 80, 80); // Softer grey for date
+    
+    let dateStr = "Date à préciser";
+    if (eventData.date) {
+        dateStr = eventData.date;
+        if (eventData.time) {
+            dateStr += ` à ${eventData.time}`;
+        }
+    } else if (eventData.created_at) {
+        const d = new Date(eventData.created_at);
+        dateStr = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+    
+    const titleOffset = Math.min(mainTitleLines.length * 6, 15);
+    doc.text(dateStr, offsetX + 45, offsetY + 12 + titleOffset);
+
+    // QR Code Section
+    const qrDataUrl = await QRCode.toDataURL(ticket.qr_code_key || "invalid", {
+        margin: 1,
+        width: 400,
+        color: { dark: '#1a1a1a', light: '#ffffff' }
+    });
+    doc.addImage(qrDataUrl, "PNG", offsetX + 110, offsetY + 25, 40, 40);
+    doc.setTextColor(150, 150, 150);
+    doc.setFontSize(7);
+    doc.text("SCANNEZ A L'ENTREE", offsetX + 130, offsetY + 68, { align: "center" });
+
+    // Category and Price
+    doc.setTextColor(120, 120, 120);
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.text("CATEGORIE", offsetX + 45, offsetY + 42);
+    
+    doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]);
+    doc.setFont("helvetica", "bold");
+    const catName = (ticket.category || "Standard").toUpperCase();
+    
+    const isLongCat = catName.length > 12;
+    doc.setFontSize(isLongCat ? 9 : 11);
+    const catLines = doc.splitTextToSize(catName, 32); 
+    doc.text(catLines, offsetX + 45, offsetY + 47);
+
+    doc.setTextColor(120, 120, 120);
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.text("PRIX", offsetX + 82, offsetY + 42);
+    
+    doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.text(`${Number(ticket.amount || 0).toLocaleString()} F CFA`, offsetX + 82, offsetY + 47);
+
+    // Buyer
+    doc.setTextColor(120, 120, 120);
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.text("ACHETEUR", offsetX + 45, offsetY + 60);
+    
+    doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    const buyerName = (ticket.user_name || ticket.user_email || "Client").toUpperCase();
+    const buyerLines = doc.splitTextToSize(buyerName, 55);
+    doc.text(buyerLines, offsetX + 45, offsetY + 65);
+
+    // Dotted Separator
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineDashPattern([1, 1], 0);
+    doc.line(offsetX + 105, offsetY + 0, offsetX + 105, offsetY + 80);
+    
+    // Ticket Number
+    doc.setTextColor(255, 90, 31);
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.text("TICKET N", offsetX + 130, offsetY + 12, { align: "center" });
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text(`#${String(ticket.ticket_number || 0).padStart(5, '0')}`, offsetX + 130, offsetY + 19, { align: "center" });
+
+    doc.setTextColor(200, 200, 200);
+    doc.setFontSize(8);
+    doc.text("ITA Arena", offsetX + 75, offsetY + 75, { align: "center" });
+    
+    // Draw standard border to cut out
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineDashPattern([0, 0], 0);
+    doc.rect(offsetX, offsetY, 160, 80);
+};
+
+export const generateBulkTicketsPDF = async (tickets: any[], event: any) => {
+    if (!tickets || tickets.length === 0 || !event) return null;
+
+    const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+    });
+
+    let currentStripBase64: string | null = null;
+    let currentCategoryStr: string | null = null;
+    
+    const pageWidth = 210;
+    const ticketW = 160;
+    const ticketH = 80;
+    const offsetX = (pageWidth - ticketW) / 2; // Center horizontally (25mm)
+    const marginY = 15;
+    const gapY = 10;
+    
+    for (let i = 0; i < tickets.length; i++) {
+        if (i > 0 && i % 3 === 0) {
+            doc.addPage();
+        }
+        
+        const posOnPage = i % 3;
+        const offsetY = marginY + (posOnPage * (ticketH + gapY));
+
+        const currentTicket = tickets[i];
+        
+        if (currentCategoryStr !== currentTicket.category) {
+            currentCategoryStr = currentTicket.category;
+            const c = getCategoryColor(currentCategoryStr || '');
+            currentStripBase64 = event.image_url ? await getOverlayedImage(event.image_url, 400, 800, c.bg) : null;
+        }
+
+        await drawTicketOnDoc(doc, offsetX, offsetY, currentTicket, event, currentStripBase64);
+    }
+
+    return doc;
+};
+
+export const downloadBulkTicketsPDF = async (tickets: any[], event: any) => {
+    const doc = await generateBulkTicketsPDF(tickets, event);
+    if (doc) {
+        doc.save(`Tickets_Tous_${event.title.replace(/\s+/g, '_')}.pdf`);
+    }
+};
