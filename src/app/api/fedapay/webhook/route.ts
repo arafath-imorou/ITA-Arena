@@ -25,6 +25,7 @@ export async function POST(request: Request) {
         if (eventType === 'transaction.approved' && entity && (entity.status === 'approved' || entity.status === 'successful')) {
             const transactionId = entity.id;
             const voteId = customMetadata?.vote_id;
+            const checkoutSessionId = customMetadata?.checkout_session_id;
 
             if (voteId) {
                 const { error } = await supabase.from('votes_cast')
@@ -39,6 +40,12 @@ export async function POST(request: Request) {
                 } else {
                     console.log(`Webhook: Vote ${voteId} validated via FedaPay webhook.`);
                 }
+            } else if (checkoutSessionId) {
+                const { error } = await supabase.from('tickets')
+                    .update({ status: 'valid' })
+                    .eq('checkout_session_id', checkoutSessionId);
+                if (error) console.error('Webhook: Error updating tickets', error);
+                else console.log(`Webhook: Tickets for session ${checkoutSessionId} validated.`);
             } else if (transactionId) {
                 await supabase.from('votes_cast')
                     .update({ status: 'valid' })
@@ -48,12 +55,18 @@ export async function POST(request: Request) {
         } else if (['transaction.canceled', 'transaction.refunded'].includes(eventType) || (entity && ['canceled', 'refunded'].includes(entity.status))) {
             const transactionId = entity?.id;
             const voteId = customMetadata?.vote_id;
+            const checkoutSessionId = customMetadata?.checkout_session_id;
 
             if (voteId) {
                 await supabase.from('votes_cast')
                     .update({ status: 'cancelled' })
                     .eq('id', voteId);
                 console.log(`Webhook: Vote ${voteId} marked as cancelled.`);
+            } else if (checkoutSessionId) {
+                await supabase.from('tickets')
+                    .update({ status: 'cancelled' })
+                    .eq('checkout_session_id', checkoutSessionId);
+                console.log(`Webhook: Tickets for session ${checkoutSessionId} marked as cancelled.`);
             } else if (transactionId) {
                 await supabase.from('votes_cast')
                     .update({ status: 'cancelled' })

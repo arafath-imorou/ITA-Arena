@@ -237,27 +237,85 @@ function CheckoutContent() {
                     }
                 };
 
-                // @ts-ignore
-                if (window.FedaPay) {
-                    try {
-                        // @ts-ignore
-                        const checkout = window.FedaPay.init(fedaConfig);
-                        checkout.open();
-                    } catch (fedaErr: any) {
-                        console.error("FedaPay Error:", fedaErr);
-                        alert("Erreur technique lors du lancement du paiement : " + (fedaErr.message || "Erreur inconnue"));
+                                if (paymentMethod === 'card') {
+                    // Use standard FedaPay widget for card payments
+                    // @ts-ignore
+                    if (window.FedaPay) {
+                        try {
+                            // @ts-ignore
+                            const checkout = window.FedaPay.init(fedaConfig);
+                            checkout.open();
+                        } catch (fedaErr: any) {
+                            console.error("FedaPay Error:", fedaErr);
+                            alert("Erreur technique lors du lancement du paiement : " + (fedaErr.message || "Erreur inconnue"));
+                            setIsProcessing(false);
+                        }
+                    } else {
+                        alert("Le module de paiement n'est pas encore prêt. Veuillez patienter un instant.");
+                        setIsProcessing(false);
                     }
                 } else {
-                    alert("Le module de paiement n'est pas encore prêt. Veuillez patienter un instant.");
-                    setIsProcessing(false);
+                    // Direct API push for mobile money
+                    try {
+                        const directRes = await fetch('/api/fedapay/direct', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                amount: total,
+                                description: `Achat de tickets - ${eventName}`,
+                                custom_metadata: fedaConfig.transaction.custom_metadata,
+                                customer: fedaConfig.customer,
+                                method: fedaConfig.method
+                            })
+                        });
+
+                        const directData = await directRes.json();
+                        
+                        if (!directRes.ok || !directData.success) {
+                            alert(directData.error || "Erreur lors du déclenchement du paiement mobile.");
+                            setIsProcessing(false);
+                            return;
+                        }
+
+                        alert("Paiement initié ! Veuillez valider le retrait sur votre téléphone.");
+                        
+                        // Polling for success
+                        const pollInterval = setInterval(async () => {
+                            const { data, error } = await supabase
+                                .from('tickets')
+                                .select('status')
+                                .eq('checkout_session_id', checkoutSessionId)
+                                .limit(1);
+                                
+                            if (!error && data && data.length > 0) {
+                                if (data[0].status === 'valid') {
+                                    clearInterval(pollInterval);
+                                    router.push(`/checkout/confirmation?session=${checkoutSessionId}&event=${eventId}`);
+                                } else if (data[0].status === 'cancelled') {
+                                    clearInterval(pollInterval);
+                                    alert("Le paiement a été annulé ou a échoué.");
+                                    setIsProcessing(false);
+                                }
+                            }
+                        }, 3000);
+                        
+                        // Timeout after 3 minutes
+                        setTimeout(() => {
+                            clearInterval(pollInterval);
+                            setIsProcessing(false);
+                        }, 180000);
+
+                    } catch (err: any) {
+                        console.error("Direct payment error:", err);
+                        alert("Erreur de connexion.");
+                        setIsProcessing(false);
+                    }
                 }
             }
         } catch (err: any) {
             console.error("Erreur de réservation:", err);
             alert(`Une erreur est survenue: ${err.message || "Erreur inconnue"}`);
-        } finally {
-            setIsProcessing(false);
-        }
+        } finally { /* isProcessing managed individually */ }
     };
 
     const countryData = [
