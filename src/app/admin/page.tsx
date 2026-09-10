@@ -56,7 +56,22 @@ function AdminDashboardContent() {
         try {
             const { data: profilesData } = await supabase.from('profiles').select('*');
             const { data: eventsData } = await supabase.from('events_with_stats').select('*').or('category_id.neq.physical_event,category_id.is.null').order('created_at', { ascending: false });
-            const { data: ticketsData } = await supabase.from('tickets').select('*').in('status', ['valid', 'checked-in', 'used']).order('created_at', { ascending: false });
+            
+              let ticketsData: any[] = [];
+              let hasMoreTickets = true;
+              let tStart = 0;
+              const tStep = 1000;
+              while (hasMoreTickets) {
+                  const { data: pageTickets } = await supabase.from('tickets').select('*').in('status', ['valid', 'checked-in', 'used']).order('created_at', { ascending: false }).range(tStart, tStart + tStep - 1);
+                  if (pageTickets && pageTickets.length > 0) {
+                      ticketsData = ticketsData.concat(pageTickets);
+                      tStart += tStep;
+                      if (pageTickets.length < tStep) hasMoreTickets = false;
+                  } else {
+                      hasMoreTickets = false;
+                  }
+              }
+
             const { data: campaignsData } = await supabase.from('support_campaigns').select('*').order('created_at', { ascending: false });
             const { data: formsData } = await supabase.from('forms').select('*').order('created_at', { ascending: false });
             

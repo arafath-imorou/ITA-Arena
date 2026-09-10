@@ -37,12 +37,28 @@ function DashboardContent() {
 
                 if (data) {
                     const eventIds = data.map(e => e.id);
-                    const { data: tData } = await supabase
-                        .from('tickets')
-                        .select('*')
-                        .in('status', ['valid', 'checked-in', 'used'])
-                        .in('event_id', eventIds);
-                    const tickets = tData || [];
+                    
+                    let tickets: any[] = [];
+                    let hasMoreOrgTickets = true;
+                    let orgTStart = 0;
+                    const orgTStep = 1000;
+                    while (hasMoreOrgTickets) {
+                        const { data: pageTickets } = await supabase
+                            .from('tickets')
+                            .select('*')
+                            .in('status', ['valid', 'checked-in', 'used'])
+                            .in('event_id', eventIds)
+                            .range(orgTStart, orgTStart + orgTStep - 1);
+                        
+                        if (pageTickets && pageTickets.length > 0) {
+                            tickets = tickets.concat(pageTickets);
+                            orgTStart += orgTStep;
+                            if (pageTickets.length < orgTStep) hasMoreOrgTickets = false;
+                        } else {
+                            hasMoreOrgTickets = false;
+                        }
+                    }
+
                     setRawTickets(tickets);
 
                     const enhancedData = data.map(e => {
