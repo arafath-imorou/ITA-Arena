@@ -221,9 +221,8 @@ export const drawTicketOnDoc = async (doc: jsPDF, offsetX: number, offsetY: numb
     doc.text(titleLines, offsetX + 15, offsetY + 40, { angle: 90, align: "center" });
 
     // Main Content
-    doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]); // Main accent color
+    doc.setTextColor(255, 0, 0); // Event name in RED
     doc.setFont("helvetica", "bold");
-    
     const rawTitle = (eventData.title || "").toUpperCase();
     const isLongTitle = rawTitle.length > 20;
     doc.setFontSize(isLongTitle ? 13 : 15);
@@ -333,6 +332,7 @@ export const generateBulkTicketsPDF = async (tickets: any[], event: any) => {
     let currentStripBase64: string | null = null;
     let currentCategoryStr: string | null = null;
     
+    tickets.sort((a, b) => (a.ticket_number || 0) - (b.ticket_number || 0));
     const pageWidth = 210;
     const ticketW = 196;
     const ticketH = 80;

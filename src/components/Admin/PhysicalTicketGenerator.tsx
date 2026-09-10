@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import jsPDF from 'jspdf';
 import QRCode from 'qrcode';
 import { v4 as uuidv4 } from 'uuid';
-import { getCategoryColor, getOverlayedImage } from '@/lib/ticketUtils';
+import { getCategoryColor, getOverlayedImage, generateBulkTicketsPDF } from '@/lib/ticketUtils';
 
 interface PhysicalTicketGeneratorProps {
     isOpen: boolean;
@@ -263,53 +263,29 @@ export default function PhysicalTicketGenerator({ isOpen, onClose }: PhysicalTic
                 }
             }
 
-            const { data: insertedTickets, error: ticketsError } = await supabase
-                .from('tickets')
-                .insert(ticketsToInsert)
-                .select();
-
-            if (ticketsError) throw ticketsError;
-
-            // PDF Generation
-            const doc = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4'
-            });
-
-            // Group tickets by category to optimize image loading
-            let currentStripBase64: string | null = null;
-            let currentCategoryStr: string | null = null;
+            // Chunk inserts because PostgREST limits bulk insert to 1000 rows
+            const CHUNK_SIZE = 500;
+            let insertedTickets: any[] = [];
             
-            const pageWidth = 210;
-            const pageHeight = 297;
-            const ticketW = 160;
-            const ticketH = 80;
-            const offsetX = (pageWidth - ticketW) / 2; // Center horizontally (25mm)
-            const marginY = 15;
-            const gapY = 10;
-            
-            for (let i = 0; i < insertedTickets.length; i++) {
-                if (i > 0 && i % 3 === 0) {
-                    doc.addPage();
+            for (let i = 0; i < ticketsToInsert.length; i += CHUNK_SIZE) {
+                const chunk = ticketsToInsert.slice(i, i + CHUNK_SIZE);
+                const { data: chunkInserted, error: chunkError } = await supabase
+                    .from('tickets')
+                    .insert(chunk)
+                    .select();
+                    
+                if (chunkError) throw chunkError;
+                if (chunkInserted) {
+                    insertedTickets = insertedTickets.concat(chunkInserted);
                 }
-                
-                const posOnPage = i % 3;
-                const offsetY = marginY + (posOnPage * (ticketH + gapY));
-
-                const currentTicket = insertedTickets[i];
-                
-                // Fetch the background image colored specifically for this ticket's category
-                if (currentCategoryStr !== currentTicket.category) {
-                    currentCategoryStr = currentTicket.category;
-                    const c = getCategoryColor(currentCategoryStr!);
-                    currentStripBase64 = formData.image_url ? await getOverlayedImage(formData.image_url, 400, 800, c.bg) : null;
-                }
-
-                await drawTicket(doc, offsetX, offsetY, currentTicket, formData, currentStripBase64);
             }
 
-            doc.save(`Tickets_Physiques_${formData.title.replace(/\s+/g, '_')}.pdf`);
+            // PDF Generation using the unified utility (which already handles Red title, ordering, and width)
+            
+            const doc = await generateBulkTicketsPDF(insertedTickets, formData);
+            if (doc) {
+                doc.save(`Tickets_Physiques_${formData.title.replace(/\s+/g, '_')}.pdf`);
+            }
             
             alert(`${insertedTickets.length} tickets générés avec succès !`);
             onClose();
