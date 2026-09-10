@@ -7,7 +7,7 @@ export async function POST(request: Request) {
         const { amount, description, customer, method, custom_metadata } = payload;
         
         const isSandbox = (process.env.NEXT_PUBLIC_FEDAPAY_PUBLIC_KEY || '').includes('sandbox');
-        FedaPay.setApiKey(process.env.FEDAPAY_SECRET_KEY);
+        FedaPay.setApiKey(process.env.FEDAPAY_SECRET_KEY!);
         FedaPay.setEnvironment(isSandbox ? 'sandbox' : 'live');
 
         const transaction = await Transaction.create({
