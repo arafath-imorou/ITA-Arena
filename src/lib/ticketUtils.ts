@@ -67,15 +67,15 @@ export const generateTicketPDF = async (ticket: any, event: any) => {
     const doc = new jsPDF({
         orientation: "landscape",
         unit: "mm",
-        format: [160, 80]
+        format: [196, 80]
     });
 
     // Background Header (Left Strip)
     if (stripVisualBase64) {
-        doc.addImage(stripVisualBase64, "JPEG", 0, 0, 40, 80);
+        doc.addImage(stripVisualBase64, 'JPEG', 0, 0, 80, 80);
     } else {
         doc.setFillColor(colors.bg[0], colors.bg[1], colors.bg[2]);
-        doc.rect(0, 0, 40, 80, "F");
+        doc.rect(0, 0, 80, 80, 'F');
     }
 
     doc.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
@@ -93,7 +93,7 @@ export const generateTicketPDF = async (ticket: any, event: any) => {
     const isLongTitle = rawTitle.length > 20;
     doc.setFontSize(isLongTitle ? 13 : 15);
     const mainTitleLines = doc.splitTextToSize(rawTitle, 58);
-    doc.text(mainTitleLines, 45, 12);
+    doc.text(mainTitleLines, 85, 12);
     
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
@@ -127,13 +127,13 @@ export const generateTicketPDF = async (ticket: any, event: any) => {
     }
     
     const titleOffset = Math.min(mainTitleLines.length * 6, 15);
-    doc.text(dateStr, 45, 12 + titleOffset);
+    doc.text(dateStr, 85, 12 + titleOffset);
 
     // QR Code Section
-    doc.addImage(qrDataUrl, "PNG", 110, 25, 40, 40);
+    doc.addImage(qrDataUrl, 'PNG', 146, 25, 40, 40);
     doc.setTextColor(150, 150, 150);
     doc.setFontSize(7);
-    doc.text("SCANNEZ À L'ENTRÉE", 130, 68, { align: "center" });
+    doc.text("SCANNEZ À L'ENTRÉE", 168.5, 68, { align: "center" });
 
     // Category and Price
     doc.setTextColor(120, 120, 120); // Labels in grey
@@ -149,12 +149,12 @@ export const generateTicketPDF = async (ticket: any, event: any) => {
     const isLongCat = catName.length > 12;
     doc.setFontSize(isLongCat ? 9 : 11);
     const catLines = doc.splitTextToSize(catName, 32); // Constrained to 32mm to never overlap with Price at 82mm
-    doc.text(catLines, 45, 47);
+    doc.text(catLines, 85, 47);
 
     doc.setTextColor(120, 120, 120);
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    doc.text("PRIX", 82, 42);
+    doc.text('PRIX', 122, 42);
     
     doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]);
     doc.setFontSize(10);
@@ -165,32 +165,32 @@ export const generateTicketPDF = async (ticket: any, event: any) => {
     doc.setTextColor(120, 120, 120);
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    doc.text("ACHETEUR", 45, 60);
+    doc.text('ACHETEUR', 85, 60);
     
     doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]);
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     const buyerName = (ticket.user_name || ticket.user_email || "Client").toUpperCase();
     const buyerLines = doc.splitTextToSize(buyerName, 55);
-    doc.text(buyerLines, 45, 65);
+    doc.text(buyerLines, 85, 65);
 
     // Dotted Separator
     doc.setDrawColor(200, 200, 200);
     doc.setLineDashPattern([1, 1], 0);
-    doc.line(105, 0, 105, 80);
+    doc.line(141, 0, 141, 80);
     
     // Ticket Number
     doc.setTextColor(255, 90, 31); // Keep Orange for Ticket No as it's the brand color
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    doc.text("TICKET N°", 130, 12, { align: "center" });
+    doc.text("TICKET N°", 168.5, 12, { align: "center" });
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
-    doc.text(`#${String(ticket.ticket_number || 0).padStart(5, '0')}`, 130, 19, { align: "center" });
+    doc.text(`#${String(ticket.ticket_number || 0).padStart(5, '0')}`, 168.5, 19, { align: "center" });
 
     doc.setTextColor(200, 200, 200);
     doc.setFontSize(8);
-    doc.text("ITA Arena", 75, 75, { align: "center" });
+    doc.text("ITA Arena", 115, 75, { align: "center" });
 
     return doc;
 };
@@ -208,10 +208,10 @@ export const drawTicketOnDoc = async (doc: jsPDF, offsetX: number, offsetY: numb
     
     // Background Header (Left Strip)
     if (stripVisualBase64) {
-        doc.addImage(stripVisualBase64, "JPEG", offsetX, offsetY, 40, 80);
+        doc.addImage(stripVisualBase64, 'JPEG', offsetX, offsetY, 80, 80);
     } else {
         doc.setFillColor(colors.bg[0], colors.bg[1], colors.bg[2]);
-        doc.rect(offsetX, offsetY, 40, 80, "F");
+        doc.rect(offsetX, offsetY, 80, 80, 'F');
     }
 
     doc.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
@@ -228,7 +228,7 @@ export const drawTicketOnDoc = async (doc: jsPDF, offsetX: number, offsetY: numb
     const isLongTitle = rawTitle.length > 20;
     doc.setFontSize(isLongTitle ? 13 : 15);
     const mainTitleLines = doc.splitTextToSize(rawTitle, 58);
-    doc.text(mainTitleLines, offsetX + 45, offsetY + 12);
+    doc.text(mainTitleLines, offsetX + 85, offsetY + 12);
     
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
@@ -246,7 +246,7 @@ export const drawTicketOnDoc = async (doc: jsPDF, offsetX: number, offsetY: numb
     }
     
     const titleOffset = Math.min(mainTitleLines.length * 6, 15);
-    doc.text(dateStr, offsetX + 45, offsetY + 12 + titleOffset);
+    doc.text(dateStr, offsetX + 85, offsetY + 12 + titleOffset);
 
     // QR Code Section
     const qrDataUrl = await QRCode.toDataURL(ticket.qr_code_key || "invalid", {
@@ -254,16 +254,16 @@ export const drawTicketOnDoc = async (doc: jsPDF, offsetX: number, offsetY: numb
         width: 400,
         color: { dark: '#1a1a1a', light: '#ffffff' }
     });
-    doc.addImage(qrDataUrl, "PNG", offsetX + 110, offsetY + 25, 40, 40);
+    doc.addImage(qrDataUrl, "PNG", offsetX + 146, offsetY + 25, 40, 40);
     doc.setTextColor(150, 150, 150);
     doc.setFontSize(7);
-    doc.text("SCANNEZ A L'ENTREE", offsetX + 130, offsetY + 68, { align: "center" });
+    doc.text("SCANNEZ A L'ENTREE", offsetX + 168.5, offsetY + 68, { align: "center" });
 
     // Category and Price
     doc.setTextColor(120, 120, 120);
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    doc.text("CATEGORIE", offsetX + 45, offsetY + 42);
+    doc.text("CATEGORIE", offsetX + 85, offsetY + 42);
     
     doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]);
     doc.setFont("helvetica", "bold");
@@ -272,53 +272,53 @@ export const drawTicketOnDoc = async (doc: jsPDF, offsetX: number, offsetY: numb
     const isLongCat = catName.length > 12;
     doc.setFontSize(isLongCat ? 9 : 11);
     const catLines = doc.splitTextToSize(catName, 32); 
-    doc.text(catLines, offsetX + 45, offsetY + 47);
+    doc.text(catLines, offsetX + 85, offsetY + 47);
 
     doc.setTextColor(120, 120, 120);
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    doc.text("PRIX", offsetX + 82, offsetY + 42);
+    doc.text("PRIX", offsetX + 122, offsetY + 42);
     
     doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]);
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
-    doc.text(`${Number(ticket.amount || 0).toLocaleString()} F CFA`, offsetX + 82, offsetY + 47);
+    doc.text(`${Number(ticket.amount || 0).toLocaleString()} F CFA`, offsetX + 122, offsetY + 47);
 
     // Buyer
     doc.setTextColor(120, 120, 120);
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    doc.text("ACHETEUR", offsetX + 45, offsetY + 60);
+    doc.text("ACHETEUR", offsetX + 85, offsetY + 60);
     
     doc.setTextColor(colors.bg[0], colors.bg[1], colors.bg[2]);
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     const buyerName = (ticket.user_name || ticket.user_email || "Client").toUpperCase();
     const buyerLines = doc.splitTextToSize(buyerName, 55);
-    doc.text(buyerLines, offsetX + 45, offsetY + 65);
+    doc.text(buyerLines, offsetX + 85, offsetY + 65);
 
     // Dotted Separator
     doc.setDrawColor(200, 200, 200);
     doc.setLineDashPattern([1, 1], 0);
-    doc.line(offsetX + 105, offsetY + 0, offsetX + 105, offsetY + 80);
+    doc.line(offsetX + 141, offsetY + 0, offsetX + 141, offsetY + 80);
     
     // Ticket Number
     doc.setTextColor(255, 90, 31);
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    doc.text("TICKET N", offsetX + 130, offsetY + 12, { align: "center" });
+    doc.text("TICKET N", offsetX + 168.5, offsetY + 12, { align: "center" });
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
-    doc.text(`#${String(ticket.ticket_number || 0).padStart(5, '0')}`, offsetX + 130, offsetY + 19, { align: "center" });
+    doc.text(`#${String(ticket.ticket_number || 0).padStart(5, '0')}`, offsetX + 168.5, offsetY + 19, { align: "center" });
 
     doc.setTextColor(200, 200, 200);
     doc.setFontSize(8);
-    doc.text("ITA Arena", offsetX + 75, offsetY + 75, { align: "center" });
+    doc.text("ITA Arena", offsetX + 115, offsetY + 75, { align: "center" });
     
     // Draw standard border to cut out
     doc.setDrawColor(200, 200, 200);
     doc.setLineDashPattern([0, 0], 0);
-    doc.rect(offsetX, offsetY, 160, 80);
+    doc.rect(offsetX, offsetY, 196, 80);
 };
 
 export const generateBulkTicketsPDF = async (tickets: any[], event: any) => {
@@ -334,7 +334,7 @@ export const generateBulkTicketsPDF = async (tickets: any[], event: any) => {
     let currentCategoryStr: string | null = null;
     
     const pageWidth = 210;
-    const ticketW = 160;
+    const ticketW = 196;
     const ticketH = 80;
     const offsetX = (pageWidth - ticketW) / 2; // Center horizontally (25mm)
     const marginY = 15;
@@ -353,7 +353,7 @@ export const generateBulkTicketsPDF = async (tickets: any[], event: any) => {
         if (currentCategoryStr !== currentTicket.category) {
             currentCategoryStr = currentTicket.category;
             const c = getCategoryColor(currentCategoryStr || '');
-            currentStripBase64 = event.image_url ? await getOverlayedImage(event.image_url, 400, 800, c.bg) : null;
+            currentStripBase64 = event.image_url ? await getOverlayedImage(event.image_url, 800, 800, c.bg) : null;
         }
 
         await drawTicketOnDoc(doc, offsetX, offsetY, currentTicket, event, currentStripBase64);
