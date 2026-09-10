@@ -11,45 +11,71 @@ const FAQ_DATA = [
         items: [
             {
                 question: "Qu'est-ce qu'ITA Arena ?",
-                answer: "ITA Arena est une plateforme de billetterie et d'organisation d'événements en ligne qui permet aux organisateurs de créer des événements et de vendre des tickets, et aux participants de découvrir et d'acheter des places pour des événements variés."
+                answer: "ITA Arena est une plateforme digitale complète qui permet aux organisateurs de créer et gérer des événements (billetterie), d'organiser des concours (votes), de lancer des campagnes de soutien, de créer des formulaires d'inscription et de gérer des cotisations."
             },
             {
-                question: "Pourquoi utiliser ITA Arena ?",
-                answer: "Nous offrons une interface intuitive, des paiements sécurisés et des outils de gestion en temps réel pour les organisateurs, tout en simplifiant l'accès aux événements pour les utilisateurs."
+                question: "Pourquoi choisir ITA Arena ?",
+                answer: "Nous offrons une interface intuitive, des paiements sécurisés (notamment le paiement Mobile Money direct en 1 clic), et des outils de gestion en temps réel (statistiques, génération de PDF) pour simplifier au maximum la vie des organisateurs et des participants."
             }
         ]
     },
     {
-        category: "Organisateurs",
+        category: "Billetterie & Événements",
         items: [
             {
                 question: "Combien de temps faut-il pour créer une billetterie ?",
-                answer: "La création d'un événement sur ITA Arena est rapide. En moins de 15 minutes, vous pouvez configurer vos tarifs, ajouter vos visuels et publier votre billetterie."
+                answer: "La création d'un événement sur ITA Arena est très rapide. En moins de 15 minutes, vous pouvez configurer vos tarifs (VIP, Standard, etc.), ajouter vos visuels et publier votre billetterie en ligne."
             },
             {
-                question: "Quels types d'événements puis-je organiser ?",
-                answer: "Vous pouvez organiser tout type d'événement : concerts, conférences, événements sportifs, formations, festivals, et même des cotisations pour des voyages ou des projets d'entreprise."
+                question: "Puis-je gérer des tickets physiques ?",
+                answer: "Oui ! Depuis votre tableau de bord, vous pouvez générer des tickets physiques, les personnaliser selon la catégorie (couleurs, prix), et télécharger un document PDF prêt à être imprimé (format A4 avec 3 tickets par page)."
             },
             {
                 question: "Puis-je suivre mes ventes en temps réel ?",
-                answer: "Oui, chaque organisateur dispose d'un tableau de bord dédié permettant de suivre les ventes de billets, le chiffre d'affaires et la portée de ses événements en temps réel."
+                answer: "Absolument. Chaque organisateur dispose d'un tableau de bord dédié avec des statistiques en temps réel sur les ventes de billets et le chiffre d'affaires généré."
             }
         ]
     },
     {
-        category: "Billets et Paiements",
+        category: "Votes & Concours",
         items: [
             {
+                question: "Puis-je organiser des votes en ligne (ex: Miss, Awards) ?",
+                answer: "Oui, la plateforme dispose d'un système de vote complet. Vous pouvez créer une campagne, ajouter des candidats, et définir le prix d'un vote. Les participants peuvent ensuite voter de manière illimitée via Mobile Money ou carte bancaire."
+            },
+            {
+                question: "Comment les résultats des votes sont-ils affichés ?",
+                answer: "Vous disposez d'un tableau de bord organisateur pour suivre chaque vote et le montant collecté. Vous pouvez également activer une page de résultats publique pour que les participants voient le classement en temps réel."
+            }
+        ]
+    },
+    {
+        category: "Formulaires, Soutiens & Cotisations",
+        items: [
+            {
+                question: "Puis-je créer un formulaire d'inscription personnalisé ?",
+                answer: "Oui, vous pouvez créer des formulaires sur-mesure (questions texte, choix multiples, dates, etc.) et partager un lien public pour récolter les réponses de vos utilisateurs."
+            },
+            {
+                question: "Qu'est-ce qu'une campagne de soutien ?",
+                answer: "C'est une fonctionnalité qui vous permet de collecter des fonds (cagnotte) pour un projet personnel, caritatif ou d'entreprise, en recevant des dons via Mobile Money ou carte bancaire."
+            }
+        ]
+    },
+    {
+        category: "Paiements & Reversements",
+        items: [
+            {
+                question: "Quels sont les modes de paiement supportés ?",
+                answer: "Nous intégrons FedaPay pour supporter les paiements par Mobile Money (MTN, Moov, Celtiis, etc.) directement via un prompt USSD sur le téléphone du client, ainsi que les paiements par Carte Bancaire."
+            },
+            {
                 question: "Quels sont les frais pour les organisateurs ?",
-                answer: "ITA Arena propose des options flexibles. Pour de nombreux événements, l'utilisation de la plateforme est gratuite et les seuls frais applicables sont les frais de transaction bancaire standards."
+                answer: "L'utilisation de la plateforme de base est souvent gratuite, seuls les frais de transaction bancaire ou Mobile Money standards sont appliqués sur les paiements."
             },
             {
-                question: "Comment s'effectuent les paiements ?",
-                answer: "Les paiements sont effectués via des passerelles sécurisées (comme Mobile Money ou cartes bancaires). Les fonds sont ensuite reversés aux organisateurs selon les modalités convenues."
-            },
-            {
-                question: "Puis-je personnaliser mes billets ?",
-                answer: "Tout à fait ! Vous pouvez ajouter votre logo et personnaliser les informations présentes sur les e-tickets envoyés aux participants."
+                question: "Comment sont reversés les fonds collectés ?",
+                answer: "Les fonds collectés (billetterie, votes, soutiens) vous sont reversés selon les modalités convenues avec notre équipe, généralement par transfert Mobile Money ou virement bancaire une fois la campagne clôturée."
             }
         ]
     }
@@ -88,7 +114,7 @@ export default function FAQPage() {
                                         onClick={() => toggleAccordion(id)}
                                     >
                                         {item.question}
-                                        <span className={styles.icon}>▼</span>
+                                        <span className={styles.icon}>{activeIndex === id ? "-" : "+"}</span>
                                     </button>
                                     <div className={styles.answer}>
                                         <p>{item.answer}</p>
