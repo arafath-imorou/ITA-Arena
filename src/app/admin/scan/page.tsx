@@ -1,12 +1,16 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 import { supabase } from "@/lib/supabase";
 import styles from "./Scan.module.css";
 import BackButton from "@/components/BackButton";
+import { useSearchParams } from "next/navigation";
 
-export default function ScanPage() {
+function ScannerContent() {
+    const searchParams = useSearchParams();
+    const forcedEventId = searchParams.get('eventId');
+
     const [events, setEvents] = useState<any[]>([]);
     const [selectedEventId, setSelectedEventId] = useState<string>("");
     const [result, setResult] = useState<{ type: 'success' | 'error', message: string, details?: any } | null>(null);
@@ -17,13 +21,18 @@ export default function ScanPage() {
     
     const selectedEventIdRef = useRef<string>("");
     const html5QrCode = useRef<Html5Qrcode | null>(null);
+    const isProcessingRef = useRef<boolean>(false);
+    const resultTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         async function fetchEvents() {
             const { data } = await supabase.from('events').select('id, title').order('date', { ascending: false });
             if (data) {
                 setEvents(data);
-                if (data.length > 0) {
+                if (forcedEventId && data.find(e => e.id === forcedEventId)) {
+                    setSelectedEventId(forcedEventId);
+                    selectedEventIdRef.current = forcedEventId;
+                } else if (data.length > 0) {
                     setSelectedEventId(data[0].id);
                     selectedEventIdRef.current = data[0].id;
                 }
@@ -35,10 +44,12 @@ export default function ScanPage() {
             if (html5QrCode.current && html5QrCode.current.isScanning) {
                 html5QrCode.current.stop();
             }
+            if (resultTimeoutRef.current) clearTimeout(resultTimeoutRef.current);
         };
-    }, []);
+    }, [forcedEventId]);
 
     const handleEventChange = (id: string) => {
+        if (forcedEventId) return; // Locked
         setSelectedEventId(id);
         selectedEventIdRef.current = id;
         fetchStats(id);
@@ -96,8 +107,26 @@ export default function ScanPage() {
         }
     };
 
+    const clearResult = () => {
+        setResult(null);
+        isProcessingRef.current = false;
+        if (resultTimeoutRef.current) clearTimeout(resultTimeoutRef.current);
+        
+        // Ensure scanner is actively looking for the next code
+        if (html5QrCode.current && html5QrCode.current.isScanning && html5QrCode.current.getState() === 3 /* PAUSED */) {
+            try { html5QrCode.current.resume(); } catch(e) {}
+        }
+    };
+
     async function onScanSuccess(decodedText: string) {
-        // Use Ref value to get the CURRENTLY selected event
+        if (isProcessingRef.current) return;
+        isProcessingRef.current = true;
+        
+        // Try to pause scanner to prevent duplicate scans
+        if (html5QrCode.current && html5QrCode.current.isScanning) {
+            try { html5QrCode.current.pause(); } catch(e) {}
+        }
+
         const currentEventId = selectedEventIdRef.current;
         
         try { new Audio('/success.mp3').play(); } catch(e) {}
@@ -113,13 +142,22 @@ export default function ScanPage() {
             .eq('qr_code_key', qrKey)
             .single();
 
+        const showResult = (data: any) => {
+            setResult(data);
+            // Auto close after 3 seconds to scan another one
+            if (resultTimeoutRef.current) clearTimeout(resultTimeoutRef.current);
+            resultTimeoutRef.current = setTimeout(() => {
+                clearResult();
+            }, 3000);
+        };
+
         if (error || !ticket) {
-            setResult({ type: 'error', message: "Ticket invalide ou inconnu." });
+            showResult({ type: 'error', message: "Ticket invalide ou inconnu." });
             return;
         }
 
         if (ticket.event_id !== currentEventId) {
-            setResult({ 
+            showResult({ 
                 type: 'error', 
                 message: "Mauvais événement !", 
                 details: { info: `Appartient à : ${ticket.event?.title}` } 
@@ -128,7 +166,7 @@ export default function ScanPage() {
         }
 
         if (ticket.status === 'checked-in') {
-            setResult({ 
+            showResult({ 
                 type: 'error', 
                 message: "Déjà utilisé !", 
                 details: { info: `Scanné le: ${new Date(ticket.updated_at).toLocaleString()}` } 
@@ -142,19 +180,24 @@ export default function ScanPage() {
             .eq('id', ticket.id);
 
         if (updateError) {
-            setResult({ type: 'error', message: "Erreur de validation base de données." });
+            showResult({ type: 'error', message: "Erreur de validation base de données." });
             return;
         }
 
-        setResult({ 
+        showResult({ 
             type: 'success', 
             message: "Entrée Validée !", 
-            details: { name: ticket.user_name, category: ticket.category } 
+            details: { 
+                name: ticket.user_name || "Ticket Physique", 
+                category: ticket.category,
+                eventName: ticket.event?.title,
+                number: ticket.ticket_number
+            } 
         });
 
         setStats(prev => ({ ...prev, checkedIn: prev.checkedIn + 1 }));
         setRecentScans(prev => [{
-            name: ticket.user_name,
+            name: ticket.ticket_number ? `#${String(ticket.ticket_number).padStart(5, '0')}` : ticket.user_name,
             category: ticket.category,
             time: new Date().toLocaleTimeString()
         }, ...prev].slice(0, 5));
@@ -174,15 +217,21 @@ export default function ScanPage() {
                     <h1>Scanner Pro</h1>
                 </div>
                 
-                <select 
-                    className={styles.eventSelector}
-                    value={selectedEventId}
-                    onChange={(e) => handleEventChange(e.target.value)}
-                >
-                    {events.map(ev => (
-                        <option key={ev.id} value={ev.id}>{ev.title}</option>
-                    ))}
-                </select>
+                {forcedEventId ? (
+                    <div className={styles.eventSelector} style={{ opacity: 0.8, pointerEvents: 'none', background: '#e2e8f0', textAlign: 'center' }}>
+                        {events.find(e => e.id === forcedEventId)?.title || "Chargement de l'événement..."}
+                    </div>
+                ) : (
+                    <select 
+                        className={styles.eventSelector}
+                        value={selectedEventId}
+                        onChange={(e) => handleEventChange(e.target.value)}
+                    >
+                        {events.map(ev => (
+                            <option key={ev.id} value={ev.id}>{ev.title}</option>
+                        ))}
+                    </select>
+                )}
             </div>
 
             <div className={styles.scannerWrapper}>
@@ -191,7 +240,7 @@ export default function ScanPage() {
                 {!isCameraActive && !result && (
                     <div className={styles.cameraPlaceholder}>
                         <button className={styles.startBtn} onClick={startScanner}>
-                            📷 ACTIVER LA CAMÉRA
+                            📸 ACTIVER LA CAMÉRA
                         </button>
                         {errorMsg && <p className={styles.errorText}>{errorMsg}</p>}
                     </div>
@@ -203,9 +252,10 @@ export default function ScanPage() {
                             <>
                                 <div className={styles.successIcon}>✅</div>
                                 <h2 className={styles.resultTitle}>{result.message}</h2>
-                                <div className={styles.resultDetails}>
-                                    <p><strong>{result.details.name}</strong></p>
-                                    <p>{result.details.category}</p>
+                                <div className={styles.resultDetails} style={{ fontSize: '1.2rem', lineHeight: '1.6' }}>
+                                    {result.details.eventName && <p><strong>Événement :</strong> {result.details.eventName}</p>}
+                                    <p><strong>Catégorie :</strong> {result.details.category}</p>
+                                    {result.details.number && <p><strong>Ticket :</strong> #{String(result.details.number).padStart(5, '0')}</p>}
                                 </div>
                             </>
                         ) : (
@@ -219,8 +269,8 @@ export default function ScanPage() {
                                 )}
                             </>
                         )}
-                        <button className={styles.closeBtn} onClick={() => setResult(null)}>
-                            CONTINUER
+                        <button className={styles.closeBtn} onClick={clearResult} style={{ marginTop: '2rem' }}>
+                            SCANNER LE SUIVANT
                         </button>
                     </div>
                 )}
@@ -235,11 +285,15 @@ export default function ScanPage() {
             <div className={styles.statsGrid}>
                 <div className={styles.statCard}>
                     <span className={styles.statVal}>{stats.checkedIn}</span>
-                    <span className={styles.statLabel}>Présents</span>
+                    <span className={styles.statLabel}>En salle</span>
                 </div>
-                <div className={styles.statCard}>
+                <div className={styles.statCard} style={{ background: '#fef3c7', color: '#92400e' }}>
+                    <span className={styles.statVal}>{Math.max(0, stats.total - stats.checkedIn)}</span>
+                    <span className={styles.statLabel}>Restants</span>
+                </div>
+                <div className={styles.statCard} style={{ background: '#f1f5f9', color: '#475569' }}>
                     <span className={styles.statVal}>{stats.total}</span>
-                    <span className={styles.statLabel}>Total</span>
+                    <span className={styles.statLabel}>Total tickets</span>
                 </div>
             </div>
 
@@ -258,5 +312,13 @@ export default function ScanPage() {
                 </div>
             )}
         </div>
+    );
+}
+
+export default function ScanPage() {
+    return (
+        <Suspense fallback={<div style={{textAlign: 'center', padding: '2rem'}}>Chargement du scanner...</div>}>
+            <ScannerContent />
+        </Suspense>
     );
 }
