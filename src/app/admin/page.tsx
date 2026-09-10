@@ -55,7 +55,7 @@ function AdminDashboardContent() {
         setLoading(true);
         try {
             const { data: profilesData } = await supabase.from('profiles').select('*');
-            const { data: eventsData } = await supabase.from('events_with_stats').select('*').neq('category_id', 'physical_event').order('created_at', { ascending: false });
+            const { data: eventsData } = await supabase.from('events_with_stats').select('*').or('category_id.neq.physical_event,category_id.is.null').order('created_at', { ascending: false });
             const { data: ticketsData } = await supabase.from('tickets').select('*').in('status', ['valid', 'checked-in', 'used']).order('created_at', { ascending: false });
             const { data: campaignsData } = await supabase.from('support_campaigns').select('*').order('created_at', { ascending: false });
             const { data: formsData } = await supabase.from('forms').select('*').order('created_at', { ascending: false });

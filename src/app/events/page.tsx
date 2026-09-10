@@ -39,7 +39,7 @@ export default function EventsPage() {
                 `)
                 .eq('type', 'event')
                 .eq('is_published', true)
-                .neq('category_id', 'physical_event');
+                .or('category_id.neq.physical_event,category_id.is.null');
 
             if (selectedCountry.name !== "Tous") {
                 query = query.eq('country', selectedCountry.name);
