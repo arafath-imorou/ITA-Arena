@@ -26,11 +26,11 @@ export async function POST(request: Request) {
 
     } catch (error: any) {
         console.error('Direct Payment Error:', error.message);
-        console.error(error.hasErrors ? error.getErrors() : error);
+        console.error(error.hasErrors && typeof error.hasErrors === 'function' && error.hasErrors() ? error.errors : error);
         
         let errorMessage = "Erreur lors du déclenchement du paiement mobile.";
-        if (error.hasErrors && error.getErrors()) {
-            errorMessage = JSON.stringify(error.getErrors());
+        if (error.hasErrors && typeof error.hasErrors === 'function' && error.hasErrors()) {
+            errorMessage = JSON.stringify(error.errors || error.errorMessage || error.message);
         } else if (error.message) {
             errorMessage = error.message;
         }
