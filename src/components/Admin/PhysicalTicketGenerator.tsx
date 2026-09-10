@@ -14,6 +14,7 @@ interface PhysicalTicketGeneratorProps {
 
 export default function PhysicalTicketGenerator({ isOpen, onClose }: PhysicalTicketGeneratorProps) {
     const [loading, setLoading] = useState(false);
+    const [progressText, setProgressText] = useState('');
     const [uploading, setUploading] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
@@ -268,6 +269,7 @@ export default function PhysicalTicketGenerator({ isOpen, onClose }: PhysicalTic
             let insertedTickets: any[] = [];
             
             for (let i = 0; i < ticketsToInsert.length; i += CHUNK_SIZE) {
+                setProgressText(`Création en base de données (${Math.min(i + CHUNK_SIZE, ticketsToInsert.length)}/${ticketsToInsert.length})...`);
                 const chunk = ticketsToInsert.slice(i, i + CHUNK_SIZE);
                 const { data: chunkInserted, error: chunkError } = await supabase
                     .from('tickets')
@@ -280,12 +282,17 @@ export default function PhysicalTicketGenerator({ isOpen, onClose }: PhysicalTic
                 }
             }
 
-            // PDF Generation using the unified utility (which already handles Red title, ordering, and width)
+            // PDF Generation using the unified utility
+            setProgressText('Génération du fichier PDF (0%)...');
+            const doc = await generateBulkTicketsPDF(insertedTickets, formData, (progress) => {
+                setProgressText(`Génération du fichier PDF (${progress}%)...`);
+            });
             
-            const doc = await generateBulkTicketsPDF(insertedTickets, formData);
             if (doc) {
+                setProgressText('Téléchargement du fichier...');
                 doc.save(`Tickets_Physiques_${formData.title.replace(/\s+/g, '_')}.pdf`);
             }
+            setProgressText('');
             
             alert(`${insertedTickets.length} tickets générés avec succès !`);
             onClose();

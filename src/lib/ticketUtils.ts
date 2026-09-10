@@ -67,7 +67,8 @@ export const generateTicketPDF = async (ticket: any, event: any) => {
     const doc = new jsPDF({
         orientation: "landscape",
         unit: "mm",
-        format: [196, 80]
+        format: [196, 80],
+        compress: true
     });
 
     // Background Header (Left Strip)
@@ -208,7 +209,7 @@ export const drawTicketOnDoc = async (doc: jsPDF, offsetX: number, offsetY: numb
     
     // Background Header (Left Strip)
     if (stripVisualBase64) {
-        doc.addImage(stripVisualBase64, 'JPEG', offsetX, offsetY, 80, 80);
+        doc.addImage(stripVisualBase64, 'JPEG', offsetX, offsetY, 80, 80, "STRIP_" + ticket.category, "FAST");
     } else {
         doc.setFillColor(colors.bg[0], colors.bg[1], colors.bg[2]);
         doc.rect(offsetX, offsetY, 80, 80, 'F');
@@ -320,13 +321,14 @@ export const drawTicketOnDoc = async (doc: jsPDF, offsetX: number, offsetY: numb
     doc.rect(offsetX, offsetY, 196, 80);
 };
 
-export const generateBulkTicketsPDF = async (tickets: any[], event: any) => {
+export const generateBulkTicketsPDF = async (tickets: any[], event: any, onProgress?: (progress: number) => void) => {
     if (!tickets || tickets.length === 0 || !event) return null;
 
     const doc = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
-        format: 'a4'
+        format: 'a4',
+        compress: true
     });
 
     let currentStripBase64: string | null = null;
@@ -341,6 +343,10 @@ export const generateBulkTicketsPDF = async (tickets: any[], event: any) => {
     const gapY = 10;
     
     for (let i = 0; i < tickets.length; i++) {
+        if (i % 10 === 0) {
+            await new Promise(r => setTimeout(r, 0)); // yield
+            if (onProgress) onProgress(Math.round((i / tickets.length) * 100));
+        }
         if (i > 0 && i % 3 === 0) {
             doc.addPage();
         }
