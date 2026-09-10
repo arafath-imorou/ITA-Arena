@@ -34,10 +34,10 @@ export default function BlogPage() {
             
             <header className={styles.header}>
                 <div className="container">
-                    <h1 className={styles.title}>L'ARÈNE SHOWBIZ</h1>
+                    <h1 className={styles.title}>LE BLOG ITA ARENA</h1>
                     <div className={styles.titleUnderline}></div>
                     <p className={styles.subtitle}>
-                        Toutes les actualités croustillantes, les coulisses et les exclusivités du monde du showbiz béninois et international.
+                        Découvrez les dernières actualités, les événements marquants de nos organisateurs et les nouveautés de la plateforme ITA Arena.
                     </p>
                 </div>
             </header>
@@ -58,7 +58,7 @@ export default function BlogPage() {
                                         alt={item.title} 
                                         className={styles.blogImage} 
                                     />
-                                    <span className={styles.categoryTag}>{item.category || "Showbizz"}</span>
+                                    <span className={styles.categoryTag}>{item.category || "Actualité"}</span>
                                 </div>
                                 <div className={styles.cardBody}>
                                     <div className={styles.cardDate}>
@@ -77,8 +77,8 @@ export default function BlogPage() {
                 ) : (
                     <div className={styles.empty}>
                         <div className={styles.emptyIcon}>🎭</div>
-                        <h2>L'arène est calme pour le moment</h2>
-                        <p>Revenez bientôt pour de nouvelles actualités showbiz !</p>
+                        <h2>Le blog est calme pour le moment</h2>
+                        <p>Revenez bientôt pour de nouvelles actualités !</p>
                     </div>
                 )}
             </main>

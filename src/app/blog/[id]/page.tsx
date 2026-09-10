@@ -46,7 +46,7 @@ export default function BlogDetailPage() {
                 <article className={styles.detailWrapper}>
                     <header className={styles.detailHeader}>
                         <div className={styles.detailMeta}>
-                            <span className={styles.categoryTag}>{item.category || "Showbizz"}</span>
+                            <span className={styles.categoryTag}>{item.category || "Actualité"}</span>
                             <span>📅 {item.date || new Date(item.created_at).toLocaleDateString()}</span>
                         </div>
                         <h1 className={styles.detailTitle}>{item.title}</h1>
