@@ -399,6 +399,20 @@ function AdminDashboardContent() {
         }
     };
 
+    
+
+    const deletePhysicalEvent = async (eventId: string, eventTitle: string) => {
+        if (!confirm(`Supprimer "${eventTitle}" et TOUS ses tickets ? Cette action est irréversible.`)) return;
+        try {
+            await supabase.from('tickets').delete().eq('event_id', eventId);
+            await supabase.from('events').delete().eq('id', eventId);
+            setRawPhysicalEvents(prev => prev.filter(e => e.id !== eventId));
+            alert('Événement supprimé avec succès !');
+        } catch (err) {
+            alert('Erreur lors de la suppression.');
+        }
+    };
+
     const deleteVote = async (voteId: string) => {
         if (!confirm("Voulez-vous vraiment supprimer cette campagne de vote ? Tous les candidats et les paiements associés pourraient être affectés.")) return;
         try {
@@ -1024,6 +1038,12 @@ function AdminDashboardContent() {
                                                     }}
                                                 >
                                                     Gérer les tickets
+                                                </button>
+                                                <button 
+                                                    style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', background: '#fee2e2', color: '#991b1b', border: 'none', borderRadius: '4px', cursor: 'pointer', marginLeft: '0.4rem' }}
+                                                    onClick={() => deletePhysicalEvent(evt.id, evt.title)}
+                                                >
+                                                    🗑 Supprimer
                                                 </button>
                                             </td>
                                         </tr>
