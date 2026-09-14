@@ -21,6 +21,8 @@ function CheckoutContent() {
     const [cotisationReason, setCotisationReason] = useState("");
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [promoCode, setPromoCode] = useState("");
+    const [appliedPromo, setAppliedPromo] = useState(false);
     const router = useRouter();
 
     const eventId = searchParams.get("id"); // No more hardcoded ID fallback
@@ -75,6 +77,16 @@ function CheckoutContent() {
             return () => clearInterval(timer);
         }
     }, [step, timeLeft]);
+
+    const handleApplyPromo = () => {
+        if (eventId === 'eafab046-9cc8-4e68-8811-c555ee158489' && promoCode.trim().toUpperCase() === 'OLA LE COMEDIEN') {
+            setAppliedPromo(true);
+            alert("Code promo appliqué avec succès ! Vous bénéficiez de 50% de réduction sur vos tickets.");
+        } else {
+            alert("Code promo invalide ou non applicable à cet événement.");
+            setAppliedPromo(false);
+        }
+    };
 
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
