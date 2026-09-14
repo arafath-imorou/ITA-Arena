@@ -22,6 +22,18 @@ export default function EventDetailClient({ slug }: { slug: string }) {
     const [periodicOption, setPeriodicOption] = useState<'mensuel' | 'trimestriel' | 'semestriel' | 'annuel'>('mensuel');
     const [donationAmount, setDonationAmount] = useState<string>('500');
     const [showPastEventMessage, setShowPastEventMessage] = useState(false);
+    const [promoCode, setPromoCode] = useState("");
+    const [appliedPromo, setAppliedPromo] = useState(false);
+
+    const handleApplyPromo = () => {
+        if (item.id === 'eafab046-9cc8-4e68-8811-c555ee158489' && promoCode.trim().toUpperCase() === 'OLA LE COMEDIEN') {
+            setAppliedPromo(true);
+            alert("Code promo appliqué avec succès ! Vous bénéficiez de 50% de réduction sur vos tickets.");
+        } else {
+            alert("Code promo invalide.");
+            setAppliedPromo(false);
+        }
+    };
 
     const checkIsPastEvent = (dateStr: string) => {
         if (!dateStr) return false;
@@ -592,7 +604,7 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                                             <div className={styles.ticketInfo}>
                                                 <span className={styles.ticketName}>{cat.name}</span>
                                                 <span className={styles.ticketPrice}>
-                                                    {parseFloat(cat.price) === 0 ? "GRATUIT" : `${new Intl.NumberFormat('fr-FR').format(cat.price)} F CFA`}
+                                                    {parseFloat(cat.price) === 0 ? "GRATUIT" : `${new Intl.NumberFormat('fr-FR').format(appliedPromo ? cat.price / 2 : cat.price)} F CFA`}
                                                 </span>
                                                 {cat.description && (
                                                     <div style={{ fontSize: '0.75rem', marginTop: '0.5rem', lineHeight: '1.5', textAlign: 'justify' }}>
@@ -616,10 +628,29 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                                     </div>
                                 )}
 
+                                {item.id === 'eafab046-9cc8-4e68-8811-c555ee158489' && (
+                                    <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                        <input 
+                                            type="text" 
+                                            placeholder="Code Promo" 
+                                            style={{ flex: 1, padding: '0.6rem', border: '1px solid #e2e8f0', borderRadius: '8px' }}
+                                            value={promoCode}
+                                            onChange={(e) => setPromoCode(e.target.value)}
+                                            disabled={appliedPromo}
+                                        />
+                                        <button 
+                                            onClick={handleApplyPromo}
+                                            style={{ padding: '0.6rem 1rem', background: appliedPromo ? '#10b981' : '#0a2e73', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+                                            disabled={appliedPromo}
+                                        >
+                                            {appliedPromo ? 'Appliqué ✓' : 'Appliquer'}
+                                        </button>
+                                    </div>
+                                )}
                                 <div className={styles.totalRow}>
                                     <span>Total à payer</span>
                                     <span className={styles.totalVal}>{new Intl.NumberFormat('fr-FR').format(
-                                        (item.ticket_categories || []).reduce((acc: number, cat: any) => acc + (quantities[cat.name] || 0) * parseFloat(cat.price), 0)
+                                        (item.ticket_categories || []).reduce((acc: number, cat: any) => acc + (quantities[cat.name] || 0) * (appliedPromo ? parseFloat(cat.price) / 2 : parseFloat(cat.price)), 0)
                                     )} F CFA</span>
                                 </div>
                                 
@@ -648,7 +679,7 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                                             item.ticket_categories.forEach((cat: any, idx: number) => {
                                                 if (quantities[cat.name] > 0) {
                                                     params.set(`q${idx+1}`, quantities[cat.name].toString());
-                                                    params.set(`p${idx+1}`, cat.price.toString());
+                                                    params.set(`p${idx+1}`, (appliedPromo ? cat.price / 2 : cat.price).toString());
                                                     params.set(`n${idx+1}`, cat.name);
                                                 }
                                             });
