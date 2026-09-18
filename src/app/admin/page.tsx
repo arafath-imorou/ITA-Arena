@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense, useMemo } from "react";
 import styles from "./AdminDashboard.module.css";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import QRCode from 'qrcode';
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { downloadTicket, downloadBulkTicketsPDF } from "@/lib/ticketUtils";
@@ -1663,6 +1664,107 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
         fetchStats();
     }, [campaignId]);
 
+    
+    const generateAdminBadge = (p: any) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 600;
+        canvas.height = 600;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, 600, 600);
+        
+        ctx.fillStyle = '#FF5A1F';
+        ctx.beginPath();
+        ctx.arc(300, 300, 270, 0, 2 * Math.PI);
+        ctx.fill();
+
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 30px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(p.is_company ? 'PARTENAIRE DE SOUTIEN' : 'JE SOUTIENS', 300, 100);
+        ctx.font = 'bold 45px Arial';
+        ctx.fillText('OUIDAH SANS POLIO', 300, 160);
+
+        ctx.fillStyle = '#e2e8f0';
+        ctx.beginPath();
+        ctx.arc(300, 300, 140, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 24px Arial';
+        ctx.fillText('MERCI !', 300, 310);
+
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '24px Arial';
+        ctx.fillText('24 OCTOBRE 2026', 300, 500);
+        ctx.font = '20px Arial';
+        ctx.fillText('OUIDAH — BÉNIN', 300, 530);
+
+        const link = document.createElement('a');
+        link.download = `Badge_OuidahSansPolio_${p.is_company ? p.company_name : p.nom_contributeur || 'Anonyme'}.jpg`;
+        link.href = canvas.toDataURL('image/jpeg', 0.7);
+        link.click();
+    };
+
+    const generateAdminCertificate = async (p: any) => {
+        const doc = new jsPDF({ orientation: "landscape", unit: "px", format: [800, 560] });
+        
+        doc.setFillColor(255, 255, 255);
+        doc.rect(0, 0, 800, 560, 'F');
+        
+        doc.setDrawColor(255, 90, 31);
+        doc.setLineWidth(8);
+        doc.rect(16, 16, 768, 528);
+
+        doc.setTextColor(15, 23, 42);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(32);
+        doc.text("CERTIFICAT DE RECONNAISSANCE", 400, 100, { align: "center" });
+        
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(18);
+        doc.text("Ce certificat est décerné à", 400, 160, { align: "center" });
+        
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(40);
+        doc.setTextColor(255, 90, 31);
+        const name = p.is_company ? (p.company_name || 'Entreprise') : (p.nom_contributeur || 'Anonyme');
+        doc.text(name.toUpperCase(), 400, 230, { align: "center" });
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(18);
+        doc.setTextColor(15, 23, 42);
+        doc.text(`pour sa contribution inestimable à la campagne`, 400, 280, { align: "center" });
+        
+        doc.setFont("helvetica", "bold");
+        doc.text(`OUIDAH SANS POLIO`, 400, 320, { align: "center" });
+        
+        doc.setFont("helvetica", "normal");
+        doc.text(`en finançant l'achat de`, 400, 360, { align: "center" });
+        
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(255, 90, 31);
+        doc.setFontSize(28);
+        doc.text(`${p.nombre_de_vaccins || 0} VACCINS`, 400, 400, { align: "center" });
+
+        doc.setTextColor(100, 116, 139);
+        doc.setFontSize(10);
+        const certId = p.certificat_id || ('OSP-2026-' + p.id.substring(0,6).toUpperCase());
+        doc.text(`ID: ${certId}`, 650, 480);
+        
+        try {
+            const qrUrl = await QRCode.toDataURL(`${window.location.origin}/verification/certificat/${certId}`, { width: 60, margin: 1 });
+            doc.addImage(qrUrl, "PNG", 650, 490, 50, 50, undefined, 'FAST');
+        } catch (err) {
+            console.error(err);
+        }
+
+        doc.save(`Certificat_OuidahSansPolio_${name}.pdf`);
+    };
+
+
     const handleDownloadPDF = () => {
         if (!stats) return;
         const doc = new jsPDF();
@@ -1735,7 +1837,8 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
                                 <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', color: '#64748b', fontSize: '0.9rem' }}>Nom</th>
                                 <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', color: '#64748b', fontSize: '0.9rem' }}>Vaccins</th>
                                 <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', color: '#64748b', fontSize: '0.9rem' }}>Montant</th>
-                                <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', color: '#64748b', fontSize: '0.9rem' }}>Statut</th>
+                                <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', color: '#64748b', fontSize: '0.9rem' }}>Actions</th>
+                                
                             </tr>
                         </thead>
                         <tbody>
@@ -1748,17 +1851,12 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
                                     </td>
                                     <td style={{ padding: '1rem', fontWeight: 'bold' }}>{p.nombre_de_vaccins || 0}</td>
                                     <td style={{ padding: '1rem' }}>{p.montant_total || 0} FCFA</td>
+                                    
                                     <td style={{ padding: '1rem' }}>
-                                        <span style={{ 
-                                            padding: '0.25rem 0.75rem', 
-                                            borderRadius: '9999px', 
-                                            fontSize: '0.85rem', 
-                                            fontWeight: 'bold',
-                                            background: p.statut_paiement === 'SUCCESS' ? '#dcfce7' : '#f1f5f9',
-                                            color: p.statut_paiement === 'SUCCESS' ? '#16a34a' : '#64748b'
-                                        }}>
-                                            {p.statut_paiement === 'SUCCESS' ? 'Confirmé' : 'En attente'}
-                                        </span>
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <button onClick={() => generateAdminBadge(p)} style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '0.4rem 0.5rem', cursor: 'pointer', fontSize: '0.8rem', color: '#334155', fontWeight: 'bold' }}>📸 Badge</button>
+                                            <button onClick={() => generateAdminCertificate(p)} style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '0.4rem 0.5rem', cursor: 'pointer', fontSize: '0.8rem', color: '#334155', fontWeight: 'bold' }}>📜 Certificat</button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
