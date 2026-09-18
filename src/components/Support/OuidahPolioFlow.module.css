@@ -1,0 +1,492 @@
+.polioWrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    font-family: system-ui, -apple-system, sans-serif;
+    color: #0f172a;
+    padding: 2rem 1rem;
+}
+
+.heroSection {
+    text-align: center;
+}
+
+.title {
+    color: #FF5A1F;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.subtitle {
+    color: #334155;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+}
+
+.dateLoc {
+    font-weight: bold;
+    color: #475569;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+}
+
+.logos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.logos span {
+    background: #f1f5f9;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.ctaBtn {
+    background: #FF5A1F;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 3rem;
+    transition: background 0.2s;
+    box-shadow: 0 4px 6px -1px rgb(255 90 31 / 30%);
+}
+
+.ctaBtn:hover {
+    background: #e04812;
+}
+
+.ctaBtn:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.backBtn {
+    background: #e2e8f0;
+    color: #475569;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.backBtn:hover {
+    background: #cbd5e1;
+}
+
+.presentation {
+    text-align: left;
+    background: #f8fafc;
+    padding: 2rem;
+    border-radius: 1rem;
+    border: 1px solid #e2e8f0;
+}
+
+.presentation p {
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.activities {
+    list-style: none;
+    padding: 0;
+    margin-top: 1.5rem;
+}
+
+.activities li {
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    font-size: 1.1rem;
+}
+
+.selectorSection, .formSection, .successSection {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.sectionTitle {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: #0f172a;
+}
+
+.priceTag {
+    text-align: center;
+    background: #fef2f2;
+    color: #ef4444;
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    border-radius: 2rem;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin: 0 auto 2rem;
+    display: table;
+}
+
+.quickGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.qtyBtn, .qtyBtnActive {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 1rem;
+    border-radius: 0.75rem;
+    border: 2px solid #e2e8f0;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.qtyBtnActive {
+    border-color: #FF5A1F;
+    background: #fff7ed;
+}
+
+.qtyLabel {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+}
+
+.qtyBtnActive .qtyLabel {
+    color: #FF5A1F;
+}
+
+.qtyPrice {
+    font-size: 1rem;
+    color: #64748b;
+}
+
+.customSelector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.spinner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.spinner button {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    border: 2px solid #e2e8f0;
+    background: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #0f172a;
+    cursor: pointer;
+}
+
+.spinner input {
+    width: 100px;
+    height: 3rem;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.5rem;
+}
+
+.customResult {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #FF5A1F;
+    display: flex;
+    flex-direction: column;
+}
+
+.impactMessage {
+    text-align: center;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    margin-bottom: 2rem;
+    font-size: 1.25rem;
+}
+
+.impactSub {
+    font-size: 1rem;
+    color: #3b82f6;
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+.summaryCard {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+}
+
+.summaryCard h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+    color: #64748b;
+}
+
+.summaryRow {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.summaryTotal {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #0f172a;
+    border-top: 2px solid #e2e8f0;
+    padding-top: 1rem;
+}
+
+.typeSelector {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+}
+
+.typeSelector label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.infoForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.infoForm input[type="text"],
+.infoForm input[type="email"],
+.infoForm input[type="tel"] {
+    padding: 1rem;
+    font-size: 1.1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    width: 100%;
+}
+
+.consentLabel {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 1rem;
+    color: #475569;
+    line-height: 1.5;
+    cursor: pointer;
+}
+
+.consentLabel input {
+    margin-top: 0.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.loadingSection {
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.spinnerIcon {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #e2e8f0;
+    border-top-color: #FF5A1F;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 2rem auto;
+}
+
+.successIcon {
+    font-size: 5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.successSub {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #475569;
+    margin-bottom: 2rem;
+}
+
+.actionGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.actionBtn {
+    background: #FF5A1F;
+    color: white;
+    border: none;
+    padding: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.actionBtn:hover {
+    background: #e04812;
+}
+
+.actionBtnAlt {
+    background: #f1f5f9;
+    color: #334155;
+    border: 2px solid #cbd5e1;
+    padding: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.actionBtnAlt:hover {
+    background: #e2e8f0;
+}
+
+.badgeConfig {
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.badgeConfig input[type="file"] {
+    margin-top: 1rem;
+}
+
+.photoPreview {
+    margin-top: 1rem;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 1rem auto 0;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 10%);
+}
+
+.photoPreview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.statsBar {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.statBox {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+    flex: 1;
+    min-width: 120px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.statVal {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 0.25rem;
+}
+
+.statLabel {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.progressContainer {
+    background: #f1f5f9;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.progressHeader {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    color: #334155;
+    margin-bottom: 0.5rem;
+}
+
+.progressBar {
+    height: 1rem;
+    background: #e2e8f0;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: #FF5A1F;
+    border-radius: 1rem;
+    transition: width 1s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

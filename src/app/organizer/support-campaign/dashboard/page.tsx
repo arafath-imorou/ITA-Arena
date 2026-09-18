@@ -10,6 +10,7 @@ export default function SupportCampaignDashboard() {
     const { user, loading: authLoading } = useAuth();
     const [campaigns, setCampaigns] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [polioCampaignId, setPolioCampaignId] = useState<string | null>(null);
     
     // Aggregated stats
     const [stats, setStats] = useState({
@@ -185,6 +186,18 @@ export default function SupportCampaignDashboard() {
                                             >
                                                 👁️
                                             </a>
+                                            
+                                            {camp.slug === 'ouidah-sans-polio' && (
+                                                <button 
+                                                    className={styles.btnAction} 
+                                                    onClick={() => setPolioCampaignId(camp.id)}
+                                                    title="Statistiques Polio"
+                                                    style={{ background: '#FF5A1F', color: 'white', border: 'none' }}
+                                                >
+                                                    📊
+                                                </button>
+                                            )}
+
                                             <button 
                                                 className={styles.btnAction} 
                                                 onClick={() => handleCopyLink(camp.slug)}
@@ -199,7 +212,95 @@ export default function SupportCampaignDashboard() {
                         </tbody>
                     </table>
                 )}
+            {polioCampaignId && <PolioStatsModal campaignId={polioCampaignId} onClose={() => setPolioCampaignId(null)} />}
             </div>
         </div>
     );
 }
+
+
+function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose: () => void }) {
+    const [stats, setStats] = React.useState<any>(null);
+    const [loading, setLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        const fetchStats = async () => {
+            const { data, error } = await supabase
+                .from('support_participations')
+                .select('*')
+                .eq('campaign_id', campaignId);
+            
+            if (data) {
+                const confirmed = data.filter(d => d.statut_paiement === 'SUCCESS');
+                const pending = data.filter(d => d.statut_paiement === 'PENDING');
+                
+                setStats({
+                    soutiens: confirmed.length,
+                    vaccins: confirmed.reduce((acc, curr) => acc + (curr.nombre_de_vaccins || 0), 0),
+                    montant: confirmed.reduce((acc, curr) => acc + (curr.montant_total || 0), 0),
+                    enAttente: pending.length,
+                    badges: confirmed.length, // Assuming 1 badge generated per success
+                    certificats: confirmed.length,
+                    participations: data
+                });
+            }
+            setLoading(false);
+        };
+        fetchStats();
+    }, [campaignId]);
+
+    if (loading) return <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ background: 'white', padding: '2rem', borderRadius: '8px' }}>Chargement...</div></div>;
+
+    return (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ background: 'white', padding: '2rem', borderRadius: '8px', maxWidth: '800px', width: '90%', maxHeight: '90vh', overflowY: 'auto' }}>
+                <h2 style={{ marginBottom: '1rem' }}>Statistiques - Ouidah Sans Polio</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+                    <div style={{ padding: '1rem', background: '#f1f5f9', borderRadius: '8px' }}>
+                        <h3>Total Vaccins Financés</h3>
+                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#FF5A1F' }}>{stats.vaccins}</p>
+                    </div>
+                    <div style={{ padding: '1rem', background: '#f1f5f9', borderRadius: '8px' }}>
+                        <h3>Montant Mobilisé</h3>
+                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#10b981' }}>{new Intl.NumberFormat('fr-FR').format(stats.montant)} FCFA</p>
+                    </div>
+                    <div style={{ padding: '1rem', background: '#f1f5f9', borderRadius: '8px' }}>
+                        <h3>Contributions Confirmées</h3>
+                        <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{stats.soutiens}</p>
+                    </div>
+                    <div style={{ padding: '1rem', background: '#f1f5f9', borderRadius: '8px' }}>
+                        <h3>Contributions en Attente</h3>
+                        <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{stats.enAttente}</p>
+                    </div>
+                </div>
+
+                <h3>Derniers Contributeurs</h3>
+                <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', marginTop: '1rem' }}>
+                    <thead>
+                        <tr style={{ borderBottom: '2px solid #e2e8f0' }}>
+                            <th style={{ padding: '0.5rem' }}>Nom</th>
+                            <th style={{ padding: '0.5rem' }}>Vaccins</th>
+                            <th style={{ padding: '0.5rem' }}>Montant</th>
+                            <th style={{ padding: '0.5rem' }}>Statut</th>
+                            <th style={{ padding: '0.5rem' }}>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {stats.participations.slice(0, 20).map((p: any) => (
+                            <tr key={p.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
+                                <td style={{ padding: '0.5rem' }}>{p.nom_contributeur || 'Anonyme'} {p.is_company ? '(Entreprise)' : ''}</td>
+                                <td style={{ padding: '0.5rem' }}>{p.nombre_de_vaccins || 0}</td>
+                                <td style={{ padding: '0.5rem' }}>{new Intl.NumberFormat('fr-FR').format(p.montant_total || 0)}</td>
+                                <td style={{ padding: '0.5rem' }}>{p.statut_paiement}</td>
+                                <td style={{ padding: '0.5rem' }}>{new Date(p.created_at).toLocaleDateString()}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+
+                <button onClick={onClose} style={{ marginTop: '2rem', padding: '0.75rem 1.5rem', background: '#e2e8f0', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Fermer</button>
+            </div>
+        </div>
+    );
+}
+

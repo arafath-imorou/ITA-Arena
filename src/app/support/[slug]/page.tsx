@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./SupportPage.module.css";
 import PhotoGenerator from "@/components/PhotoGenerator/PhotoGenerator";
+import OuidahPolioFlow from "@/components/Support/OuidahPolioFlow";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -158,6 +159,11 @@ export default function SupportCampaignPage() {
                 <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
             </div>
         );
+    }
+
+    if (campaign && campaign.slug.includes('ouidah-sans-polio')) {
+        console.log('RENDERING OUIDAH');
+        return <OuidahPolioFlow campaign={campaign} />;
     }
 
     if (!campaign) {
