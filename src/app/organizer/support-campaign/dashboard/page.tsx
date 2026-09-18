@@ -241,8 +241,7 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
                     soutiens: confirmed.length,
                     vaccins: confirmed.reduce((acc: number, curr: any) => acc + (curr.nombre_de_vaccins || 0), 0),
                     montant: confirmed.reduce((acc: number, curr: any) => acc + (curr.montant_total || 0), 0),
-                    enAttente: pending.length,
-                    participations: data
+                    participations: confirmed
                 });
             }
             setLoading(false);
@@ -310,10 +309,7 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
                         <h3 style={{ margin: '0 0 0.5rem 0', color: '#475569', fontSize: '0.9rem', textTransform: 'uppercase' }}>Contributions Confirmées</h3>
                         <p style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#334155' }}>{stats.soutiens}</p>
                     </div>
-                    <div style={{ padding: '1.5rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                        <h3 style={{ margin: '0 0 0.5rem 0', color: '#475569', fontSize: '0.9rem', textTransform: 'uppercase' }}>Contributions en Attente</h3>
-                        <p style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#94a3b8' }}>{stats.enAttente}</p>
-                    </div>
+                    
                 </div>
 
                 <h3 style={{ marginBottom: '1rem', color: '#334155' }}>Détails des contributeurs</h3>
