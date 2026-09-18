@@ -15,7 +15,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
     const [step, setStep] = useState<'intro' | 'selector' | 'form' | 'payment' | 'success'>('intro');
     
     // Vaccine selection
-    const pricePerVaccine = campaign.price_per_unit || 500;
+    const pricePerVaccine = campaign.price_per_unit || 525;
     const [vaccineCount, setVaccineCount] = useState<number>(10);
     const [isCustom, setIsCustom] = useState(false);
     
