@@ -330,18 +330,8 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                 <div className={styles.heroSection}>
                     <h1 className={styles.title}>OUIDAH SANS POLIO</h1>
                     <h2 className={styles.subtitle}>« Mobilisons-nous pour un monde sans polio. »</h2>
-                    <p className={styles.dateLoc}>24 OCTOBRE 2026<br/>OUIDAH — BÉNIN</p>
-                    
-                    <div className={styles.logos}>
-                        <span>Rotary</span>
-                        <span>District 9103</span>
-                        <span>End Polio Now</span>
-                        <span>OMS</span>
-                        <span>UNICEF</span>
-                        <span>Ministère de la Santé</span>
-                    </div>
 
-                    <div className={styles.statsBar}>
+<div className={styles.statsBar}>
                         <div className={styles.statBox}>
                             <span className={styles.statVal}>{stats.vaccins}</span>
                             <span className={styles.statLabel}>VACCINS FINANCÉS</span>
@@ -369,6 +359,17 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                     <button className={styles.ctaBtn} onClick={() => setStep('selector')}>
                         JE SOUTIENS LA CAUSE
                     </button>
+
+<p className={styles.dateLoc}>24 OCTOBRE 2026<br/>OUIDAH — BÉNIN</p>
+                    
+                    <div className={styles.logos}>
+                        <span>Rotary</span>
+                        <span>District 9103</span>
+                        <span>End Polio Now</span>
+                        <span>OMS</span>
+                        <span>UNICEF</span>
+                        <span>Ministère de la Santé</span>
+                    </div>
 
                     <div className={styles.presentation}>
                         <p>Ouidah Sans Polio est une mobilisation citoyenne autour de l'éradication de la poliomyélite.</p>
