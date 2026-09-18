@@ -1636,10 +1636,10 @@ export default function AdminPage() {
 
 
 function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose: () => void }) {
-    const [stats, setStats] = React.useState<any>(null);
-    const [loading, setLoading] = React.useState(true);
+    const [stats, setStats] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const fetchStats = async () => {
             const { data, error } = await supabase
                 .from('support_participations')
