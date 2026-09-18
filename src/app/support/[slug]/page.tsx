@@ -161,7 +161,7 @@ export default function SupportCampaignPage() {
         );
     }
 
-    if (campaign && campaign.slug.includes('ouidah-sans-polio')) {
+    if (campaign && (String(campaign.slug).toLowerCase().includes('ouidah') || String(campaign.title).toLowerCase().includes('ouidah'))) {
         console.log('RENDERING OUIDAH');
         return <OuidahPolioFlow campaign={campaign} />;
     }
@@ -308,3 +308,5 @@ export default function SupportCampaignPage() {
         </div>
     );
 }
+
+// FORCE HOT RELOAD
