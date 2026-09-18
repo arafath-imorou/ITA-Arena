@@ -189,7 +189,7 @@ export default function SupportCampaignDashboard() {
                                                 👁️
                                             </a>
                                             
-                                            {camp.slug.toLowerCase().includes(\'ouidah\') && (
+                                            {camp.slug.toLowerCase().includes('ouidah') && (
                                                 <button 
                                                     className={styles.btnAction} 
                                                     onClick={() => setPolioCampaignId(camp.id)}
