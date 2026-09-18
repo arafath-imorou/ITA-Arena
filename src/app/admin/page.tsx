@@ -18,6 +18,7 @@ function AdminDashboardContent() {
     const { user } = useAuth();
     const router = useRouter();
     const [loading, setLoading] = useState(true);
+    const [polioAdminCampaignId, setPolioAdminCampaignId] = useState<string | null>(null);
     const [rawEvents, setRawEvents] = useState<any[]>([]);
     const [rawCampaigns, setRawCampaigns] = useState<any[]>([]);
     const [rawProfiles, setRawProfiles] = useState<any[]>([]);
@@ -500,6 +501,7 @@ function AdminDashboardContent() {
                 {userRole !== "visualiseur" && <Link href="/" className={styles.badgeInfo}>Retour au site</Link>}
             </div>
 
+            {polioAdminCampaignId && <PolioStatsModal campaignId={polioAdminCampaignId} onClose={() => setPolioAdminCampaignId(null)} />}
             {/* Main Tabs */}
             <div className={styles.section} style={{ marginBottom: '2rem', display: 'flex', gap: '1rem', borderBottom: '2px solid #e2e8f0', paddingBottom: '0' }}>
                 <button 
@@ -845,6 +847,15 @@ function AdminDashboardContent() {
                                             <td>{c.views || 0}</td>
                                             <td>
                                                 <div style={{ display: 'flex', gap: '0.4rem' }}>
+                                                    {c.slug && c.slug.toLowerCase().includes('ouidah') && (
+                                                        <button 
+                                                            onClick={() => setPolioAdminCampaignId(c.id)}
+                                                            className={styles.badge} 
+                                                            style={{ border: 'none', cursor: 'pointer', background: '#FF5A1F', color: 'white' }} 
+                                                            title="Statistiques Polio">
+                                                            📊
+                                                        </button>
+                                                    )}
                                                     <a href={`/support/${c.slug}`} target="_blank" rel="noreferrer" className={styles.badge} style={{ textDecoration: 'none', background: '#e0f2fe', color: '#0369a1' }} title="Voir la page publique">👁️</a>
                                                     <button onClick={() => toggleSupportStatus(c.id, c.status)} className={styles.badge} style={{ border: 'none', cursor: 'pointer', background: c.status === 'active' ? '#fef3c7' : '#dcfce7', color: c.status === 'active' ? '#92400e' : '#166534', fontWeight: 'bold' }} title={c.status === 'active' ? "Désactiver" : "Valider & Publier"}>{c.status === 'active' ? "⏸️" : "✅ Valider"}</button>
                                                     {userRole !== "visualiseur" && <Link href={`/organizer/support-campaign/create?edit=${c.id}`} className={styles.badge} style={{ display: 'inline-block', textDecoration: 'none', background: '#fef9c3', color: '#854d0e', textAlign: 'center' }} title="Modifier">✏️</Link>}
@@ -1620,5 +1631,150 @@ export default function AdminPage() {
         <Suspense fallback={<div>Chargement...</div>}>
             <AdminDashboardContent />
         </Suspense>
+    );
+}
+
+
+function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose: () => void }) {
+    const [stats, setStats] = React.useState<any>(null);
+    const [loading, setLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        const fetchStats = async () => {
+            const { data, error } = await supabase
+                .from('support_participations')
+                .select('*')
+                .eq('campaign_id', campaignId)
+                .order('created_at', { ascending: false });
+            
+            if (data) {
+                const confirmed = data.filter((d: any) => d.statut_paiement === 'SUCCESS');
+                const pending = data.filter((d: any) => d.statut_paiement === 'PENDING');
+                
+                setStats({
+                    soutiens: confirmed.length,
+                    vaccins: confirmed.reduce((acc: number, curr: any) => acc + (curr.nombre_de_vaccins || 0), 0),
+                    montant: confirmed.reduce((acc: number, curr: any) => acc + (curr.montant_total || 0), 0),
+                    enAttente: pending.length,
+                    participations: data
+                });
+            }
+            setLoading(false);
+        };
+        fetchStats();
+    }, [campaignId]);
+
+    const handleDownloadPDF = () => {
+        if (!stats) return;
+        const doc = new jsPDF();
+        
+        doc.setFontSize(18);
+        doc.text("Rapport - Ouidah Sans Polio", 14, 22);
+        
+        doc.setFontSize(12);
+        doc.text(`Total Vaccins Financés: ${stats.vaccins}`, 14, 32);
+        doc.text(`Montant Mobilisé: ${new Intl.NumberFormat('fr-FR').format(stats.montant)} FCFA`, 14, 40);
+        doc.text(`Contributions Confirmées: ${stats.soutiens}`, 14, 48);
+
+        const tableColumn = ["Date", "Nom", "Email", "Vaccins", "Montant", "Statut"];
+        const tableRows = stats.participations.map((p: any) => [
+            new Date(p.created_at).toLocaleDateString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+            p.is_company ? p.company_name : p.nom_contributeur || '-',
+            p.email_contributeur || '-',
+            p.nombre_de_vaccins || 0,
+            `${p.montant_total || 0} FCFA`,
+            p.statut_paiement === 'SUCCESS' ? 'Confirmé' : 'En attente'
+        ]);
+
+        (doc as any).autoTable({
+            startY: 60,
+            head: [tableColumn],
+            body: tableRows,
+            theme: 'grid',
+            styles: { fontSize: 8 },
+            headStyles: { fillColor: [255, 90, 31] }
+        });
+
+        doc.save("Rapport_OuidahSansPolio.pdf");
+    };
+
+    if (loading) return <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ background: 'white', padding: '2rem', borderRadius: '8px' }}>Chargement...</div></div>;
+
+    return (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+            <div style={{ background: 'white', padding: '2rem', borderRadius: '12px', maxWidth: '1000px', width: '100%', maxHeight: '95vh', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                    <h2 style={{ margin: 0, color: '#0f172a' }}>Statistiques - Ouidah Sans Polio</h2>
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                        <button onClick={handleDownloadPDF} style={{ padding: '0.75rem 1.5rem', background: '#FF5A1F', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>📄 Télécharger PDF</button>
+                        <button onClick={onClose} style={{ padding: '0.75rem 1.5rem', background: '#e2e8f0', color: '#475569', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Fermer</button>
+                    </div>
+                </div>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+                    <div style={{ padding: '1.5rem', background: '#fff7ed', borderRadius: '8px', border: '1px solid #ffedd5' }}>
+                        <h3 style={{ margin: '0 0 0.5rem 0', color: '#c2410c', fontSize: '0.9rem', textTransform: 'uppercase' }}>Total Vaccins Financés</h3>
+                        <p style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#ea580c' }}>{stats.vaccins}</p>
+                    </div>
+                    <div style={{ padding: '1.5rem', background: '#f0fdf4', borderRadius: '8px', border: '1px solid #dcfce7' }}>
+                        <h3 style={{ margin: '0 0 0.5rem 0', color: '#15803d', fontSize: '0.9rem', textTransform: 'uppercase' }}>Montant Mobilisé</h3>
+                        <p style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#16a34a' }}>{new Intl.NumberFormat('fr-FR').format(stats.montant)} <span style={{fontSize:'1.2rem'}}>FCFA</span></p>
+                    </div>
+                    <div style={{ padding: '1.5rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                        <h3 style={{ margin: '0 0 0.5rem 0', color: '#475569', fontSize: '0.9rem', textTransform: 'uppercase' }}>Contributions Confirmées</h3>
+                        <p style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#334155' }}>{stats.soutiens}</p>
+                    </div>
+                    <div style={{ padding: '1.5rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                        <h3 style={{ margin: '0 0 0.5rem 0', color: '#475569', fontSize: '0.9rem', textTransform: 'uppercase' }}>Contributions en Attente</h3>
+                        <p style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#94a3b8' }}>{stats.enAttente}</p>
+                    </div>
+                </div>
+
+                <h3 style={{ marginBottom: '1rem', color: '#334155' }}>Détails des contributeurs</h3>
+                <div style={{ overflowY: 'auto', flex: 1, border: '1px solid #e2e8f0', borderRadius: '8px' }}>
+                    <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+                        <thead style={{ position: 'sticky', top: 0, background: '#f8fafc', zIndex: 1 }}>
+                            <tr>
+                                <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', color: '#64748b', fontSize: '0.9rem' }}>Date</th>
+                                <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', color: '#64748b', fontSize: '0.9rem' }}>Nom</th>
+                                <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', color: '#64748b', fontSize: '0.9rem' }}>Vaccins</th>
+                                <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', color: '#64748b', fontSize: '0.9rem' }}>Montant</th>
+                                <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', color: '#64748b', fontSize: '0.9rem' }}>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {stats.participations.map((p: any) => (
+                                <tr key={p.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
+                                    <td style={{ padding: '1rem' }}>{new Date(p.created_at).toLocaleDateString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</td>
+                                    <td style={{ padding: '1rem', fontWeight: '500' }}>
+                                        {p.is_company ? p.company_name : (p.nom_contributeur || '-')}
+                                        <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 'normal' }}>{p.email_contributeur}</div>
+                                    </td>
+                                    <td style={{ padding: '1rem', fontWeight: 'bold' }}>{p.nombre_de_vaccins || 0}</td>
+                                    <td style={{ padding: '1rem' }}>{p.montant_total || 0} FCFA</td>
+                                    <td style={{ padding: '1rem' }}>
+                                        <span style={{ 
+                                            padding: '0.25rem 0.75rem', 
+                                            borderRadius: '9999px', 
+                                            fontSize: '0.85rem', 
+                                            fontWeight: 'bold',
+                                            background: p.statut_paiement === 'SUCCESS' ? '#dcfce7' : '#f1f5f9',
+                                            color: p.statut_paiement === 'SUCCESS' ? '#16a34a' : '#64748b'
+                                        }}>
+                                            {p.statut_paiement === 'SUCCESS' ? 'Confirmé' : 'En attente'}
+                                        </span>
+                                    </td>
+                                </tr>
+                            ))}
+                            {stats.participations.length === 0 && (
+                                <tr>
+                                    <td colSpan={5} style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>Aucune participation pour le moment.</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     );
 }
