@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Dashboard.module.css";
 import { supabase } from "@/lib/supabase";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 
@@ -187,7 +189,7 @@ export default function SupportCampaignDashboard() {
                                                 👁️
                                             </a>
                                             
-                                            {camp.slug === 'ouidah-sans-polio' && (
+                                            {camp.slug.toLowerCase().includes(\'ouidah\') && (
                                                 <button 
                                                     className={styles.btnAction} 
                                                     onClick={() => setPolioCampaignId(camp.id)}
@@ -228,19 +230,18 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
             const { data, error } = await supabase
                 .from('support_participations')
                 .select('*')
-                .eq('campaign_id', campaignId);
+                .eq('campaign_id', campaignId)
+                .order('created_at', { ascending: false });
             
             if (data) {
-                const confirmed = data.filter(d => d.statut_paiement === 'SUCCESS');
-                const pending = data.filter(d => d.statut_paiement === 'PENDING');
+                const confirmed = data.filter((d: any) => d.statut_paiement === 'SUCCESS');
+                const pending = data.filter((d: any) => d.statut_paiement === 'PENDING');
                 
                 setStats({
                     soutiens: confirmed.length,
-                    vaccins: confirmed.reduce((acc, curr) => acc + (curr.nombre_de_vaccins || 0), 0),
-                    montant: confirmed.reduce((acc, curr) => acc + (curr.montant_total || 0), 0),
+                    vaccins: confirmed.reduce((acc: number, curr: any) => acc + (curr.nombre_de_vaccins || 0), 0),
+                    montant: confirmed.reduce((acc: number, curr: any) => acc + (curr.montant_total || 0), 0),
                     enAttente: pending.length,
-                    badges: confirmed.length, // Assuming 1 badge generated per success
-                    certificats: confirmed.length,
                     participations: data
                 });
             }
@@ -249,58 +250,117 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
         fetchStats();
     }, [campaignId]);
 
+    const handleDownloadPDF = () => {
+        if (!stats) return;
+        const doc = new jsPDF();
+        
+        doc.setFontSize(18);
+        doc.text("Rapport - Ouidah Sans Polio", 14, 22);
+        
+        doc.setFontSize(12);
+        doc.text(`Total Vaccins Financés: ${stats.vaccins}`, 14, 32);
+        doc.text(`Montant Mobilisé: ${new Intl.NumberFormat('fr-FR').format(stats.montant)} FCFA`, 14, 40);
+        doc.text(`Contributions Confirmées: ${stats.soutiens}`, 14, 48);
+
+        const tableColumn = ["Date", "Nom", "Email", "Vaccins", "Montant", "Statut"];
+        const tableRows = stats.participations.map((p: any) => [
+            new Date(p.created_at).toLocaleDateString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+            p.is_company ? p.company_name : p.nom_contributeur || '-',
+            p.email_contributeur || '-',
+            p.nombre_de_vaccins || 0,
+            `${p.montant_total || 0} FCFA`,
+            p.statut_paiement === 'SUCCESS' ? 'Confirmé' : 'En attente'
+        ]);
+
+        (doc as any).autoTable({
+            startY: 60,
+            head: [tableColumn],
+            body: tableRows,
+            theme: 'grid',
+            styles: { fontSize: 8 },
+            headStyles: { fillColor: [255, 90, 31] }
+        });
+
+        doc.save("Rapport_OuidahSansPolio.pdf");
+    };
+
     if (loading) return <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ background: 'white', padding: '2rem', borderRadius: '8px' }}>Chargement...</div></div>;
 
     return (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ background: 'white', padding: '2rem', borderRadius: '8px', maxWidth: '800px', width: '90%', maxHeight: '90vh', overflowY: 'auto' }}>
-                <h2 style={{ marginBottom: '1rem' }}>Statistiques - Ouidah Sans Polio</h2>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
-                    <div style={{ padding: '1rem', background: '#f1f5f9', borderRadius: '8px' }}>
-                        <h3>Total Vaccins Financés</h3>
-                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#FF5A1F' }}>{stats.vaccins}</p>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+            <div style={{ background: 'white', padding: '2rem', borderRadius: '12px', maxWidth: '1000px', width: '100%', maxHeight: '95vh', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                    <h2 style={{ margin: 0, color: '#0f172a' }}>Statistiques - Ouidah Sans Polio</h2>
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                        <button onClick={handleDownloadPDF} style={{ padding: '0.75rem 1.5rem', background: '#FF5A1F', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>📄 Télécharger PDF</button>
+                        <button onClick={onClose} style={{ padding: '0.75rem 1.5rem', background: '#e2e8f0', color: '#475569', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Fermer</button>
                     </div>
-                    <div style={{ padding: '1rem', background: '#f1f5f9', borderRadius: '8px' }}>
-                        <h3>Montant Mobilisé</h3>
-                        <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#10b981' }}>{new Intl.NumberFormat('fr-FR').format(stats.montant)} FCFA</p>
+                </div>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+                    <div style={{ padding: '1.5rem', background: '#fff7ed', borderRadius: '8px', border: '1px solid #ffedd5' }}>
+                        <h3 style={{ margin: '0 0 0.5rem 0', color: '#c2410c', fontSize: '0.9rem', textTransform: 'uppercase' }}>Total Vaccins Financés</h3>
+                        <p style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#ea580c' }}>{stats.vaccins}</p>
                     </div>
-                    <div style={{ padding: '1rem', background: '#f1f5f9', borderRadius: '8px' }}>
-                        <h3>Contributions Confirmées</h3>
-                        <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{stats.soutiens}</p>
+                    <div style={{ padding: '1.5rem', background: '#f0fdf4', borderRadius: '8px', border: '1px solid #dcfce7' }}>
+                        <h3 style={{ margin: '0 0 0.5rem 0', color: '#15803d', fontSize: '0.9rem', textTransform: 'uppercase' }}>Montant Mobilisé</h3>
+                        <p style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#16a34a' }}>{new Intl.NumberFormat('fr-FR').format(stats.montant)} <span style={{fontSize:'1.2rem'}}>FCFA</span></p>
                     </div>
-                    <div style={{ padding: '1rem', background: '#f1f5f9', borderRadius: '8px' }}>
-                        <h3>Contributions en Attente</h3>
-                        <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{stats.enAttente}</p>
+                    <div style={{ padding: '1.5rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                        <h3 style={{ margin: '0 0 0.5rem 0', color: '#475569', fontSize: '0.9rem', textTransform: 'uppercase' }}>Contributions Confirmées</h3>
+                        <p style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#334155' }}>{stats.soutiens}</p>
+                    </div>
+                    <div style={{ padding: '1.5rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                        <h3 style={{ margin: '0 0 0.5rem 0', color: '#475569', fontSize: '0.9rem', textTransform: 'uppercase' }}>Contributions en Attente</h3>
+                        <p style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold', color: '#94a3b8' }}>{stats.enAttente}</p>
                     </div>
                 </div>
 
-                <h3>Derniers Contributeurs</h3>
-                <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', marginTop: '1rem' }}>
-                    <thead>
-                        <tr style={{ borderBottom: '2px solid #e2e8f0' }}>
-                            <th style={{ padding: '0.5rem' }}>Nom</th>
-                            <th style={{ padding: '0.5rem' }}>Vaccins</th>
-                            <th style={{ padding: '0.5rem' }}>Montant</th>
-                            <th style={{ padding: '0.5rem' }}>Statut</th>
-                            <th style={{ padding: '0.5rem' }}>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {stats.participations.slice(0, 20).map((p: any) => (
-                            <tr key={p.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                                <td style={{ padding: '0.5rem' }}>{p.nom_contributeur || 'Anonyme'} {p.is_company ? '(Entreprise)' : ''}</td>
-                                <td style={{ padding: '0.5rem' }}>{p.nombre_de_vaccins || 0}</td>
-                                <td style={{ padding: '0.5rem' }}>{new Intl.NumberFormat('fr-FR').format(p.montant_total || 0)}</td>
-                                <td style={{ padding: '0.5rem' }}>{p.statut_paiement}</td>
-                                <td style={{ padding: '0.5rem' }}>{new Date(p.created_at).toLocaleDateString()}</td>
+                <h3 style={{ marginBottom: '1rem', color: '#334155' }}>Détails des contributeurs</h3>
+                <div style={{ overflowY: 'auto', flex: 1, border: '1px solid #e2e8f0', borderRadius: '8px' }}>
+                    <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+                        <thead style={{ position: 'sticky', top: 0, background: '#f8fafc', zIndex: 1 }}>
+                            <tr>
+                                <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', color: '#64748b', fontSize: '0.9rem' }}>Date</th>
+                                <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', color: '#64748b', fontSize: '0.9rem' }}>Nom</th>
+                                <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', color: '#64748b', fontSize: '0.9rem' }}>Vaccins</th>
+                                <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', color: '#64748b', fontSize: '0.9rem' }}>Montant</th>
+                                <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', color: '#64748b', fontSize: '0.9rem' }}>Statut</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-
-                <button onClick={onClose} style={{ marginTop: '2rem', padding: '0.75rem 1.5rem', background: '#e2e8f0', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Fermer</button>
+                        </thead>
+                        <tbody>
+                            {stats.participations.map((p: any) => (
+                                <tr key={p.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
+                                    <td style={{ padding: '1rem' }}>{new Date(p.created_at).toLocaleDateString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</td>
+                                    <td style={{ padding: '1rem', fontWeight: '500' }}>
+                                        {p.is_company ? p.company_name : (p.nom_contributeur || '-')}
+                                        <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 'normal' }}>{p.email_contributeur}</div>
+                                    </td>
+                                    <td style={{ padding: '1rem', fontWeight: 'bold' }}>{p.nombre_de_vaccins || 0}</td>
+                                    <td style={{ padding: '1rem' }}>{p.montant_total || 0} FCFA</td>
+                                    <td style={{ padding: '1rem' }}>
+                                        <span style={{ 
+                                            padding: '0.25rem 0.75rem', 
+                                            borderRadius: '9999px', 
+                                            fontSize: '0.85rem', 
+                                            fontWeight: 'bold',
+                                            background: p.statut_paiement === 'SUCCESS' ? '#dcfce7' : '#f1f5f9',
+                                            color: p.statut_paiement === 'SUCCESS' ? '#16a34a' : '#64748b'
+                                        }}>
+                                            {p.statut_paiement === 'SUCCESS' ? 'Confirmé' : 'En attente'}
+                                        </span>
+                                    </td>
+                                </tr>
+                            ))}
+                            {stats.participations.length === 0 && (
+                                <tr>
+                                    <td colSpan={5} style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>Aucune participation pour le moment.</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     );
 }
-
