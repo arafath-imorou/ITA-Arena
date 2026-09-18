@@ -123,9 +123,9 @@
 
 .sectionTitle {
     text-align: center;
-    font-size: 1.8rem;
+    font-size: 1.4rem;
     font-weight: 800;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
     color: #0f172a;
 }
 
@@ -134,19 +134,19 @@
     background: #fef2f2;
     color: #ef4444;
     display: inline-block;
-    padding: 0.5rem 1.5rem;
-    border-radius: 2rem;
+    padding: 0.25rem 1rem;
+    border-radius: 1rem;
     font-weight: bold;
-    font-size: 1.2rem;
-    margin: 0 auto 2rem;
+    font-size: 1rem;
+    margin: 0 auto 1rem;
     display: table;
 }
 
 .quickGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .qtyBtn, .qtyBtnActive {
@@ -154,8 +154,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 1.5rem 1rem;
-    border-radius: 0.75rem;
+    padding: 0.75rem 0.5rem;
+    border-radius: 0.5rem;
     border: 2px solid #e2e8f0;
     background: white;
     cursor: pointer;
@@ -168,10 +168,10 @@
 }
 
 .qtyLabel {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     font-weight: bold;
     color: #0f172a;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .qtyBtnActive .qtyLabel {
@@ -179,7 +179,7 @@
 }
 
 .qtyPrice {
-    font-size: 1rem;
+    font-size: 0.85rem;
     color: #64748b;
 }
 
@@ -187,8 +187,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    gap: 1rem;
+    margin-bottom: 1rem;
 }
 
 .spinner {
@@ -198,22 +198,22 @@
 }
 
 .spinner button {
-    width: 3rem;
-    height: 3rem;
+    width: 2.5rem;
+    height: 2.5rem;
     border-radius: 50%;
     border: 2px solid #e2e8f0;
     background: white;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: bold;
     color: #0f172a;
     cursor: pointer;
 }
 
 .spinner input {
-    width: 100px;
-    height: 3rem;
+    width: 80px;
+    height: 2.5rem;
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: bold;
     border: 2px solid #e2e8f0;
     border-radius: 0.5rem;
@@ -231,24 +231,24 @@
     text-align: center;
     background: #eff6ff;
     border: 1px solid #bfdbfe;
-    padding: 1.5rem;
-    border-radius: 0.75rem;
-    margin-bottom: 2rem;
-    font-size: 1.25rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
 }
 
 .impactSub {
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: #3b82f6;
-    margin-top: 0.5rem;
+    margin-top: 0.25rem;
     font-style: italic;
 }
 
 .summaryCard {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
-    padding: 1.5rem;
-    border-radius: 0.75rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
 }
 
 .summaryCard h3 {
