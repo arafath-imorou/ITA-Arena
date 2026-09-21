@@ -8,6 +8,9 @@ import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
+export const revalidate = 60;
+
+
 export default function SupportCampaignPage() {
     const params = useParams();
     const slug = params.slug as string;
@@ -172,7 +175,7 @@ export default function SupportCampaignPage() {
                 <h1 style={{ fontSize: '3rem', color: '#0A2E73', marginBottom: '1rem' }}>404</h1>
                 <h2>Campagne introuvable</h2>
                 <p style={{ color: '#666', marginBottom: '2rem' }}>Cette campagne n'existe pas ou n'est plus active.</p>
-                <Link href="/" className={styles.btnParticipate} style={{ textDecoration: 'none' }}>
+                <Link prefetch={false} href="/" className={styles.btnParticipate} style={{ textDecoration: 'none' }}>
                     Retour à l'accueil
                 </Link>
             </div>

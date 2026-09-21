@@ -11,8 +11,7 @@ interface HomeButtonProps {
 
 export default function HomeButton({ variant = "light", className = "", label = "Accueil" }: HomeButtonProps) {
     return (
-        <Link 
-            href="/"
+        <Link prefetch={false} href="/"
             className={`${styles.backButton} ${variant === "dark" ? styles.backButtonDark : ""} ${className}`}
             aria-label="Retour à l'accueil"
         >

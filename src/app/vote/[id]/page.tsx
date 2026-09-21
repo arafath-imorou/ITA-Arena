@@ -6,6 +6,9 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import styles from "./PublicVote.module.css";
 import Script from "next/script";
 
+export const revalidate = 60;
+
+
 declare global {
     interface Window {
         FedaPay: any;

@@ -38,7 +38,7 @@ function EventsListContent() {
                     <h1 className={styles.title}>Tous mes Événements</h1>
                     <p className={styles.subtitle}>Liste complète de vos événements créés</p>
                 </div>
-                <Link href="/organizer/create" className={styles.createBtn}>
+                <Link prefetch={false} href="/organizer/create" className={styles.createBtn}>
                     <span>+</span> Nouvel événement
                 </Link>
             </div>
@@ -58,7 +58,7 @@ function EventsListContent() {
                                 </div>
                             </div>
                             <div className={styles.eventActions}>
-                                <Link href={`/organizer/create?edit=${event.id}`} className={styles.editBtn}>Modifier</Link>
+                                <Link prefetch={false} href={`/organizer/create?edit=${event.id}`} className={styles.editBtn}>Modifier</Link>
                                 <button className={styles.editBtn} style={{ color: '#e53e3e', borderColor: '#fed7d7' }}>Supprimer</button>
                             </div>
                         </div>
@@ -66,7 +66,7 @@ function EventsListContent() {
                 ) : (
                     <div className={styles.emptyState}>
                         <p>Aucun événement trouvé.</p>
-                        <Link href="/organizer/create" className={styles.smallBtn}>Créer mon premier événement</Link>
+                        <Link prefetch={false} href="/organizer/create" className={styles.smallBtn}>Créer mon premier événement</Link>
                     </div>
                 )}
             </div>

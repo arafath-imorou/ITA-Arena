@@ -184,7 +184,7 @@ export default function BlogPage() {
                 ) : news.length > 0 ? (
                     <div className={styles.blogGrid}>
                         {news.map((item) => (
-                            <Link key={item.id} href={`/blog/${item.id}`} className={styles.blogCard}>
+                            <Link prefetch={false} key={item.id} href={`/blog/${item.id}`} className={styles.blogCard}>
                                 <div className={styles.imageWrapper}>
                                     <img 
                                         src={item.image?.startsWith('assets') ? `/${item.image}` : item.image} 

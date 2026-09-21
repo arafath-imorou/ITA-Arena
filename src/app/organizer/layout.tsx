@@ -50,7 +50,7 @@ export default function OrganizerLayout({
             {/* Sidebar */}
             <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : ""}`}>
                 <div className={styles.sidebarHeader}>
-                    <Link href="/" className={styles.logo}>
+                    <Link prefetch={false} href="/" className={styles.logo}>
                         <img
                             src="/images/logo/ita_arena_logo.png"
                             alt="ITA Arena Logo"
@@ -60,24 +60,21 @@ export default function OrganizerLayout({
                 </div>
 
                 <nav className={styles.sideNav} onClick={() => setIsSidebarOpen(false)}>
-                    <Link
-                        href="/"
+                    <Link prefetch={false} href="/"
                         className={styles.navItem}
                         style={{ color: '#0369a1', background: '#e0f2fe', fontWeight: 'bold' }}
                     >
                         <span className={styles.navIcon}>🏠</span> Retour à l'accueil
                     </Link>
 
-                    <Link
-                        href="/organizer"
+                    <Link prefetch={false} href="/organizer"
                         className={`${styles.navItem} ${pathname === '/organizer' ? styles.activeNavItem : ''}`}
                     >
                         <span className={styles.navIcon}>📊</span> Tableau de bord
                     </Link>
 
                     {hasAdminAccess && (
-                        <Link
-                            href="/admin"
+                        <Link prefetch={false} href="/admin"
                             className={`${styles.navItem}`}
                             style={{ background: 'rgba(255, 90, 31, 0.1)', color: '#ff5a1f', fontWeight: 'bold', borderLeft: '4px solid #ff5a1f' }}
                         >
@@ -87,14 +84,12 @@ export default function OrganizerLayout({
 
                     <div className={styles.navGroup}>
                         <span className={styles.groupLabel}>Événements</span>
-                        <Link
-                            href="/organizer/create"
+                        <Link prefetch={false} href="/organizer/create"
                             className={`${styles.navItem} ${pathname === '/organizer/create' ? styles.activeNavItem : ''}`}
                         >
                             <span className={styles.navIcon}>➕</span> Créer un événement
                         </Link>
-                        <Link
-                            href="/organizer?mode=events"
+                        <Link prefetch={false} href="/organizer?mode=events"
                             className={`${styles.navItem} ${pathname === '/organizer' && (new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('mode') !== 'cotisations') ? styles.activeNavItem : ''}`}
                         >
                             <span className={styles.navIcon}>📊</span> Dashboard Événements
@@ -103,14 +98,12 @@ export default function OrganizerLayout({
 
                     <div className={styles.navGroup}>
                         <span className={styles.groupLabel}>Cotisations</span>
-                        <Link
-                            href="/organizer/cotisation/create"
+                        <Link prefetch={false} href="/organizer/cotisation/create"
                             className={`${styles.navItem} ${pathname === '/organizer/cotisation/create' ? styles.activeNavItem : ''}`}
                         >
                             <span className={styles.navIcon}>💰</span> Créer une cotisation
                         </Link>
-                        <Link
-                            href="/organizer?mode=cotisations"
+                        <Link prefetch={false} href="/organizer?mode=cotisations"
                             className={`${styles.navItem} ${pathname === '/organizer' && (new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('mode') === 'cotisations') ? styles.activeNavItem : ''}`}
                         >
                             <span className={styles.navIcon}>📈</span> Dashboard Cotisations
@@ -119,14 +112,12 @@ export default function OrganizerLayout({
 
                     <div className={styles.navGroup}>
                         <span className={styles.groupLabel}>Campagnes de Soutien</span>
-                        <Link
-                            href="/organizer/support-campaign/create"
+                        <Link prefetch={false} href="/organizer/support-campaign/create"
                             className={`${styles.navItem} ${pathname === '/organizer/support-campaign/create' ? styles.activeNavItem : ''}`}
                         >
                             <span className={styles.navIcon}>🖼️</span> Créer une campagne
                         </Link>
-                        <Link
-                            href="/organizer/support-campaign/dashboard"
+                        <Link prefetch={false} href="/organizer/support-campaign/dashboard"
                             className={`${styles.navItem} ${pathname === '/organizer/support-campaign/dashboard' ? styles.activeNavItem : ''}`}
                         >
                             <span className={styles.navIcon}>📊</span> Dashboard Campagnes
@@ -135,14 +126,12 @@ export default function OrganizerLayout({
 
                     <div className={styles.navGroup}>
                         <span className={styles.groupLabel}>Formulaires</span>
-                        <Link
-                            href="/organizer/forms/create"
+                        <Link prefetch={false} href="/organizer/forms/create"
                             className={`${styles.navItem} ${pathname === '/organizer/forms/create' ? styles.activeNavItem : ''}`}
                         >
                             <span className={styles.navIcon}>📝</span> Créer un formulaire
                         </Link>
-                        <Link
-                            href="/organizer/forms"
+                        <Link prefetch={false} href="/organizer/forms"
                             className={`${styles.navItem} ${pathname === '/organizer/forms' ? styles.activeNavItem : ''}`}
                         >
                             <span className={styles.navIcon}>📋</span> Dashboard Formulaires
@@ -151,20 +140,17 @@ export default function OrganizerLayout({
 
                     <div className={styles.navGroup}>
                         <span className={styles.groupLabel}>Votes & Sondages</span>
-                        <Link
-                            href="/organizer/votes"
+                        <Link prefetch={false} href="/organizer/votes"
                             className={`${styles.navItem} ${pathname === '/organizer/votes' ? styles.activeNavItem : ''}`}
                         >
                             <span className={styles.navIcon}>🗳️</span> Mes Campagnes
                         </Link>
-                        <Link
-                            href="/organizer/votes/create"
+                        <Link prefetch={false} href="/organizer/votes/create"
                             className={`${styles.navItem} ${pathname === '/organizer/votes/create' ? styles.activeNavItem : ''}`}
                         >
                             <span className={styles.navIcon}>🏆</span> Créer un vote
                         </Link>
-                        <Link
-                            href="/organizer/forms/create?type=poll"
+                        <Link prefetch={false} href="/organizer/forms/create?type=poll"
                             className={`${styles.navItem} ${pathname === '/organizer/forms/create' && new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('type') === 'poll' ? styles.activeNavItem : ''}`}
                         >
                             <span className={styles.navIcon}>📊</span> Créer un sondage
@@ -174,27 +160,25 @@ export default function OrganizerLayout({
                     <div className={styles.navGroup}>
                         <span className={styles.groupLabel}>Tickets et Profil</span>
                         <div className={styles.collapsibleNav}>
-                            <Link
-                                href="/organizer/tickets"
+                            <Link prefetch={false} href="/organizer/tickets"
                                 className={`${styles.navItem} ${pathname.startsWith('/organizer/tickets') ? styles.activeNavItem : ''}`}
                             >
                                 <span className={styles.navIcon}>🎫</span> Mes tickets
                                 <span className={styles.chevron}>⌄</span>
                             </Link>
                             <div className={styles.subNav}>
-                                <Link href="/organizer/tickets?tab=upcoming" className={styles.subNavItem}>Mes tickets en cours</Link>
-                                <Link href="/organizer/tickets?tab=unfinished" className={styles.subNavItem}>Mes commandes non terminées</Link>
-                                <Link href="/organizer/tickets?tab=transferred" className={styles.subNavItem}>Mes tickets transférés</Link>
-                                <Link href="/organizer/tickets?tab=cancelled" className={styles.subNavItem}>Mes tickets annulés</Link>
-                                <Link href="/organizer/tickets?tab=past" className={styles.subNavItem}>Mes tickets passés</Link>
+                                <Link prefetch={false} href="/organizer/tickets?tab=upcoming" className={styles.subNavItem}>Mes tickets en cours</Link>
+                                <Link prefetch={false} href="/organizer/tickets?tab=unfinished" className={styles.subNavItem}>Mes commandes non terminées</Link>
+                                <Link prefetch={false} href="/organizer/tickets?tab=transferred" className={styles.subNavItem}>Mes tickets transférés</Link>
+                                <Link prefetch={false} href="/organizer/tickets?tab=cancelled" className={styles.subNavItem}>Mes tickets annulés</Link>
+                                <Link prefetch={false} href="/organizer/tickets?tab=past" className={styles.subNavItem}>Mes tickets passés</Link>
                             </div>
                         </div>
                     </div>
 
                     <div className={styles.navGroup}>
                         <span className={styles.groupLabel}>Paramètres</span>
-                        <Link
-                            href="/organizer/account"
+                        <Link prefetch={false} href="/organizer/account"
                             className={`${styles.navItem} ${pathname === '/organizer/account' ? styles.activeNavItem : ''}`}
                         >
                             <span className={styles.navIcon}>👤</span> Mon Compte
@@ -224,14 +208,14 @@ export default function OrganizerLayout({
                         ☰
                     </button>
                     <div className={styles.topTabs}>
-                        <Link href="/organizer?mode=events" className={`${styles.topTab} ${(pathname === '/organizer' && new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('mode') !== 'cotisations') ? styles.activeTab : ''}`}>📅 Événements</Link>
-                        <Link href="/organizer?mode=cotisations" className={`${styles.topTab} ${(pathname === '/organizer' && new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('mode') === 'cotisations') ? styles.activeTab : ''}`}>💰 Cotisations</Link>
-                        <Link href="/organizer/support-campaign/dashboard" className={`${styles.topTab} ${pathname?.includes('/support-campaign') ? styles.activeTab : ''}`}>🖼️ Soutien</Link>
-                        <Link href="/organizer/forms" className={`${styles.topTab} ${pathname?.includes('/forms') ? styles.activeTab : ''}`}>📝 ITA Forms</Link>
+                        <Link prefetch={false} href="/organizer?mode=events" className={`${styles.topTab} ${(pathname === '/organizer' && new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('mode') !== 'cotisations') ? styles.activeTab : ''}`}>📅 Événements</Link>
+                        <Link prefetch={false} href="/organizer?mode=cotisations" className={`${styles.topTab} ${(pathname === '/organizer' && new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('mode') === 'cotisations') ? styles.activeTab : ''}`}>💰 Cotisations</Link>
+                        <Link prefetch={false} href="/organizer/support-campaign/dashboard" className={`${styles.topTab} ${pathname?.includes('/support-campaign') ? styles.activeTab : ''}`}>🖼️ Soutien</Link>
+                        <Link prefetch={false} href="/organizer/forms" className={`${styles.topTab} ${pathname?.includes('/forms') ? styles.activeTab : ''}`}>📝 ITA Forms</Link>
                     </div>
                     <div className={styles.topIcons}>
                         <div className={styles.notifIcon}>🔔 <span className={styles.dot}></span></div>
-                        <Link href="/" className={styles.homeIcon}>🏠</Link>
+                        <Link prefetch={false} href="/" className={styles.homeIcon}>🏠</Link>
                         <div className={styles.profileMenu} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
                             <div className={styles.avatar}>{user?.email?.charAt(0).toUpperCase()}</div>
                             <span className={styles.organizerName}>{user?.email?.split('@')[0]}</span>
@@ -246,12 +230,12 @@ export default function OrganizerLayout({
                                     <hr className={styles.dropdownDivider} />
                                     {hasAdminAccess && (
                                         <>
-                                            <Link href="/admin" className={styles.dropdownItem} style={{ color: '#ff5a1f', fontWeight: 'bold' }}>🔧 Administration</Link>
+                                            <Link prefetch={false} href="/admin" className={styles.dropdownItem} style={{ color: '#ff5a1f', fontWeight: 'bold' }}>🔧 Administration</Link>
                                             <hr className={styles.dropdownDivider} />
                                         </>
                                     )}
-                                    <Link href="/organizer/account" className={styles.dropdownItem}>Mon Profil</Link>
-                                    <Link href="/organizer/account" className={styles.dropdownItem}>Paramètres</Link>
+                                    <Link prefetch={false} href="/organizer/account" className={styles.dropdownItem}>Mon Profil</Link>
+                                    <Link prefetch={false} href="/organizer/account" className={styles.dropdownItem}>Paramètres</Link>
                                     <hr className={styles.dropdownDivider} />
                                     <button onClick={handleLogout} className={styles.dropdownLogoutBtn}>
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>

@@ -128,7 +128,7 @@ function RegisterContent() {
 
                 {/* Right Side: Form */}
                 <div className={styles.formSide}>
-                    <Link href="/" className={styles.backBtn} title="Retour à l'accueil">🏠</Link>
+                    <Link prefetch={false} href="/" className={styles.backBtn} title="Retour à l'accueil">🏠</Link>
 
                     <div className={styles.formHeader}>
                         <h1>Inscription</h1>
@@ -260,7 +260,7 @@ function RegisterContent() {
                         </div>
 
                         <p className={styles.termsText}>
-                            En créant votre compte, vous acceptez notre <Link href="#">politique de confidentialité</Link>.
+                            En créant votre compte, vous acceptez notre <Link prefetch={false} href="#">politique de confidentialité</Link>.
                         </p>
 
                         <button type="submit" className={styles.submitBtn} disabled={loading}>
@@ -268,7 +268,7 @@ function RegisterContent() {
                         </button>
 
                         <div className={styles.switchAuth}>
-                            Vous avez déjà un compte ? <Link href={`/login${searchParams.get("redirect") ? `?redirect=${searchParams.get("redirect")}` : ""}`}>Connectez-vous</Link>
+                            Vous avez déjà un compte ? <Link prefetch={false} href={`/login${searchParams.get("redirect") ? `?redirect=${searchParams.get("redirect")}` : ""}`}>Connectez-vous</Link>
                         </div>
                     </form>
                 </div>

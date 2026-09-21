@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function CookiesPage() {
     return (
         <div style={{ maxWidth: '900px', margin: '0 auto', padding: '3rem 1.5rem', fontFamily: 'var(--font-body, sans-serif)', color: '#334155' }}>
-            <Link href="/" style={{ textDecoration: 'none', color: '#ff5a1f', fontWeight: 'bold', display: 'inline-block', marginBottom: '1.5rem' }}>
+            <Link prefetch={false} href="/" style={{ textDecoration: 'none', color: '#ff5a1f', fontWeight: 'bold', display: 'inline-block', marginBottom: '1.5rem' }}>
                 ← Retour à l&apos;accueil
             </Link>
             <h1 style={{ fontSize: '2.2rem', color: '#0f172a', marginBottom: '1rem', fontWeight: 800 }}>

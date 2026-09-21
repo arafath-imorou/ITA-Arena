@@ -65,7 +65,7 @@ export default function Navbar() {
           </button>
 
           {/* Logo */}
-          <Link href="/" className={styles.logo} onClick={() => setIsMobileMenuOpen(false)}>
+          <Link prefetch={false} href="/" className={styles.logo} onClick={() => setIsMobileMenuOpen(false)}>
             <img
               src="/images/logo/ita_arena_logo.png"
               alt="ITA Arena Logo"
@@ -96,12 +96,12 @@ export default function Navbar() {
 
             {/* Mobile specific links requested by user */}
             <div className={styles.mobileLinks}>
-                <Link href="/about" className={styles.mobileLinkItem} onClick={() => setIsMobileMenuOpen(false)}>Qui sommes nous ?</Link>
-                <Link href="/#solutions" className={styles.mobileLinkItem} onClick={() => setIsMobileMenuOpen(false)}>Nos solutions</Link>
-                <Link href="/#explore" className={styles.mobileLinkItem} onClick={() => setIsMobileMenuOpen(false)}>Nos évènements en cours</Link>
+                <Link prefetch={false} href="/about" className={styles.mobileLinkItem} onClick={() => setIsMobileMenuOpen(false)}>Qui sommes nous ?</Link>
+                <Link prefetch={false} href="/#solutions" className={styles.mobileLinkItem} onClick={() => setIsMobileMenuOpen(false)}>Nos solutions</Link>
+                <Link prefetch={false} href="/#explore" className={styles.mobileLinkItem} onClick={() => setIsMobileMenuOpen(false)}>Nos évènements en cours</Link>
             </div>
 
-            <Link href={user ? "/organizer/create-hub" : "/signin"} className={styles.publishBtn} onClick={() => setIsMobileMenuOpen(false)}>
+            <Link prefetch={false} href={user ? "/organizer/create-hub" : "/signin"} className={styles.publishBtn} onClick={() => setIsMobileMenuOpen(false)}>
               Créer un événement
             </Link>
             
@@ -125,21 +125,21 @@ export default function Navbar() {
                           <hr className={styles.divider} />
                           {(['admin', 'super_admin', 'organisateur', 'organizer', 'visualiseur'].includes(role || '') || (user?.email && ['groupita25@gmail.com', 'admin@itaarena.com'].includes(user.email.toLowerCase().trim()))) && (
                             <>
-                              <Link href="/admin" className={styles.dropdownItem} style={{ color: '#ff5a1f', fontWeight: 'bold' }} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>
+                              <Link prefetch={false} href="/admin" className={styles.dropdownItem} style={{ color: '#ff5a1f', fontWeight: 'bold' }} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>
                                 🔧 Administration
                               </Link>
                               <hr className={styles.divider} />
                             </>
                           )}
-                          <Link href="/organizer" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Tableau de bord</Link>
-                          <Link href="/organizer" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Mes évènements</Link>
-                          <Link href="/organizer/tickets" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Mes Tickets</Link>
-                          <Link href="/organizer/account" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Mon Profil</Link>
-                          <Link href="/blog" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Showbizz Blog</Link>
+                          <Link prefetch={false} href="/organizer" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Tableau de bord</Link>
+                          <Link prefetch={false} href="/organizer" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Mes évènements</Link>
+                          <Link prefetch={false} href="/organizer/tickets" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Mes Tickets</Link>
+                          <Link prefetch={false} href="/organizer/account" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Mon Profil</Link>
+                          <Link prefetch={false} href="/blog" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Showbizz Blog</Link>
                           <hr className={styles.divider} />
-                          <Link href="/about" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Qui sommes nous?</Link>
-                          <Link href="/faq" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>FAQ</Link>
-                          <Link href="/contact" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Nous contacter</Link>
+                          <Link prefetch={false} href="/about" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Qui sommes nous?</Link>
+                          <Link prefetch={false} href="/faq" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>FAQ</Link>
+                          <Link prefetch={false} href="/contact" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Nous contacter</Link>
                           <hr className={styles.divider} />
                           <button onClick={handleSignOut} className={styles.signOutBtn}>
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
@@ -148,15 +148,15 @@ export default function Navbar() {
                         </>
                     ) : (
                       <>
-                        <Link href="/login" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Se connecter</Link>
-                        <Link href="/register" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>S'inscrire</Link>
+                        <Link prefetch={false} href="/login" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Se connecter</Link>
+                        <Link prefetch={false} href="/register" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>S'inscrire</Link>
                         <hr className={styles.divider} />
-                          <Link href="/pricing" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Tarif</Link>
-                          <Link href="/blog" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Showbizz Blog</Link>
+                          <Link prefetch={false} href="/pricing" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Tarif</Link>
+                          <Link prefetch={false} href="/blog" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Showbizz Blog</Link>
                           <hr className={styles.divider} />
-                        <Link href="/about" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Qui sommes nous?</Link>
-                        <Link href="/faq" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>FAQ</Link>
-                        <Link href="/contact" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Nous contacter</Link>
+                        <Link prefetch={false} href="/about" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Qui sommes nous?</Link>
+                        <Link prefetch={false} href="/faq" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>FAQ</Link>
+                        <Link prefetch={false} href="/contact" className={styles.dropdownItem} onClick={() => {setShowDropdown(false); setIsMobileMenuOpen(false);}}>Nous contacter</Link>
                       </>
                     )}
                   </div>

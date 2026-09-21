@@ -96,7 +96,7 @@ export default function SupportCampaignDashboard() {
         <div className={styles.container}>
             <div className={styles.header}>
                 <h1 className={styles.title}>Mes Campagnes de Soutien</h1>
-                <Link href="/organizer/support-campaign/create" className={styles.btnNew}>
+                <Link prefetch={false} href="/organizer/support-campaign/create" className={styles.btnNew}>
                     <span>➕</span> Créer une campagne
                 </Link>
             </div>
@@ -173,8 +173,7 @@ export default function SupportCampaignDashboard() {
                                     <td>{camp.views || 0}</td>
                                     <td>
                                         <div className={styles.actions}>
-                                            <Link 
-                                                href={`/organizer/support-campaign/create?edit=${camp.id}`} 
+                                            <Link prefetch={false} href={`/organizer/support-campaign/create?edit=${camp.id}`} 
                                                 className={styles.btnAction}
                                                 title="Modifier la campagne"
                                             >

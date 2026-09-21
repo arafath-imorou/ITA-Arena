@@ -37,7 +37,7 @@ function CotisationsListContent() {
                     <h1 className={styles.title}>Toutes mes Cotisations</h1>
                     <p className={styles.subtitle}>Suivez vos collectes de fonds et cotisations</p>
                 </div>
-                <Link href="/organizer/cotisation/create" className={styles.createBtn}>
+                <Link prefetch={false} href="/organizer/cotisation/create" className={styles.createBtn}>
                     <span>+</span> Nouvelle cotisation
                 </Link>
             </div>
@@ -57,20 +57,20 @@ function CotisationsListContent() {
                                 </div>
                             </div>
                             <div className={styles.eventActions} style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                                <Link href={`/organizer/cotisations/${item.id}/stats`} className={styles.editBtn} style={{ background: '#e0f2fe', color: '#0369a1', borderColor: '#bae6fd', fontWeight: 'bold' }}>
+                                <Link prefetch={false} href={`/organizer/cotisations/${item.id}/stats`} className={styles.editBtn} style={{ background: '#e0f2fe', color: '#0369a1', borderColor: '#bae6fd', fontWeight: 'bold' }}>
                                     👁️ Cotisants & Statistiques
                                 </Link>
-                                <Link href={`/events/${item.slug || item.id}`} target="_blank" className={styles.editBtn} style={{ color: '#475569' }}>
+                                <Link prefetch={false} href={`/events/${item.slug || item.id}`} target="_blank" className={styles.editBtn} style={{ color: '#475569' }}>
                                     🔗 Page
                                 </Link>
-                                <Link href={`/organizer/cotisation/create?edit=${item.id}`} className={styles.editBtn}>Modifier</Link>
+                                <Link prefetch={false} href={`/organizer/cotisation/create?edit=${item.id}`} className={styles.editBtn}>Modifier</Link>
                             </div>
                         </div>
                     ))
                 ) : (
                     <div className={styles.emptyState}>
                         <p>Aucune cotisation trouvée.</p>
-                        <Link href="/organizer/cotisation/create" className={styles.smallBtn}>Créer ma première cotisation</Link>
+                        <Link prefetch={false} href="/organizer/cotisation/create" className={styles.smallBtn}>Créer ma première cotisation</Link>
                     </div>
                 )}
             </div>

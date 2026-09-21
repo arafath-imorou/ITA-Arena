@@ -264,7 +264,7 @@ export default function CreateEventPage() {
                 {step === 5 ? "Résumé de l'évènement" : (editId ? "Modifier l'évènement" : "Créer un évènement")}
             </h1>
             <div className={styles.breadcrumb}>
-                <Link href="/organizer">Dashboard</Link> &gt; <span>{step === 5 ? "Résumé" : (editId ? "Modifier" : "Créer un évènement")}</span>
+                <Link prefetch={false} href="/organizer">Dashboard</Link> &gt; <span>{step === 5 ? "Résumé" : (editId ? "Modifier" : "Créer un évènement")}</span>
             </div>
 
             {/* Stepper */}

@@ -98,7 +98,7 @@ export default function VoteResultsPage() {
         <div className={styles.container}>
             <div className={styles.header}>
                 <div>
-                    <Link href="/organizer/votes" className={styles.backLink}>← Retour aux campagnes</Link>
+                    <Link prefetch={false} href="/organizer/votes" className={styles.backLink}>← Retour aux campagnes</Link>
                     <h1 className={styles.title}>{campaign.title} - Résultats en direct</h1>
                     <p className={styles.subtitle}>Classement officiel et statistiques</p>
                 </div>

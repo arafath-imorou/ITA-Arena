@@ -66,7 +66,7 @@ function LoginContent() {
 
                 {/* Right Side: Form */}
                 <div className={styles.formSide}>
-                    <Link href="/" className={styles.backBtn} title="Retour à l'accueil">🏠</Link>
+                    <Link prefetch={false} href="/" className={styles.backBtn} title="Retour à l'accueil">🏠</Link>
 
                     <div className={styles.formHeader}>
                         <h1>Connexion</h1>
@@ -87,7 +87,7 @@ function LoginContent() {
                         }}>
                             <strong>Email ou mot de passe incorrect.</strong>
                             <div style={{ marginTop: '8px' }}>
-                                Vous n'avez pas encore de compte ? <Link href={`/register${searchParams.get("redirect") ? `?redirect=${searchParams.get("redirect")}` : ""}`} style={{ color: '#FF5A1F', fontWeight: 'bold', textDecoration: 'underline' }}>Inscrivez-vous ici</Link>
+                                Vous n'avez pas encore de compte ? <Link prefetch={false} href={`/register${searchParams.get("redirect") ? `?redirect=${searchParams.get("redirect")}` : ""}`} style={{ color: '#FF5A1F', fontWeight: 'bold', textDecoration: 'underline' }}>Inscrivez-vous ici</Link>
                             </div>
                         </div>
                     )}
@@ -126,7 +126,7 @@ function LoginContent() {
                             </div>
                         </div>
 
-                        <Link href="#" className={styles.forgotPass}>Mot de passe oublié ?</Link>
+                        <Link prefetch={false} href="#" className={styles.forgotPass}>Mot de passe oublié ?</Link>
 
                         <button type="submit" className={styles.submitBtn} disabled={loading}>
                             {loading ? "Connexion..." : "Connexion"}
@@ -137,7 +137,7 @@ function LoginContent() {
                         </button>
 
                         <div className={styles.switchAuth}>
-                            Vous n'avez pas encore de compte ? <Link href={`/register${searchParams.get("redirect") ? `?redirect=${searchParams.get("redirect")}` : ""}`}>Inscrivez-vous</Link>
+                            Vous n'avez pas encore de compte ? <Link prefetch={false} href={`/register${searchParams.get("redirect") ? `?redirect=${searchParams.get("redirect")}` : ""}`}>Inscrivez-vous</Link>
                         </div>
                     </form>
                 </div>

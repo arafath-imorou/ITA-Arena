@@ -56,7 +56,7 @@ export default function CotisationStatsPage({ params }: { params: Promise<{ id: 
             <div className="container" style={{ padding: '4rem 1rem', textAlign: 'center' }}>
                 <h2>❌ Erreur</h2>
                 <p style={{ color: '#64748b', margin: '1rem 0' }}>{error || "Cotisation introuvable."}</p>
-                <Link href="/organizer/cotisations" style={{ background: '#FF5A1F', color: '#fff', padding: '0.75rem 1.5rem', borderRadius: '0.5rem', textDecoration: 'none', fontWeight: 'bold' }}>
+                <Link prefetch={false} href="/organizer/cotisations" style={{ background: '#FF5A1F', color: '#fff', padding: '0.75rem 1.5rem', borderRadius: '0.5rem', textDecoration: 'none', fontWeight: 'bold' }}>
                     Retour aux cotisations
                 </Link>
             </div>
@@ -130,7 +130,7 @@ export default function CotisationStatsPage({ params }: { params: Promise<{ id: 
                             </p>
                         </div>
                         <div style={{ display: 'flex', gap: '0.75rem' }}>
-                            <Link href={`/events/${event.slug || event.id}`} target="_blank" style={{ background: '#f1f5f9', color: '#334155', padding: '0.6rem 1.2rem', borderRadius: '0.5rem', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem' }}>
+                            <Link prefetch={false} href={`/events/${event.slug || event.id}`} target="_blank" style={{ background: '#f1f5f9', color: '#334155', padding: '0.6rem 1.2rem', borderRadius: '0.5rem', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem' }}>
                                 🔗 Voir la page
                             </Link>
                             <button onClick={exportCSV} style={{ background: '#10b981', color: 'white', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '0.5rem', fontWeight: 700, cursor: 'pointer', fontSize: '0.9rem' }}>

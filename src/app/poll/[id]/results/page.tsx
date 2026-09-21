@@ -146,8 +146,7 @@ export default function PollResultsPage() {
                     )}
 
                     <div style={{ marginTop: "3rem", textAlign: "center" }}>
-                        <Link 
-                            href="/"
+                        <Link prefetch={false} href="/"
                             style={{ display: "inline-block", padding: "1rem 2rem", backgroundColor: "#f3f4f6", color: "#374151", textDecoration: "none", borderRadius: "8px", fontWeight: "bold" }}
                         >
                             Retour à l'accueil

@@ -85,7 +85,7 @@ export default function VotesDashboard() {
                     <h1 className={styles.title}>Mes Campagnes de Vote</h1>
                     <p className={styles.subtitle}>Gérez vos élections, concours et sondages</p>
                 </div>
-                <Link href="/organizer/votes/create" className={styles.createBtn}>
+                <Link prefetch={false} href="/organizer/votes/create" className={styles.createBtn}>
                     + Créer un vote
                 </Link>
             </div>
@@ -132,10 +132,10 @@ export default function VotesDashboard() {
                                     <button onClick={() => toggleStatus(campaign.id, campaign.status)} className={styles.actionBtn}>
                                         {campaign.status === 'active' ? '⏸️ Suspendre' : '▶️ Activer'}
                                     </button>
-                                    <Link href={`/organizer/votes/${campaign.id}/candidates`} className={styles.actionBtn}>
+                                    <Link prefetch={false} href={`/organizer/votes/${campaign.id}/candidates`} className={styles.actionBtn}>
                                         👥 Candidats
                                     </Link>
-                                    <Link href={`/organizer/votes/${campaign.id}/results`} className={styles.actionBtn}>
+                                    <Link prefetch={false} href={`/organizer/votes/${campaign.id}/results`} className={styles.actionBtn}>
                                         📊 Résultats
                                     </Link>
                                     <button onClick={() => deleteCampaign(campaign.id)} className={`${styles.actionBtn} ${styles.actionDelete}`}>
@@ -156,7 +156,7 @@ export default function VotesDashboard() {
                 {campaigns.length === 0 && (
                     <div className={styles.emptyState}>
                         <p>Vous n'avez pas encore de campagne de vote.</p>
-                        <Link href="/organizer/votes/create" className={styles.createBtn}>
+                        <Link prefetch={false} href="/organizer/votes/create" className={styles.createBtn}>
                             Créer ma première campagne
                         </Link>
                     </div>

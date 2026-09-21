@@ -197,7 +197,7 @@ export default function EventDetailClient({ slug }: { slug: string }) {
             <p style={{ color: '#666', marginBottom: '30px', maxWidth: '500px', margin: '0 auto 30px' }}>
                 Désolé, cet évènement n'existe pas ou a été supprimé par son organisateur.
             </p>
-            <Link href="/" className={styles.ctaBtn} style={{ maxWidth: '300px', margin: '0 auto', display: 'block', textDecoration: 'none' }}>
+            <Link prefetch={false} href="/" className={styles.ctaBtn} style={{ maxWidth: '300px', margin: '0 auto', display: 'block', textDecoration: 'none' }}>
                 Retour à l'accueil
             </Link>
         </div>
@@ -321,7 +321,7 @@ export default function EventDetailClient({ slug }: { slug: string }) {
                                 <h4>{item.organizer?.name || "Organisateur ITA"}</h4>
                                 <p>{item.organizer?.is_verified ? "Organisation vérifiée" : "Organisateur certifié"}</p>
                             </div>
-                            <Link href={`/p/${item.organizer_id}`} className={styles.followLink}>Voir le profil</Link>
+                            <Link prefetch={false} href={`/p/${item.organizer_id}`} className={styles.followLink}>Voir le profil</Link>
                         </div>
                     </section>
                 </div>

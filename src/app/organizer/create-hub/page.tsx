@@ -83,7 +83,7 @@ export default function CreateHub() {
 
             <div className={styles.grid}>
                 {options.map((opt, idx) => (
-                    <Link key={idx} href={opt.href} className={styles.card}>
+                    <Link prefetch={false} key={idx} href={opt.href} className={styles.card}>
                         <h2 className={styles.cardTitle}>{opt.title}</h2>
                         <p className={styles.cardDesc}>{opt.description}</p>
                         <div className={styles.arrowBtn}>

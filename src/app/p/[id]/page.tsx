@@ -74,7 +74,7 @@ export default async function ProfilePage({ params }: { params: { id: string } }
                 {events && events.length > 0 ? (
                     <div className={styles.eventsGrid}>
                         {events.map((evt: any) => (
-                            <Link href={`/events/${evt.slug || evt.id}`} key={evt.id} className={styles.eventCard}>
+                            <Link prefetch={false} href={`/events/${evt.slug || evt.id}`} key={evt.id} className={styles.eventCard}>
                                 <div className={styles.eventImage} style={{ backgroundImage: `url(${evt.image_url || 'https://placehold.co/600x400/F7931E/FFFFFF?text=Evenement'})` }}>
                                     <span className={styles.badge}>{evt.category_id}</span>
                                 </div>

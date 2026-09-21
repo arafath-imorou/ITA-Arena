@@ -414,8 +414,7 @@ export default function FeaturedEvents() {
                                                     TERMINÉ
                                                 </div>
                                             )}
-                                            <Link 
-                                                href={mode === 'votes' ? `/vote/${item.slug}` : (isPast || item.is_closed ? "#" : (mode === 'support' ? `/support/${item.slug}` : (mode === 'forms' ? `/f/${item.slug}` : `/events/${item.slug || item.id}`)))} 
+                                            <Link prefetch={false} href={mode === 'votes' ? `/vote/${item.slug}` : (isPast || item.is_closed ? "#" : (mode === 'support' ? `/support/${item.slug}` : (mode === 'forms' ? `/f/${item.slug}` : `/events/${item.slug || item.id}`)))} 
                                                 className={styles.buyBtn}
                                                 style={mode === 'votes' && item.is_closed ? { background: '#0A2E73', color: '#ffffff' } : ((isSoldOut || isPast || item.is_closed) ? { background: '#94a3b8', pointerEvents: 'none', color: '#ffffff', opacity: 0.75 } : {})}
                                                 onClick={(e) => {

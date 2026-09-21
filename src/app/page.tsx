@@ -42,10 +42,10 @@ export default function Home() {
               Rejoignez plus de 500 organisateurs qui font confiance à ITA Arena pour la gestion de leurs événements premium.
             </p>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link href="/organizer/create-hub" className="btn btn-primary">
+              <Link prefetch={false} href="/organizer/create-hub" className="btn btn-primary">
                 Commencer maintenant
               </Link>
-              <Link href="/about" className="btn btn-outline">
+              <Link prefetch={false} href="/about" className="btn btn-outline">
                 En savoir plus
               </Link>
             </div>

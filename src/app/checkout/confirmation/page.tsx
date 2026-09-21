@@ -86,7 +86,7 @@ function ConfirmationContent() {
     if (tickets.length === 0 || !event) return (
         <div className={styles.loadingContainer}>
             <p>Aucun ticket trouvé pour cette session.</p>
-            <Link href="/" className={styles.homeBtn}>Retour à l'accueil</Link>
+            <Link prefetch={false} href="/" className={styles.homeBtn}>Retour à l'accueil</Link>
         </div>
     );
 
@@ -170,7 +170,7 @@ function ConfirmationContent() {
                         📥 Télécharger tous les tickets ({tickets.length})
                     </button>
                 )}
-                <Link href="/" className={styles.homeBtn}>Retour à l'accueil</Link>
+                <Link prefetch={false} href="/" className={styles.homeBtn}>Retour à l'accueil</Link>
             </div>
         </div>
     );

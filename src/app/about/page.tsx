@@ -30,7 +30,7 @@ export default function AboutPage() {
                         Billetterie, votes, collectes, inscriptions — tout en un seul endroit.
                     </p>
                     <div className={styles.heroActions}>
-                        <Link href="/organizer/create-hub" className={styles.heroCta}>
+                        <Link prefetch={false} href="/organizer/create-hub" className={styles.heroCta}>
                             Commencer maintenant
                         </Link>
                         <a href="#mission" className={styles.heroCtaOutline}>
@@ -294,10 +294,10 @@ export default function AboutPage() {
                             des plus grands événements. Commencez gratuitement dès aujourd'hui.
                         </p>
                         <div className={styles.ctaButtons}>
-                            <Link href="/organizer/create-hub" className={styles.ctaBtn}>
+                            <Link prefetch={false} href="/organizer/create-hub" className={styles.ctaBtn}>
                                 Créer un événement
                             </Link>
-                            <Link href="/events" className={styles.ctaBtnOutline}>
+                            <Link prefetch={false} href="/events" className={styles.ctaBtnOutline}>
                                 Explorer les événements
                             </Link>
                         </div>

@@ -85,15 +85,13 @@ export default function FormSuccessPage() {
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem", alignItems: "center" }}>
                     {isPoll && formInfo?.show_public_results && (
-                        <Link 
-                            href={`/poll/${formId}/results`}
+                        <Link prefetch={false} href={`/poll/${formId}/results`}
                             style={{ display: "inline-block", padding: "1rem 2rem", backgroundColor: "#F7931E", color: "#fff", textDecoration: "none", borderRadius: "8px", fontWeight: "bold", width: "100%" }}
                         >
                             📊 Voir les résultats
                         </Link>
                     )}
-                    <Link 
-                        href="/"
+                    <Link prefetch={false} href="/"
                         style={{ display: "inline-block", padding: "1rem 2rem", backgroundColor: "#0A2E73", color: "#fff", textDecoration: "none", borderRadius: "8px", fontWeight: "bold" }}
                     >
                         Retour à l'accueil

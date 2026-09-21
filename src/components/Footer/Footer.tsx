@@ -9,7 +9,7 @@ export default function Footer() {
             <div className={`container ${styles.footerContainer}`}>
                 <div className={styles.footerTop}>
                     <div className={styles.footerBrand}>
-                        <Link href="/" className={styles.logo}>
+                        <Link prefetch={false} href="/" className={styles.logo}>
                             <div className={styles.logoText}>
                                 <span className={styles.logoIta}>ITA</span>
                                 <span className={styles.logoArena}> ARENA</span>
@@ -29,28 +29,28 @@ export default function Footer() {
                         <div className={styles.footerGroup}>
                             <h4 className={styles.groupTitle}>Plateforme</h4>
                             <ul className={styles.links}>
-                                <li><Link href="/events">Explorer les événements</Link></li>
-                                <li><Link href="/organizer">Espace Organisateur</Link></li>
-                                <li><Link href="/pricing">Tarifs</Link></li>
-                                <li><Link href="/faq">FAQ</Link></li>
+                                <li><Link prefetch={false} href="/events">Explorer les événements</Link></li>
+                                <li><Link prefetch={false} href="/organizer">Espace Organisateur</Link></li>
+                                <li><Link prefetch={false} href="/pricing">Tarifs</Link></li>
+                                <li><Link prefetch={false} href="/faq">FAQ</Link></li>
                             </ul>
                         </div>
 
                         <div className={styles.footerGroup}>
                             <h4 className={styles.groupTitle}>Entreprise</h4>
                             <ul className={styles.links}>
-                                <li><Link href="/about">À propos</Link></li>
-                                <li><Link href="/contact">Contact</Link></li>
-                                <li><Link href="/blog">Blog</Link></li>
+                                <li><Link prefetch={false} href="/about">À propos</Link></li>
+                                <li><Link prefetch={false} href="/contact">Contact</Link></li>
+                                <li><Link prefetch={false} href="/blog">Blog</Link></li>
                             </ul>
                         </div>
 
                         <div className={styles.footerGroup}>
                             <h4 className={styles.groupTitle}>Légal</h4>
                             <ul className={styles.links}>
-                                <li><Link href="/terms">Conditions Générales</Link></li>
-                                <li><Link href="/privacy">Confidentialité</Link></li>
-                                <li><Link href="/cookies">Politique Cookies</Link></li>
+                                <li><Link prefetch={false} href="/terms">Conditions Générales</Link></li>
+                                <li><Link prefetch={false} href="/privacy">Confidentialité</Link></li>
+                                <li><Link prefetch={false} href="/cookies">Politique Cookies</Link></li>
                             </ul>
                         </div>
                     </div>

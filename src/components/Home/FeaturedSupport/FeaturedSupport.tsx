@@ -74,8 +74,7 @@ export default function FeaturedSupport() {
                                     <span className={styles.orgName}>{item.organizer_name}</span>
                                 </div>
 
-                                <Link 
-                                    href={`/support/${item.slug}`} 
+                                <Link prefetch={false} href={`/support/${item.slug}`} 
                                     className={styles.buyBtn}
                                 >
                                     Soutenir la campagne

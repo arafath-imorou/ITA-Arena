@@ -114,7 +114,7 @@ function DashboardContent() {
                     <h1 className={styles.title}>Tableau de bord {isEvents ? "Événements" : "Cotisations"}</h1>
                     <p className={styles.subtitle}>Gérez vos {isEvents ? "événements et billetterie" : "collectes et cotisations"}</p>
                 </div>
-                <Link href={isEvents ? "/organizer/create" : "/organizer/cotisation/create"} className={styles.createBtn}>
+                <Link prefetch={false} href={isEvents ? "/organizer/create" : "/organizer/cotisation/create"} className={styles.createBtn}>
                     <span>+</span> {isEvents ? "Créer un événement" : "Créer une cotisation"}
                 </Link>
             </div>
@@ -154,13 +154,13 @@ function DashboardContent() {
             </div>
 
             <div className={styles.quickActions}>
-                <Link href={isEvents ? "/organizer/create" : "/organizer/cotisation/create"} className={styles.actionBtnActive}>
+                <Link prefetch={false} href={isEvents ? "/organizer/create" : "/organizer/cotisation/create"} className={styles.actionBtnActive}>
                     <span>+</span> {isEvents ? "Créer événement" : "Créer cotisation"}
                 </Link>
-                <Link href={isEvents ? "/organizer/tickets" : "/organizer/cotisation/reports"} className={styles.actionBtn}>
+                <Link prefetch={false} href={isEvents ? "/organizer/tickets" : "/organizer/cotisation/reports"} className={styles.actionBtn}>
                     {isEvents ? "🎫 Gérer tickets" : "📊 Rapports"}
                 </Link>
-                <Link href="/organizer/account" className={styles.actionBtn}>
+                <Link prefetch={false} href="/organizer/account" className={styles.actionBtn}>
                     👤 Mon profil
                 </Link>
             </div>
@@ -169,7 +169,7 @@ function DashboardContent() {
                 <div className={styles.eventsSection}>
                     <div className={styles.sectionHeader}>
                         <h3>{isEvents ? "Événements récents" : "Cotisations récentes"}</h3>
-                        <Link href={isEvents ? "/organizer/events" : "/organizer/cotisations"} className={styles.linkAll}>Voir tout →</Link>
+                        <Link prefetch={false} href={isEvents ? "/organizer/events" : "/organizer/cotisations"} className={styles.linkAll}>Voir tout →</Link>
                     </div>
 
                     <div className={styles.eventsList}>
@@ -197,8 +197,8 @@ function DashboardContent() {
                                     <div className={styles.eventActions}>
                                         <span className={`${styles.badge} ${styles.badgeActive}`}>{isEvents ? "En vente" : "Ouverte"}</span>
                                         <button onClick={() => { setSelectedEvent(item); setActiveModalTab('stats'); }} className={styles.editBtn} style={{ background: '#e0f2fe', color: '#0369a1', borderColor: '#bae6fd' }} title="Indicateurs de ventes">📊 Stats</button>
-                                        <Link href={isEvents ? `/organizer/create?edit=${item.id}` : `/organizer/cotisation/create?edit=${item.id}`} className={styles.editBtn}>Gérer</Link>
-                                        <Link href={`/events/${item.slug || item.id}`} target="_blank" className={styles.editBtn} style={{ background: '#f8fafc', color: '#64748b', border: '1px solid #e2e8f0', marginLeft: '8px' }}>🔗 Voir</Link>
+                                        <Link prefetch={false} href={isEvents ? `/organizer/create?edit=${item.id}` : `/organizer/cotisation/create?edit=${item.id}`} className={styles.editBtn}>Gérer</Link>
+                                        <Link prefetch={false} href={`/events/${item.slug || item.id}`} target="_blank" className={styles.editBtn} style={{ background: '#f8fafc', color: '#64748b', border: '1px solid #e2e8f0', marginLeft: '8px' }}>🔗 Voir</Link>
                                     </div>
                                 </div>
 
@@ -206,7 +206,7 @@ function DashboardContent() {
                         }) : (
                             <div className={styles.emptyState}>
                                 <p>Vous n'avez pas encore de {isEvents ? "événements" : "cotisations"}.</p>
-                                <Link href={isEvents ? "/organizer/create" : "/organizer/cotisation/create"} className={styles.smallBtn}>
+                                <Link prefetch={false} href={isEvents ? "/organizer/create" : "/organizer/cotisation/create"} className={styles.smallBtn}>
                                     Créer {isEvents ? "mon premier événement" : "ma première cotisation"}
                                 </Link>
                             </div>
@@ -236,7 +236,7 @@ function DashboardContent() {
                                 <p className={styles.orgEmail}>{user?.email}</p>
                             </div>
                         </div>
-                        <Link href="/organizer/account" className={styles.accountBtn}>Gérer mon compte</Link>
+                        <Link prefetch={false} href="/organizer/account" className={styles.accountBtn}>Gérer mon compte</Link>
                     </div>
                 </div>
             </div>

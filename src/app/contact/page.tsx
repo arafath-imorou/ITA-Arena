@@ -40,7 +40,7 @@ export default function ContactPage() {
                         <div className={styles.faqContent}>
                             <h2>Besoin d'une réponse rapide ?</h2>
                             <p>Notre centre d'aide regroupe les réponses aux questions les plus fréquentes pour les participants et organisateurs.</p>
-                            <Link href="/faq" className={styles.faqBtn}>
+                            <Link prefetch={false} href="/faq" className={styles.faqBtn}>
                                 Accéder à la FAQ <span className={styles.btnIcon}>❓</span>
                             </Link>
                         </div>
@@ -104,7 +104,7 @@ export default function ContactPage() {
                                     <label htmlFor="newsletter">S'abonner à la newsletter</label>
                                 </div>
                                 <p className={styles.privacyNote}>
-                                    En envoyant ce message, vous acceptez notre <Link href="/privacy">Politique de confidentialité</Link>.
+                                    En envoyant ce message, vous acceptez notre <Link prefetch={false} href="/privacy">Politique de confidentialité</Link>.
                                 </p>
                                 <button type="submit" className={styles.submitBtn}>
                                     Envoyer <span className={styles.sendIcon}>🚀</span>

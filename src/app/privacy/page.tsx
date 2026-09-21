@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function PrivacyPolicyPage() {
     return (
         <div style={{ maxWidth: '900px', margin: '0 auto', padding: '3rem 1.5rem', fontFamily: 'var(--font-body, sans-serif)', color: '#334155' }}>
-            <Link href="/" style={{ textDecoration: 'none', color: '#ff5a1f', fontWeight: 'bold', display: 'inline-block', marginBottom: '1.5rem' }}>
+            <Link prefetch={false} href="/" style={{ textDecoration: 'none', color: '#ff5a1f', fontWeight: 'bold', display: 'inline-block', marginBottom: '1.5rem' }}>
                 ← Retour à l&apos;accueil
             </Link>
             <h1 style={{ fontSize: '2.2rem', color: '#0f172a', marginBottom: '1rem', fontWeight: 800 }}>
@@ -43,7 +43,7 @@ export default function PrivacyPolicyPage() {
             <section style={{ marginBottom: '2rem', lineHeight: 1.7 }}>
                 <h2 style={{ fontSize: '1.4rem', color: '#1e293b', marginBottom: '0.8rem' }}>4. Vos Droits</h2>
                 <p>
-                    Conformément aux réglementations en vigueur, vous disposez d&apos;un droit d&apos;accès, de rectification et de suppression de vos données personnelles. Vous pouvez exercer ce droit à tout moment en nous contactant via notre page de <Link href="/contact" style={{ color: '#ff5a1f', textDecoration: 'underline' }}>contact</Link>.
+                    Conformément aux réglementations en vigueur, vous disposez d&apos;un droit d&apos;accès, de rectification et de suppression de vos données personnelles. Vous pouvez exercer ce droit à tout moment en nous contactant via notre page de <Link prefetch={false} href="/contact" style={{ color: '#ff5a1f', textDecoration: 'underline' }}>contact</Link>.
                 </p>
             </section>
         </div>

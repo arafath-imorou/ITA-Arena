@@ -181,7 +181,7 @@ export default function CreateCotisationPage() {
                 {step === 3 ? "Résumé de la cotisation" : (editId ? "Modifier la cotisation" : "Créer une cotisation")}
             </h1>
             <div className={styles.breadcrumb}>
-                <Link href="/organizer?mode=cotisations">Dashboard</Link> &gt; <span>{step === 3 ? "Résumé" : (editId ? "Modifier" : "Nouvelle cotisation")}</span>
+                <Link prefetch={false} href="/organizer?mode=cotisations">Dashboard</Link> &gt; <span>{step === 3 ? "Résumé" : (editId ? "Modifier" : "Nouvelle cotisation")}</span>
             </div>
 
             <div className={styles.stepper}>
