@@ -1667,45 +1667,40 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
     
     const generateAdminBadge = (p: any) => {
         const canvas = document.createElement('canvas');
-        canvas.width = 600;
-        canvas.height = 600;
+        const SCALE = 1080 / 2480;
+        canvas.width = 1080;
+        canvas.height = Math.round(2468 * SCALE); // ~1075
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(0, 0, 600, 600);
-        
-        ctx.fillStyle = '#FF5A1F';
-        ctx.beginPath();
-        ctx.arc(300, 300, 270, 0, 2 * Math.PI);
-        ctx.fill();
+        const templateImg = new Image();
+        templateImg.onload = () => {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = 'bold 30px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(p.is_company ? 'PARTENAIRE DE SOUTIEN' : 'JE SOUTIENS', 300, 100);
-        ctx.font = 'bold 45px Arial';
-        ctx.fillText('OUIDAH SANS POLIO', 300, 160);
+            // Coordonnées du trou pour écrire "MERCI !" à la place de la photo
+            const cx = 1255 * SCALE; 
+            const cy = 1110 * SCALE;
+            
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 45px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('MERCI !', cx, cy + 15);
+            
+            const name = p.is_company ? (p.company_name || 'Partenaire') : (p.nom_contributeur || 'Anonyme');
+            ctx.font = 'bold 30px Arial';
+            ctx.fillStyle = '#FF5A1F';
+            ctx.fillText(name.toUpperCase(), cx, cy + 60);
 
-        ctx.fillStyle = '#e2e8f0';
-        ctx.beginPath();
-        ctx.arc(300, 300, 140, 0, 2 * Math.PI);
-        ctx.fill();
-        
-        ctx.fillStyle = '#0f172a';
-        ctx.font = 'bold 24px Arial';
-        ctx.fillText('MERCI !', 300, 310);
+            // Dessiner le template par-dessus
+            ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = '24px Arial';
-        ctx.fillText('24 OCTOBRE 2026', 300, 500);
-        ctx.font = '20px Arial';
-        ctx.fillText('OUIDAH — BÉNIN', 300, 530);
-
-        const link = document.createElement('a');
-        link.download = `Badge_OuidahSansPolio_${p.is_company ? p.company_name : p.nom_contributeur || 'Anonyme'}.jpg`;
-        link.href = canvas.toDataURL('image/jpeg', 0.7);
-        link.click();
+            const link = document.createElement('a');
+            link.download = `Badge_OuidahSansPolio_${name}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.85);
+            link.click();
+        };
+        templateImg.src = '/images/poliobadge26.png';
     };
 
     const generateAdminCertificate = async (p: any) => {
