@@ -1704,57 +1704,62 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
     };
 
     const generateAdminCertificate = async (p: any) => {
-        const doc = new jsPDF({ orientation: "landscape", unit: "px", format: [800, 560] });
+        const doc = new jsPDF({ orientation: "landscape", unit: "px", format: [1000, 700] });
         
         doc.setFillColor(255, 255, 255);
-        doc.rect(0, 0, 800, 560, 'F');
+        doc.rect(0, 0, 1000, 700, 'F');
         
+        // Border
         doc.setDrawColor(255, 90, 31);
-        doc.setLineWidth(8);
-        doc.rect(16, 16, 768, 528);
+        doc.setLineWidth(10);
+        doc.rect(20, 20, 960, 660);
 
         doc.setTextColor(15, 23, 42);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(32);
-        doc.text("CERTIFICAT DE RECONNAISSANCE", 400, 100, { align: "center" });
-        
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(18);
-        doc.text("Ce certificat est décerné à", 400, 160, { align: "center" });
-        
         doc.setFont("helvetica", "bold");
         doc.setFontSize(40);
+        doc.text("CERTIFICAT DE RECONNAISSANCE", 500, 120, { align: "center" });
+        
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(24);
+        doc.text("Ce certificat est décerné à", 500, 200, { align: "center" });
+        
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(50);
         doc.setTextColor(255, 90, 31);
-        const name = p.is_company ? (p.company_name || 'Entreprise') : (p.nom_contributeur || 'Anonyme');
-        doc.text(name.toUpperCase(), 400, 230, { align: "center" });
+        const name = p.is_company ? (p.company_name || 'Partenaire') : (p.nom_contributeur || 'Anonyme');
+        doc.text(name.toUpperCase(), 500, 280, { align: "center" });
 
         doc.setFont("helvetica", "normal");
-        doc.setFontSize(18);
+        doc.setFontSize(20);
         doc.setTextColor(15, 23, 42);
-        doc.text(`pour sa contribution inestimable à la campagne`, 400, 280, { align: "center" });
+        doc.text("en reconnaissance de sa contribution à la campagne", 500, 360, { align: "center" });
         
         doc.setFont("helvetica", "bold");
-        doc.text(`OUIDAH SANS POLIO`, 400, 320, { align: "center" });
+        doc.setFontSize(30);
+        doc.text("OUIDAH SANS POLIO", 500, 420, { align: "center" });
         
-        doc.setFont("helvetica", "normal");
-        doc.text(`en finançant l'achat de`, 400, 360, { align: "center" });
-        
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(255, 90, 31);
-        doc.setFontSize(28);
-        doc.text(`${p.nombre_de_vaccins || 0} VACCINS`, 400, 400, { align: "center" });
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(20);
+        doc.text("« Ensemble pour un monde sans polio. »", 500, 480, { align: "center" });
 
-        doc.setTextColor(100, 116, 139);
-        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(16);
+        doc.text("Date : Du 24 Sept. au 24 Oct. 2026", 100, 600);
+        doc.text("Lieu: OUIDAH, BÉNIN", 100, 630);
+        
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.text("Rotary | District 9103 | End Polio Now | OMS | UNICEF | Ministère de la Santé", 500, 650, { align: "center" });
+        
         const certId = p.certificat_id || ('OSP-2026-' + p.id.substring(0,6).toUpperCase());
-        doc.text(`ID: ${certId}`, 650, 480);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(12);
+        doc.text(`ID: ${certId}`, 800, 600);
         
         try {
-            const qrUrl = await QRCode.toDataURL(`${window.location.origin}/verification/certificat/${certId}`, { width: 60, margin: 1 });
-            doc.addImage(qrUrl, "PNG", 650, 490, 50, 50, undefined, 'FAST');
-        } catch (err) {
-            console.error(err);
-        }
+            const qrUrl = await QRCode.toDataURL(`${window.location.origin}/verification/certificat/${certId}`);
+            doc.addImage(qrUrl, "PNG", 800, 610, 60, 60);
+        } catch (err) {}
 
         doc.save(`Certificat_OuidahSansPolio_${name}.pdf`);
     };
