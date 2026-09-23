@@ -40,6 +40,20 @@ export async function POST(request: Request) {
                 } else {
                     console.log(`Webhook: Vote ${voteId} validated via FedaPay webhook.`);
                 }
+            } else if (customMetadata?.type === 'ouidah_polio' || customMetadata?.campaign_id) {
+                const { error } = await supabase.from('support_participations')
+                    .update({ 
+                        statut_paiement: 'SUCCESS',
+                        transaction_id: transactionId ? transactionId.toString() : null
+                    })
+                    .eq('checkout_session_id', checkoutSessionId);
+                if (error) console.error('Webhook: Error updating support participation', error);
+                else console.log(`Webhook: Support participation for session ${checkoutSessionId} validated.`);
+            } else if (customMetadata?.type === 'ouidah_polio' || customMetadata?.campaign_id) {
+                await supabase.from('support_participations')
+                    .update({ statut_paiement: 'FAILED' })
+                    .eq('checkout_session_id', checkoutSessionId);
+                console.log(`Webhook: Support participation for session ${checkoutSessionId} marked as failed.`);
             } else if (checkoutSessionId) {
                 const { error } = await supabase.from('tickets')
                     .update({ status: 'valid' })
