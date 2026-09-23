@@ -443,6 +443,7 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
                                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                                             <button onClick={() => generateAdminBadge(p)} style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '0.4rem 0.5rem', cursor: 'pointer', fontSize: '0.8rem', color: '#334155', fontWeight: 'bold' }}>📸 Badge</button>
                                             <button onClick={() => generateAdminCertificate(p)} style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', padding: '0.4rem 0.5rem', cursor: 'pointer', fontSize: '0.8rem', color: '#334155', fontWeight: 'bold' }}>📜 Certificat</button>
+                                            <button onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/support/ouidah-sans-polio?dl=${p.id}`); alert('Lien copié ! Renvoyez-le au participant pour qu\'il télécharge son badge et certificat.'); }} style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '4px', padding: '0.4rem 0.5rem', cursor: 'pointer', fontSize: '0.8rem', color: '#0369a1', fontWeight: 'bold' }}>🔗 Lien</button>
                                         </div>
                                     </td>
                                 </tr>

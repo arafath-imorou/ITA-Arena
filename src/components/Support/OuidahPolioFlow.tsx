@@ -76,6 +76,37 @@ export default function OuidahPolioFlow({ campaign }: Props) {
         setIsCustom(false);
     };
 
+    
+    // Handle DL link for recovering badge/certificate
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const dl = params.get('dl');
+            if (dl) {
+                // Fetch the participation
+                supabase.from('support_participations').select('*').eq('id', dl).single().then(({ data, error }) => {
+                    if (data && !error && data.statut_paiement === 'SUCCESS') {
+                        setParticipationId(data.id);
+                        setCertificatId(data.certificat_id || ('OSP-2026-' + data.id.substring(0,6).toUpperCase()));
+                        setVaccineCount(data.nombre_de_vaccins || 1);
+                        setIsCompany(data.is_company || false);
+                        
+                        // Parse name
+                        if (data.is_company) {
+                            setFormData(prev => ({ ...prev, companyName: data.nom_contributeur || '' }));
+                        } else {
+                            const parts = (data.nom_contributeur || '').split(' ');
+                            const fn = parts[0] || '';
+                            const ln = parts.slice(1).join(' ') || '';
+                            setFormData(prev => ({ ...prev, firstName: fn, lastName: ln }));
+                        }
+                        setStep('success');
+                    }
+                });
+            }
+        }
+    }, []);
+
     const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setStep('payment');
