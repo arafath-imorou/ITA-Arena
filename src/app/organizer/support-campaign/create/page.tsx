@@ -147,18 +147,21 @@ export default function CreateSupportCampaign() {
 
             // 1. Upload File if new one selected
             if (frameFile) {
-                const fileExt = frameFile.name.split('.').pop();
-                const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-
-                const { data: uploadData, error: uploadError } = await supabase.storage
-                    .from('campaign_frames')
-                    .upload(fileName, frameFile);
-
-                if (uploadError) throw uploadError;
-
-                const { data: publicUrlData } = supabase.storage
-                    .from('campaign_frames')
-                    .getPublicUrl(fileName);
+                
+                const fd = new FormData();
+                fd.append('file', frameFile);
+                fd.append('folder', user.id);
+                fd.append('bucket', 'campaign_frames');
+                
+                const res = await fetch('/api/upload/optimize', {
+                    method: 'POST',
+                    body: fd
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Erreur d'optimisation");
+                
+                const publicUrlData = { publicUrl: data.url };
+            
 
                 frameImageUrl = publicUrlData.publicUrl;
             }

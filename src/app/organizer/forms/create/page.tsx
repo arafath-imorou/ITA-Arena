@@ -476,19 +476,21 @@ export default function CreateFormPage() {
                                     
                                     try {
                                         setUploading(true);
-                                        const fileExt = file.name.split('.').pop();
-                                        const fileName = `${uuidv4()}.${fileExt}`;
-                                        const filePath = `forms/${fileName}`;
-
-                                        const { error: uploadError } = await supabase.storage
-                                            .from('event-images')
-                                            .upload(filePath, file);
-
-                                        if (uploadError) throw uploadError;
-
-                                        const { data: { publicUrl } } = supabase.storage
-                                            .from('event-images')
-                                            .getPublicUrl(filePath);
+                                        
+              const fd = new FormData();
+              fd.append('file', file);
+              fd.append('folder', 'optimized_uploads');
+              fd.append('bucket', 'event-images');
+              
+              const res = await fetch('/api/upload/optimize', {
+                  method: 'POST',
+                  body: fd
+              });
+              const optimData = await res.json();
+              if (!res.ok) throw new Error(optimData.error || "Erreur d'optimisation");
+              
+              const publicUrl = optimData.url;
+            
 
                                         setCoverImage(publicUrl);
                                     } catch (err: any) {
