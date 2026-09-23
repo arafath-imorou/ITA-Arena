@@ -183,69 +183,68 @@ export default function OuidahPolioFlow({ campaign }: Props) {
         }
     };
 
+    const finishBadgeDrawing = (canvas: HTMLCanvasElement) => {
+        const link = document.createElement('a');
+        link.download = `Badge_OuidahSansPolio.jpg`;
+        // Compression JPEG (0.85) pour réduire drastiquement la taille comme demandé (ex: de 3Mo à ~150ko)
+        link.href = canvas.toDataURL('image/jpeg', 0.85);
+        link.click();
+    };
+
     const generateBadge = () => {
         const canvas = document.createElement('canvas');
+        // poliobadge26.png original fait 2480x2468. 
+        // On le dessine sur un canevas 1080x1075 pour avoir une excellente qualité HD tout en restant très léger
+        const SCALE = 1080 / 2480;
         canvas.width = 1080;
-        canvas.height = 1080;
+        canvas.height = Math.round(2468 * SCALE); // ~1075
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        // Draw background
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(0, 0, 1080, 1080);
-        
-        ctx.fillStyle = '#FF5A1F';
-        ctx.beginPath();
-        ctx.arc(540, 540, 480, 0, 2 * Math.PI);
-        ctx.fill();
+        const templateImg = new Image();
+        templateImg.onload = () => {
+            // Fond blanc (utile si le badge a des bords semi-transparents non désirés en JPEG)
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = 'bold 60px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(isCompany ? 'PARTENAIRE DE SOUTIEN' : 'JE SOUTIENS', 540, 150);
-        ctx.font = 'bold 80px Arial';
-        ctx.fillText('OUIDAH SANS POLIO', 540, 250);
-
-        // Draw photo
-        if (uploadedPhoto) {
-            const img = new Image();
-            img.onload = () => {
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(540, 540, 250, 0, 2 * Math.PI);
-                ctx.closePath();
-                ctx.clip();
-                
-                const size = Math.min(img.width, img.height);
-                const sx = (img.width - size) / 2;
-                const sy = (img.height - size) / 2;
-                ctx.drawImage(img, sx, sy, size, size, 290, 290, 500, 500);
-                ctx.restore();
-                
-                finishBadgeDrawing(canvas, ctx);
+            const drawTemplateAndFinish = () => {
+                // Dessiner le cadre PAR-DESSUS la photo
+                ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
+                finishBadgeDrawing(canvas);
             };
-            img.src = uploadedPhoto;
-        } else {
-            ctx.fillStyle = '#e2e8f0';
-            ctx.beginPath();
-            ctx.arc(540, 540, 250, 0, 2 * Math.PI);
-            ctx.fill();
-            finishBadgeDrawing(canvas, ctx);
-        }
-    };
 
-    const finishBadgeDrawing = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = 'bold 40px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('Rotary • District 9103 • End Polio Now', 540, 880);
-        ctx.font = 'italic 30px Arial';
-        ctx.fillText('« Ensemble pour des générations sans polio »', 540, 950);
-        
-        const link = document.createElement('a');
-        link.download = `Badge_OuidahSansPolio.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+            if (uploadedPhoto) {
+                const userImg = new Image();
+                userImg.onload = () => {
+                    // Les coordonnées du trou transparent dans l'image 2480x2468
+                    const cx = 1255 * SCALE; 
+                    const cy = 1110 * SCALE;
+                    // On dessine la photo un peu plus large que le trou pour éviter les espaces vides
+                    const drawSize = 1400 * SCALE; 
+
+                    const imgSize = Math.min(userImg.width, userImg.height);
+                    const sx = (userImg.width - imgSize) / 2;
+                    const sy = (userImg.height - imgSize) / 2;
+
+                    ctx.save();
+                    // On place la photo de l'utilisateur
+                    ctx.drawImage(
+                        userImg, 
+                        sx, sy, imgSize, imgSize, 
+                        cx - (drawSize / 2), 
+                        cy - (drawSize / 2), 
+                        drawSize, drawSize
+                    );
+                    ctx.restore();
+
+                    drawTemplateAndFinish();
+                };
+                userImg.src = uploadedPhoto;
+            } else {
+                drawTemplateAndFinish();
+            }
+        };
+        templateImg.src = '/images/poliobadge26.png';
     };
 
     const generateCertificate = async () => {
