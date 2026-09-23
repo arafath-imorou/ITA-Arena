@@ -145,6 +145,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
 
             const fedapayKey = process.env.NEXT_PUBLIC_FEDAPAY_PUBLIC_KEY;
             
+            let checkout: any = null;
             const fedaConfig = {
                 public_key: fedapayKey,
                 transaction: {
@@ -166,6 +167,29 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                     }
                 },
                 onComplete: async (response: any) => {
+                    // FORCE CLOSE FEDAPAY WIDGET to reveal download page
+                    try {
+                        if (checkout) {
+                            if (typeof checkout.close === 'function') checkout.close();
+                            if (typeof checkout.destroy === 'function') checkout.destroy();
+                            if (typeof checkout.closeDialog === 'function') checkout.closeDialog();
+                        }
+                        // Fallback DOM removal
+                        setTimeout(() => {
+                            document.querySelectorAll('iframe').forEach((ifr: any) => {
+                                if (ifr.src && ifr.src.includes('fedapay')) {
+                                    if (ifr.parentElement && ifr.parentElement.style.zIndex) {
+                                        ifr.parentElement.remove();
+                                    } else {
+                                        ifr.remove();
+                                    }
+                                }
+                            });
+                        }, 500);
+                    } catch (e) {
+                        console.error('Erreur fermeture FedaPay', e);
+                    }
+
                     const status = response.status || (response.transaction && response.transaction.status);
                     if (status === 'approved' || status === 'successful' || status === 'completed') {
                         // Validate
@@ -190,7 +214,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
             // @ts-ignore
             if (window.FedaPay) {
                 // @ts-ignore
-                const checkout = window.FedaPay.init(fedaConfig);
+                checkout = window.FedaPay.init(fedaConfig);
                 checkout.open();
             } else {
                 alert("Erreur de chargement du module de paiement.");
