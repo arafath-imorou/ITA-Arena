@@ -5,9 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { v4 as uuidv4 } from "uuid";
 
-export const revalidate = 60;
-
-
 export default function PublicFormPage() {
     const params = useParams();
     const router = useRouter();
