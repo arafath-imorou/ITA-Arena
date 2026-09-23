@@ -1644,9 +1644,10 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
         const fetchStats = async () => {
             const { data, error } = await supabase
                 .from('support_participations')
-                .select('*')
-                .eq('campaign_id', campaignId)
-                .order('created_at', { ascending: false });
+                  .select('*')
+                  .eq('campaign_id', campaignId)
+                  .eq('statut_paiement', 'SUCCESS')
+                  .order('created_at', { ascending: false });
             
             if (data) {
                 const confirmed = data.filter((d: any) => d.statut_paiement === 'SUCCESS');
