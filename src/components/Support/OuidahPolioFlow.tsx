@@ -288,7 +288,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
 
         doc.setFont("helvetica", "normal");
         doc.setFontSize(16);
-        doc.text("Date: 24 OCTOBRE 2026", 100, 600);
+        doc.text("Date : Du 24 Sept. au 24 Oct. 2026", 100, 600);
         doc.text("Lieu: OUIDAH, BÉNIN", 100, 630);
         
         doc.setFont("helvetica", "bold");
@@ -359,7 +359,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                         JE SOUTIENS LA CAUSE
                     </button>
 
-<p className={styles.dateLoc}>24 OCTOBRE 2026<br/>OUIDAH — BÉNIN</p>
+<p className={styles.dateLoc}>24 SEPTEMBRE AU 24 OCTOBRE 2026<br/>OUIDAH — BÉNIN</p>
                     
                     <div className={styles.logos}>
                         <span>Rotary</span>

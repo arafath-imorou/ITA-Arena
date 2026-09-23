@@ -168,9 +168,17 @@ export default function FeaturedEvents() {
                         image_url: item.cover_image || item.frame_image || "https://placehold.co/600x400/0A2E73/FFFFFF?text=Soutien",
                         category_id: item.category || 'Campagne',
                         organizer_name: "Campagne de Soutien",
-                        date: item.start_date && item.end_date 
-                            ? `Du ${new Date(item.start_date).getDate()} au ${new Date(item.end_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase()}`
-                            : (item.start_date ? new Date(item.start_date).toLocaleDateString('fr-FR') : "Date non définie"),
+                                                  date: item.start_date && item.end_date 
+                              ? (() => {
+                                  const d1 = new Date(item.start_date);
+                                  const d2 = new Date(item.end_date);
+                                  if (d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear()) {
+                                      return `Du ${d1.getDate()} au ${d2.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+                                  } else {
+                                      return `${d1.getDate()} ${d1.toLocaleDateString('fr-FR', { month: 'long' })} au ${d2.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+                                  }
+                              })()
+                              : (item.start_date ? new Date(item.start_date).toLocaleDateString('fr-FR') : "Date non définie"),
                         location: "En ligne",
                         slug: item.slug,
                         likes_count: item.likes_count || 0,
