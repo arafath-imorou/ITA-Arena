@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -202,7 +202,7 @@ function SortableFieldItem({
     );
 }
 
-export default function CreateFormPage() {
+function CreateFormContent() {
     const { user } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -630,5 +630,14 @@ export default function CreateFormPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+
+export default function CreateFormPage() {
+    return (
+        <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center' }}>Chargement...</div>}>
+            <CreateFormContent />
+        </Suspense>
     );
 }

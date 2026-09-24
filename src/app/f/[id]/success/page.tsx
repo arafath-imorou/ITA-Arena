@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import QRCode from "qrcode";
 
-export default function FormSuccessPage() {
+function FormSuccessContent() {
     const params = useParams();
     const searchParams = useSearchParams();
     const subId = searchParams?.get("sub");
@@ -99,5 +99,14 @@ export default function FormSuccessPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+
+export default function FormSuccessPage() {
+    return (
+        <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center' }}>Chargement...</div>}>
+            <FormSuccessContent />
+        </Suspense>
     );
 }

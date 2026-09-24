@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { supabase } from "@/lib/supabase";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import styles from "./PublicVote.module.css";
@@ -13,7 +13,7 @@ declare global {
     }
 }
 
-export default function PublicVotePage() {
+function PublicVoteContent() {
     const params = useParams();
     const campaignId = params.id as string;
     const searchParams = useSearchParams();
@@ -621,5 +621,14 @@ export default function PublicVotePage() {
                 </div>
             )}
         </div>
+    );
+}
+
+
+export default function PublicVotePage() {
+    return (
+        <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>Chargement...</div>}>
+            <PublicVoteContent />
+        </Suspense>
     );
 }
