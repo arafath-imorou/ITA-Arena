@@ -283,11 +283,11 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
             ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
 
             const link = document.createElement('a');
-            link.download = `Badge_OuidahSansPolio_${name}.jpg`;
+            link.download = `Badge_MondeSansPolio_${name}.jpg`;
             link.href = canvas.toDataURL('image/jpeg', 0.85);
             link.click();
         };
-        templateImg.src = '/images/poliobadge26.png';
+        templateImg.src = '/images/poliobadge26new.png';
     };
 
     const generateAdminCertificate = async (p: any) => {
@@ -323,11 +323,13 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
         
         doc.setFont("helvetica", "bold");
         doc.setFontSize(30);
-        doc.text("OUIDAH SANS POLIO", 500, 420, { align: "center" });
+        doc.text("MONDE SANS POLIO", 500, 410, { align: "center" });
+        doc.setFontSize(22);
+        doc.text("Célébration WORLD POLIO DAY - OUIDAH 2026", 500, 450, { align: "center" });
         
         doc.setFont("helvetica", "italic");
         doc.setFontSize(20);
-        doc.text("« Ensemble pour un monde sans polio. »", 500, 480, { align: "center" });
+        doc.text("« Ensemble pour un monde sans polio. »", 500, 500, { align: "center" });
 
         doc.setFont("helvetica", "normal");
         doc.setFontSize(16);
@@ -348,7 +350,7 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
             doc.addImage(qrUrl, "PNG", 800, 610, 60, 60);
         } catch (err) {}
 
-        doc.save(`Certificat_OuidahSansPolio_${name}.pdf`);
+        doc.save(`Certificat_MondeSansPolio_${name}.pdf`);
     };
 
 
@@ -357,7 +359,7 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
         const doc = new jsPDF();
         
         doc.setFontSize(18);
-        doc.text("Rapport - Ouidah Sans Polio", 14, 22);
+        doc.text("Rapport - MONDE SANS POLIO", 14, 22);
         
         doc.setFontSize(12);
         doc.text(`Total Vaccins Financés: ${stats.vaccins}`, 14, 32);
@@ -383,7 +385,7 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
             headStyles: { fillColor: [255, 90, 31] }
         });
 
-        doc.save("Rapport_OuidahSansPolio.pdf");
+        doc.save("Rapport_MondeSansPolio.pdf");
     };
 
     if (loading) return <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ background: 'white', padding: '2rem', borderRadius: '8px' }}>Chargement...</div></div>;
@@ -392,7 +394,7 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
             <div style={{ background: 'white', padding: '2rem', borderRadius: '12px', maxWidth: '1000px', width: '100%', maxHeight: '95vh', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                    <h2 style={{ margin: 0, color: '#0f172a' }}>Statistiques - Ouidah Sans Polio</h2>
+                    <h2 style={{ margin: 0, color: '#0f172a' }}>Statistiques - MONDE SANS POLIO</h2>
                     <div style={{ display: 'flex', gap: '1rem' }}>
                         <button onClick={handleDownloadPDF} style={{ padding: '0.75rem 1.5rem', background: '#FF5A1F', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>📄 Télécharger PDF</button>
                         <button onClick={onClose} style={{ padding: '0.75rem 1.5rem', background: '#e2e8f0', color: '#475569', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Fermer</button>

@@ -150,7 +150,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                 public_key: fedapayKey,
                 transaction: {
                     amount: totalAmount,
-                    description: `Achat de ${vaccineCount} vaccins - Ouidah Sans Polio`,
+                    description: `Achat de ${vaccineCount} vaccins - MONDE SANS POLIO`,
                     custom_metadata: {
                         checkout_session_id: checkoutSessionId,
                         campaign_id: campaign.id,
@@ -240,7 +240,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
 
     const finishBadgeDrawing = (canvas: HTMLCanvasElement) => {
         const link = document.createElement('a');
-        link.download = `Badge_OuidahSansPolio.jpg`;
+        link.download = `Badge_MondeSansPolio.jpg`;
         // Compression JPEG (0.85) pour réduire drastiquement la taille comme demandé (ex: de 3Mo à ~150ko)
         link.href = canvas.toDataURL('image/jpeg', 0.85);
         link.click();
@@ -248,7 +248,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
 
     const generateBadge = () => {
         const canvas = document.createElement('canvas');
-        // poliobadge26.png original fait 2480x2468. 
+        // poliobadge26new.png original fait 2480x2468. 
         // On le dessine sur un canevas 1080x1075 pour avoir une excellente qualité HD tout en restant très léger
         const SCALE = 1080 / 2480;
         canvas.width = 1080;
@@ -299,7 +299,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                 drawTemplateAndFinish();
             }
         };
-        templateImg.src = '/images/poliobadge26.png';
+        templateImg.src = '/images/poliobadge26new.png';
     };
 
     const generateCertificate = async () => {
@@ -335,11 +335,13 @@ export default function OuidahPolioFlow({ campaign }: Props) {
         
         doc.setFont("helvetica", "bold");
         doc.setFontSize(30);
-        doc.text("OUIDAH SANS POLIO", 500, 420, { align: "center" });
+        doc.text("MONDE SANS POLIO", 500, 410, { align: "center" });
+        doc.setFontSize(22);
+        doc.text("Célébration WORLD POLIO DAY - OUIDAH 2026", 500, 450, { align: "center" });
         
         doc.setFont("helvetica", "italic");
         doc.setFontSize(20);
-        doc.text("« Ensemble pour un monde sans polio. »", 500, 480, { align: "center" });
+        doc.text("« Ensemble pour un monde sans polio. »", 500, 500, { align: "center" });
 
         doc.setFont("helvetica", "normal");
         doc.setFontSize(16);
@@ -361,14 +363,14 @@ export default function OuidahPolioFlow({ campaign }: Props) {
             } catch (err) {}
         }
 
-        doc.save(`Certificat_OuidahSansPolio_${name}.pdf`);
+        doc.save(`Certificat_MondeSansPolio_${name}.pdf`);
     };
 
     const handleShare = () => {
-        const text = `Je soutiens Ouidah Sans Polio !\n\nJ'ai choisi de contribuer à la mobilisation pour un monde sans polio.\n\nEt vous ?\n\n#OuidahSansPolio #EndPolioNow #JeSoutiens #UnMondeSansPolio\n${window.location.href}`;
+        const text = `Je soutiens la campagne MONDE SANS POLIO !\n\nJ'ai choisi de contribuer à la mobilisation pour un monde sans polio.\n\nEt vous ?\n\n#MondeSansPolio #EndPolioNow #JeSoutiens #UnMondeSansPolio\n${window.location.href}`;
         if (navigator.share) {
             navigator.share({
-                title: 'Ouidah Sans Polio',
+                title: 'MONDE SANS POLIO',
                 text: text,
                 url: window.location.href
             }).catch(console.error);
@@ -382,7 +384,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
         <div className={styles.polioWrapper}>
             {step === 'intro' && (
                 <div className={styles.heroSection}>
-                    <h1 className={styles.title}>OUIDAH SANS POLIO</h1>
+                    <h1 className={styles.title}>MONDE SANS POLIO, Célébration WORLD POLIO DAY - OUIDAH 2026</h1>
                     <h2 className={styles.subtitle}>« Mobilisons-nous pour un monde sans polio. »</h2>
 
 <div className={styles.statsBar}>
@@ -426,7 +428,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                     </div>
 
                     <div className={styles.presentation}>
-                        <p>Ouidah Sans Polio est une mobilisation citoyenne autour de l'éradication de la poliomyélite.</p>
+                        <p>MONDE SANS POLIO, Célébration WORLD POLIO DAY - OUIDAH 2026, est une mobilisation citoyenne autour de l'éradication de la poliomyélite.</p>
                         <p>À travers les Foulées contre la Polio, la collecte, le Village “En finir avec la Polio”, la sensibilisation et le rattrapage vaccinal, la campagne rassemble citoyens, Rotariens, entreprises et partenaires autour d'un même objectif.</p>
                         <ul className={styles.activities}>
                             <li>🏃 Foulées contre la Polio</li>
