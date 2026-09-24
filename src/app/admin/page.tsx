@@ -848,7 +848,7 @@ function AdminDashboardContent() {
                                             <td>{c.views || 0}</td>
                                             <td>
                                                 <div style={{ display: 'flex', gap: '0.4rem' }}>
-                                                    {c.slug && c.slug.toLowerCase().includes('ouidah') && (
+                                                    {c.slug && c.slug.toLowerCase().includes('polio') && (
                                                         <button 
                                                             onClick={() => setPolioAdminCampaignId(c.id)}
                                                             className={styles.badge} 
