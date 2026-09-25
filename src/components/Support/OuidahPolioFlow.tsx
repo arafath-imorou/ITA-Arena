@@ -456,13 +456,24 @@ export default function OuidahPolioFlow({ campaign }: Props) {
 
             {step === 'selector' && (
                 <div className={styles.selectorSection}>
+                    <div className={styles.typeSelector} style={{ marginBottom: '2rem' }}>
+                        <label>
+                            <input type="radio" checked={!isCompany} onChange={() => { setIsCompany(false); setIsCustom(false); setVaccineCount(10); }} />
+                            Particulier
+                        </label>
+                        <label>
+                            <input type="radio" checked={isCompany} onChange={() => { setIsCompany(true); setIsCustom(false); setVaccineCount(100); }} />
+                            Entreprise / Organisation
+                        </label>
+                    </div>
+
                     <h2 className={styles.sectionTitle}>COMBIEN DE VACCINS SOUHAITEZ-VOUS CONTRIBUER À FINANCER ?</h2>
                     <div className={styles.priceTag}>1 VACCIN = {pricePerVaccine} FCFA</div>
 
                     {!isCustom ? (
                         <>
                             <div className={styles.quickGrid}>
-                                {[10, 20, 50, 100, 200].map(qty => (
+                                {(isCompany ? [100, 200, 500, 1000, 5000] : [10, 20, 50, 100, 200]).map(qty => (
                                     <button 
                                         key={qty} 
                                         className={vaccineCount === qty ? styles.qtyBtnActive : styles.qtyBtn}
@@ -472,9 +483,11 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                                         <span className={styles.qtyPrice}>{new Intl.NumberFormat('fr-FR').format(qty * pricePerVaccine)} FCFA</span>
                                     </button>
                                 ))}
+                                {!isCompany && (
                                 <button className={styles.qtyBtn} onClick={() => setIsCustom(true)}>
                                     <span className={styles.qtyLabel}>AUTRE NOMBRE</span>
                                 </button>
+                                )}
                             </div>
                         </>
                     ) : (
@@ -524,17 +537,6 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                 <div className={styles.formSection}>
                     <h2 className={styles.sectionTitle}>VOS INFORMATIONS</h2>
                     
-                    <div className={styles.typeSelector}>
-                        <label>
-                            <input type="radio" checked={!isCompany} onChange={() => setIsCompany(false)} />
-                            Particulier
-                        </label>
-                        <label>
-                            <input type="radio" checked={isCompany} onChange={() => setIsCompany(true)} />
-                            Entreprise / Organisation
-                        </label>
-                    </div>
-
                     <form onSubmit={handleFormSubmit} className={styles.infoForm}>
                         {!isCompany ? (
                             <>
