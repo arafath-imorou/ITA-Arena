@@ -84,14 +84,26 @@ export default function OuidahPolioFlow({ campaign }: Props) {
             const dl = params.get('dl');
             if (dl) {
                 // Fetch the participation
-                supabase.from('support_participations').select('*').eq('id', dl).single().then(({ data, error }) => {
-                    if (data && !error && data.statut_paiement === 'SUCCESS') {
+                fetch('/api/support/verify-dl', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ dl })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        if (data.error === 'EXPIRED') {
+                            alert("Désolé, ce lien personnel a expiré car il a déjà été utilisé 2 fois au maximum. Veuillez soutenir à nouveau pour générer un nouveau badge.");
+                        } else {
+                            alert("Lien invalide ou paiement non finalisé.");
+                        }
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    } else if (data.id) {
                         setParticipationId(data.id);
                         setCertificatId(data.certificat_id || ('OSP-2026-' + data.id.substring(0,6).toUpperCase()));
                         setVaccineCount(data.nombre_de_vaccins || 1);
                         setIsCompany(data.is_company || false);
                         
-                        // Parse name
                         if (data.is_company) {
                             setFormData(prev => ({ ...prev, companyName: data.nom_contributeur || '' }));
                         } else {
@@ -102,7 +114,8 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                         }
                         setStep('success');
                     }
-                });
+                })
+                .catch(err => console.error("Erreur dl:", err));
             }
         }
     }, []);
