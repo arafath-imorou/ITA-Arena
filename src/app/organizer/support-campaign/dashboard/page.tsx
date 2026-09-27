@@ -5,7 +5,7 @@ import styles from "./Dashboard.module.css";
 import { supabase } from "@/lib/supabase";
 import QRCode from 'qrcode';
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 
