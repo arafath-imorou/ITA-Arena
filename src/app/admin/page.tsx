@@ -1768,6 +1768,32 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
     };
 
 
+    
+    const handleDownloadExcel = () => {
+        if (!stats) return;
+        const headers = ["Date", "Nom", "Email", "Vaccins", "Montant", "Statut"];
+        const rows = stats.participations.map((p: any) => [
+            new Date(p.created_at).toLocaleDateString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+            (p.is_company ? p.company_name : p.nom_contributeur || '-').replace(/,/g, ' '),
+            (p.email_contributeur || '-').replace(/,/g, ' '),
+            p.nombre_de_vaccins || 0,
+            p.montant_total || 0,
+            p.statut_paiement === 'SUCCESS' ? 'Confirmé' : 'En attente'
+        ]);
+        
+        let csvContent = "data:text/csv;charset=utf-8," 
+            + headers.join(",") + "\n" 
+            + rows.map((e: any[]) => e.join(",")).join("\n");
+            
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "Rapport_MondeSansPolio.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     const handleDownloadPDF = () => {
         if (!stats) return;
         const doc = new jsPDF();
@@ -1790,7 +1816,7 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
             p.statut_paiement === 'SUCCESS' ? 'Confirmé' : 'En attente'
         ]);
 
-        (doc as any).autoTable({
+        autoTable(doc, {
             startY: 60,
             head: [tableColumn],
             body: tableRows,
@@ -1811,6 +1837,7 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
                     <h2 style={{ margin: 0, color: '#0f172a' }}>Statistiques - MONDE SANS POLIO</h2>
                     <div style={{ display: 'flex', gap: '1rem' }}>
                         <button onClick={handleDownloadPDF} style={{ padding: '0.75rem 1.5rem', background: '#FF5A1F', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>📄 Télécharger PDF</button>
+                          <button onClick={handleDownloadExcel} style={{ padding: '0.75rem 1.5rem', background: '#10b981', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>📊 Télécharger Excel</button>
                         <button onClick={onClose} style={{ padding: '0.75rem 1.5rem', background: '#e2e8f0', color: '#475569', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Fermer</button>
                     </div>
                 </div>
@@ -1832,8 +1859,8 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
                 </div>
 
                 <h3 style={{ marginBottom: '1rem', color: '#334155' }}>Détails des contributeurs</h3>
-                <div style={{ overflowY: 'auto', flex: 1, border: '1px solid #e2e8f0', borderRadius: '8px' }}>
-                    <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+                <div style={{ overflow: 'auto', flex: 1, border: '1px solid #e2e8f0', borderRadius: '8px' }}>
+                    <table style={{ width: '100%', minWidth: '800px', textAlign: 'left', borderCollapse: 'collapse' }}>
                         <thead style={{ position: 'sticky', top: 0, background: '#f8fafc', zIndex: 1 }}>
                             <tr>
                                 <th style={{ padding: '1rem', borderBottom: '2px solid #e2e8f0', color: '#64748b', fontSize: '0.9rem' }}>Date</th>
