@@ -105,7 +105,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                         setIsCompany(data.is_company || false);
                         
                         if (data.is_company) {
-                            setFormData(prev => ({ ...prev, companyName: data.nom_contributeur || '' }));
+                            setFormData(prev => ({ ...prev, companyName: data.company_name || data.nom_contributeur || '' }));
                         } else {
                             const parts = (data.nom_contributeur || '').split(' ');
                             const fn = parts[0] || '';
@@ -251,12 +251,78 @@ export default function OuidahPolioFlow({ campaign }: Props) {
         }
     };
 
-    const finishBadgeDrawing = (canvas: HTMLCanvasElement) => {
+    const finishBadgeDrawing = (canvas: HTMLCanvasElement, name?: string) => {
         const link = document.createElement('a');
-        link.download = `Badge_MondeSansPolio.jpg`;
+        const cleanName = (name || 'MondeSansPolio').replace(/[^a-zA-Z0-9_\-]/g, '_');
+        link.download = `Badge_MondeSansPolio_${cleanName}.jpg`;
         // Compression JPEG (0.85) pour réduire drastiquement la taille comme demandé (ex: de 3Mo à ~150ko)
         link.href = canvas.toDataURL('image/jpeg', 0.85);
         link.click();
+    };
+
+    const drawCompanyTextOnCanvas = (
+        ctx: CanvasRenderingContext2D,
+        text: string,
+        cx: number,
+        cy: number,
+        maxW: number = 480,
+        maxH: number = 360,
+        color: string = '#0033A0'
+    ) => {
+        const cleanText = text.trim();
+        if (!cleanText) return;
+
+        const words = cleanText.toUpperCase().split(/\s+/).filter(Boolean);
+        if (words.length === 0) return;
+
+        // Ajuster dynamiquement la taille de police pour qu'elle sorte bien grande et tienne parfaitement dans le cercle
+        let bestFontSize = 24;
+        let bestLines: string[] = [words.join(' ')];
+        let bestLineHeight = 28;
+        let bestTotalH = 28;
+
+        for (let size = 64; size >= 24; size -= 2) {
+            ctx.font = `bold ${size}px "Arial", "Helvetica Neue", sans-serif`;
+            const lines: string[] = [];
+            let currentLine = '';
+
+            for (const word of words) {
+                const testLine = currentLine ? `${currentLine} ${word}` : word;
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > maxW && currentLine) {
+                    lines.push(currentLine);
+                    currentLine = word;
+                } else {
+                    currentLine = testLine;
+                }
+            }
+            if (currentLine) lines.push(currentLine);
+
+            const exceedsW = lines.some(line => ctx.measureText(line).width > maxW);
+            const lH = size * 1.15;
+            const tH = lines.length * lH;
+
+            if (!exceedsW && tH <= maxH) {
+                bestFontSize = size;
+                bestLines = lines;
+                bestLineHeight = lH;
+                bestTotalH = tH;
+                break;
+            }
+        }
+
+        ctx.save();
+        ctx.fillStyle = color;
+        ctx.font = `bold ${bestFontSize}px "Arial", "Helvetica Neue", sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const startY = cy - (bestTotalH / 2) + (bestLineHeight / 2);
+        for (let i = 0; i < bestLines.length; i++) {
+            const y = startY + (i * bestLineHeight);
+            ctx.fillText(bestLines[i], cx, y);
+        }
+        ctx.restore();
     };
 
     const generateBadge = () => {
@@ -275,21 +341,22 @@ export default function OuidahPolioFlow({ campaign }: Props) {
             ctx.fillStyle = '#FFFFFF';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            const cx = 1260 * SCALE; 
+            const cy = (1095 * SCALE) + 15; // Centré dans le cercle photo visible (~492px)
+
             const drawTemplateAndFinish = () => {
-                // Dessiner le cadre PAR-DESSUS la photo
+                // Dessiner le cadre PAR-DESSUS la photo ou le texte
                 ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
-                finishBadgeDrawing(canvas);
+                const displayName = isCompany 
+                    ? (formData.companyName || 'Entreprise') 
+                    : (`${formData.firstName || ''}_${formData.lastName || ''}`.trim() || 'MondeSansPolio');
+                finishBadgeDrawing(canvas, displayName);
             };
 
             if (uploadedPhoto) {
                 const userImg = new Image();
                 userImg.onload = () => {
-                    // Les coordonnées du trou transparent dans l'image 2480x2468
-                    const cx = 1255 * SCALE; 
-                    const cy = 1110 * SCALE;
-                    // On dessine la photo un peu plus large que le trou pour éviter les espaces vides
                     const drawSize = 1400 * SCALE; 
-
                     const imgSize = Math.min(userImg.width, userImg.height);
                     const sx = (userImg.width - imgSize) / 2;
                     const sy = (userImg.height - imgSize) / 2;
@@ -300,7 +367,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                         userImg, 
                         sx, sy, imgSize, imgSize, 
                         cx - (drawSize / 2), 
-                        cy - (drawSize / 2), 
+                        cy - 15 - (drawSize / 2), 
                         drawSize, drawSize
                     );
                     ctx.restore();
@@ -309,6 +376,15 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                 };
                 userImg.src = uploadedPhoto;
             } else {
+                // Si aucune photo n'a été ajoutée :
+                // Pour les entreprises / associations, le nom sort bien écrit et bien grand en bleu
+                const nameToDisplay = isCompany 
+                    ? (formData.companyName || '').trim() 
+                    : `${formData.firstName || ''} ${formData.lastName || ''}`.trim();
+
+                if (nameToDisplay) {
+                    drawCompanyTextOnCanvas(ctx, nameToDisplay, cx, cy, 480, 360, '#0033A0');
+                }
                 drawTemplateAndFinish();
             }
         };
@@ -598,7 +674,11 @@ export default function OuidahPolioFlow({ campaign }: Props) {
 
                     <div className={styles.badgeConfig}>
                         <h3>Personnalisez votre badge</h3>
-                        <p>Ajoutez votre photo pour personnaliser votre badge.</p>
+                        <p>
+                            {isCompany 
+                                ? "Ajoutez votre logo ou photo (optionnel). Sans photo, le nom de votre entreprise / association apparaîtra directement en grand sur le badge." 
+                                : "Ajoutez votre photo pour personnaliser votre badge."}
+                        </p>
                         <input type="file" accept="image/*" onChange={handlePhotoUpload} />
                         {uploadedPhoto && (
                             <div className={styles.photoPreview}>

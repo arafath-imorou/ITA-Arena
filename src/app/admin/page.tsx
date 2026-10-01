@@ -1666,6 +1666,70 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
     }, [campaignId]);
 
     
+    const drawCompanyTextOnCanvas = (
+        ctx: CanvasRenderingContext2D,
+        text: string,
+        cx: number,
+        cy: number,
+        maxW: number = 480,
+        maxH: number = 360,
+        color: string = '#0033A0'
+    ) => {
+        const cleanText = text.trim();
+        if (!cleanText) return;
+
+        const words = cleanText.toUpperCase().split(/\s+/).filter(Boolean);
+        if (words.length === 0) return;
+
+        let bestFontSize = 24;
+        let bestLines: string[] = [words.join(' ')];
+        let bestLineHeight = 28;
+        let bestTotalH = 28;
+
+        for (let size = 64; size >= 24; size -= 2) {
+            ctx.font = `bold ${size}px "Arial", "Helvetica Neue", sans-serif`;
+            const lines: string[] = [];
+            let currentLine = '';
+
+            for (const word of words) {
+                const testLine = currentLine ? `${currentLine} ${word}` : word;
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > maxW && currentLine) {
+                    lines.push(currentLine);
+                    currentLine = word;
+                } else {
+                    currentLine = testLine;
+                }
+            }
+            if (currentLine) lines.push(currentLine);
+
+            const exceedsW = lines.some(line => ctx.measureText(line).width > maxW);
+            const lH = size * 1.15;
+            const tH = lines.length * lH;
+
+            if (!exceedsW && tH <= maxH) {
+                bestFontSize = size;
+                bestLines = lines;
+                bestLineHeight = lH;
+                bestTotalH = tH;
+                break;
+            }
+        }
+
+        ctx.save();
+        ctx.fillStyle = color;
+        ctx.font = `bold ${bestFontSize}px "Arial", "Helvetica Neue", sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const startY = cy - (bestTotalH / 2) + (bestLineHeight / 2);
+        for (let i = 0; i < bestLines.length; i++) {
+            const y = startY + (i * bestLineHeight);
+            ctx.fillText(bestLines[i], cx, y);
+        }
+        ctx.restore();
+    };
+
     const generateAdminBadge = (p: any) => {
         const canvas = document.createElement('canvas');
         const SCALE = 1080 / 2480;
@@ -1679,25 +1743,30 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
             ctx.fillStyle = '#FFFFFF';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Coordonnées du trou pour écrire "MERCI !" à la place de la photo
-            const cx = 1255 * SCALE; 
-            const cy = 1110 * SCALE;
+            const cx = 1260 * SCALE; 
+            const cy = (1095 * SCALE) + 15;
             
-            ctx.fillStyle = '#0f172a';
-            ctx.font = 'bold 45px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('MERCI !', cx, cy + 15);
-            
-            const name = p.is_company ? (p.company_name || 'Partenaire') : (p.nom_contributeur || 'Anonyme');
-            ctx.font = 'bold 30px Arial';
-            ctx.fillStyle = '#FF5A1F';
-            ctx.fillText(name.toUpperCase(), cx, cy + 60);
+            const name = p.is_company ? (p.company_name || p.nom_contributeur || 'Partenaire') : (p.nom_contributeur || 'Anonyme');
+
+            if (p.is_company) {
+                drawCompanyTextOnCanvas(ctx, name, cx, cy, 480, 360, '#0033A0');
+            } else {
+                ctx.fillStyle = '#0f172a';
+                ctx.font = 'bold 45px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('MERCI !', cx, cy - 25);
+                
+                ctx.font = 'bold 30px Arial';
+                ctx.fillStyle = '#FF5A1F';
+                ctx.fillText(name.toUpperCase(), cx, cy + 25);
+            }
 
             // Dessiner le template par-dessus
             ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
 
             const link = document.createElement('a');
-            link.download = `Badge_MondeSansPolio_${name}.jpg`;
+            const cleanName = (name || 'Partenaire').replace(/[^a-zA-Z0-9_\-]/g, '_');
+            link.download = `Badge_MondeSansPolio_${cleanName}.jpg`;
             link.href = canvas.toDataURL('image/jpeg', 0.85);
             link.click();
         };
