@@ -402,6 +402,156 @@
     margin-top: 1rem;
 }
 
+.fileInputWrapper {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+.fileInput {
+    display: none;
+}
+
+.uploadBtn {
+    background: #0f172a;
+    color: #ffffff;
+    padding: 0.65rem 1.4rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transition: background 0.2s, transform 0.1s;
+}
+
+.uploadBtn:hover {
+    background: #1e293b;
+    transform: translateY(-1px);
+}
+
+.uploadBtn:active {
+    transform: translateY(0);
+}
+
+.cropContainer {
+    margin: 1.5rem auto 0;
+    max-width: 420px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.cropCircle {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    margin: 0 auto;
+    border: 4px solid #FF5A1F;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    background: #f8fafc;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+.cropCircle:active {
+    cursor: grabbing;
+}
+
+.cropCircle img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    transform-origin: center center;
+}
+
+.cropHint {
+    font-size: 0.85rem;
+    color: #475569;
+    margin-top: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    line-height: 1.4;
+}
+
+.cropControls {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    background: #f8fafc;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid #e2e8f0;
+}
+
+.zoomRow {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    justify-content: center;
+}
+
+.zoomSlider {
+    flex: 1;
+    max-width: 180px;
+    accent-color: #FF5A1F;
+    cursor: pointer;
+    height: 6px;
+}
+
+.zoomValue {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #0f172a;
+    min-width: 42px;
+    text-align: right;
+}
+
+.cropButtonsRow {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.cropToolBtn {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: all 0.2s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.cropToolBtn:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #94a3b8;
+}
+
 .photoPreview {
     margin-top: 1rem;
     width: 150px;
@@ -417,6 +567,71 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.captionSection {
+    margin-top: 2rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    text-align: left;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.captionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.captionTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.captionDesc {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+}
+
+.copyCaptionBtn {
+    background: #FF5A1F;
+    color: #fff;
+    border: none;
+    padding: 0.45rem 0.95rem;
+    border-radius: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    box-shadow: 0 2px 4px rgba(255, 90, 31, 0.25);
+}
+
+.copyCaptionBtn:hover {
+    background: #e04812;
+}
+
+.captionText {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    padding: 0.85rem;
+    font-size: 0.88rem;
+    color: #334155;
+    white-space: pre-wrap;
+    line-height: 1.55;
+    user-select: all;
+    font-family: inherit;
 }
 
 .statsBar {

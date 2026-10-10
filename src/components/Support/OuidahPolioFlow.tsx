@@ -35,6 +35,14 @@ export default function OuidahPolioFlow({ campaign }: Props) {
     const [participationId, setParticipationId] = useState<string | null>(null);
     const [certificatId, setCertificatId] = useState<string | null>(null);
     const [uploadedPhoto, setUploadedPhoto] = useState<string | null>(null);
+
+    // Photo adjustment & crop state
+    const [photoZoom, setPhotoZoom] = useState<number>(1);
+    const [photoOffset, setPhotoOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+    const [photoRotation, setPhotoRotation] = useState<number>(0);
+    const [isDragging, setIsDragging] = useState<boolean>(false);
+    const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+    const [copiedCaption, setCopiedCaption] = useState<boolean>(false);
     
     // Stats
     const [stats, setStats] = useState({ vaccins: 0, montant: 0, soutiens: 0, objectif: 100000 });
@@ -246,9 +254,56 @@ export default function OuidahPolioFlow({ campaign }: Props) {
             const reader = new FileReader();
             reader.onload = (ev) => {
                 setUploadedPhoto(ev.target?.result as string);
+                setPhotoZoom(1);
+                setPhotoOffset({ x: 0, y: 0 });
+                setPhotoRotation(0);
             };
             reader.readAsDataURL(e.target.files[0]);
         }
+    };
+
+    const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+        setIsDragging(true);
+        setDragStart({
+            x: e.clientX - photoOffset.x,
+            y: e.clientY - photoOffset.y
+        });
+        (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+    };
+
+    const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+        if (!isDragging) return;
+        setPhotoOffset({
+            x: e.clientX - dragStart.x,
+            y: e.clientY - dragStart.y
+        });
+    };
+
+    const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+        setIsDragging(false);
+        try {
+            (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
+        } catch (err) {}
+    };
+
+    const handleWheel = (e: React.WheelEvent) => {
+        e.preventDefault();
+        const delta = e.deltaY < 0 ? 0.05 : -0.05;
+        setPhotoZoom(prev => Math.min(2.5, Math.max(0.5, Math.round((prev + delta) * 100) / 100)));
+    };
+
+    const handleZoomStep = (delta: number) => {
+        setPhotoZoom(prev => Math.min(2.5, Math.max(0.5, Math.round((prev + delta) * 10) / 10)));
+    };
+
+    const handleRotatePhoto = () => {
+        setPhotoRotation(prev => (prev + 90) % 360);
+    };
+
+    const handleResetPhotoAdjustments = () => {
+        setPhotoZoom(1);
+        setPhotoOffset({ x: 0, y: 0 });
+        setPhotoRotation(0);
     };
 
     const finishBadgeDrawing = (canvas: HTMLCanvasElement, name?: string) => {
@@ -356,19 +411,29 @@ export default function OuidahPolioFlow({ campaign }: Props) {
             if (uploadedPhoto) {
                 const userImg = new Image();
                 userImg.onload = () => {
-                    const drawSize = 1400 * SCALE; 
-                    const imgSize = Math.min(userImg.width, userImg.height);
-                    const sx = (userImg.width - imgSize) / 2;
-                    const sy = (userImg.height - imgSize) / 2;
+                    const PREVIEW_SIZE = 220;
+                    const HOLE_SIZE = 600;
+                    const RATIO = HOLE_SIZE / PREVIEW_SIZE;
+
+                    // Échelle de base équivalente à object-fit: cover dans le cercle
+                    const canvasBaseScale = HOLE_SIZE / Math.min(userImg.width, userImg.height);
+                    const drawW = userImg.width * canvasBaseScale * photoZoom;
+                    const drawH = userImg.height * canvasBaseScale * photoZoom;
+
+                    const canvasTargetX = cx + (photoOffset.x * RATIO);
+                    const canvasTargetY = (1095 * SCALE) + (photoOffset.y * RATIO);
 
                     ctx.save();
-                    // On place la photo de l'utilisateur
+                    ctx.translate(canvasTargetX, canvasTargetY);
+                    if (photoRotation !== 0) {
+                        ctx.rotate((photoRotation * Math.PI) / 180);
+                    }
                     ctx.drawImage(
                         userImg, 
-                        sx, sy, imgSize, imgSize, 
-                        cx - (drawSize / 2), 
-                        cy - 15 - (drawSize / 2), 
-                        drawSize, drawSize
+                        -drawW / 2, 
+                        -drawH / 2, 
+                        drawW, 
+                        drawH
                     );
                     ctx.restore();
 
@@ -455,17 +520,43 @@ export default function OuidahPolioFlow({ campaign }: Props) {
         doc.save(`Certificat_MondeSansPolio_${name}.pdf`);
     };
 
+    const getShareCaption = () => {
+        const campaignUrl = typeof window !== 'undefined' ? window.location.href : 'https://itaarena.com';
+        if (isCompany) {
+            const compName = (formData.companyName || '').trim() || 'Notre entreprise';
+            return `🤝 ${compName.toUpperCase()} S'ENGAGE POUR UN MONDE SANS POLIO ! 🌍💉\n\nDans le cadre de notre engagement citoyen et communautaire, nous avons financé ${vaccineCount} vaccins pour contribuer activement à l'éradication définitive de la poliomyélite.\n\nChaque geste compte pour protéger l'avenir de nos enfants. Ensemble avec le Rotary, l'OMS, l'UNICEF et le Ministère de la Santé, faisons la différence !\n\n👉 Rejoignez la mobilisation vous aussi :\n${campaignUrl}\n\n#MondeSansPolio #EndPolioNow #RotaryDistrict9103 #RSE #EngagementCitoyen #Ouidah2026`;
+        } else {
+            const participantName = `${formData.firstName} ${formData.lastName}`.trim();
+            const byLine = participantName ? `Je suis fier(e) d'avoir contribué en finançant ${vaccineCount} vaccins` : `J'ai contribué en finançant ${vaccineCount} vaccins`;
+            return `🔴 UN MONDE SANS POLIO EST POSSIBLE ! 🌍💉\n\n${byLine} pour la campagne de célébration WORLD POLIO DAY - OUIDAH 2026.\n\nEnsemble avec le Rotary, l'OMS, l'UNICEF et le Ministère de la Santé, protégeons chaque enfant.\n\nEt vous, quel sera votre impact ? Obtenez votre badge officiel et participez à la cause :\n${campaignUrl}\n\n#MondeSansPolio #EndPolioNow #RotaryDistrict9103 #JeSoutiens #UnMondeSansPolio #Ouidah2026`;
+        }
+    };
+
+    const handleCopyCaption = () => {
+        const caption = getShareCaption();
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(caption).then(() => {
+                setCopiedCaption(true);
+                setTimeout(() => setCopiedCaption(false), 3000);
+            }).catch(() => {
+                alert("Légende copiée !");
+            });
+        } else {
+            alert("Légende copiée !");
+        }
+    };
+
     const handleShare = () => {
-        const text = `Je soutiens la campagne MONDE SANS POLIO !\n\nJ'ai choisi de contribuer à la mobilisation pour un monde sans polio.\n\nEt vous ?\n\n#MondeSansPolio #EndPolioNow #JeSoutiens #UnMondeSansPolio\n${window.location.href}`;
+        const text = getShareCaption();
         if (navigator.share) {
             navigator.share({
-                title: 'MONDE SANS POLIO',
+                title: 'MONDE SANS POLIO - Mon soutien',
                 text: text,
                 url: window.location.href
             }).catch(console.error);
         } else {
-            navigator.clipboard.writeText(text);
-            alert("Lien et message copiés dans le presse-papier !");
+            handleCopyCaption();
+            alert("Légende copiée dans le presse-papier !");
         }
     };
 
@@ -679,10 +770,95 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                                 ? "Ajoutez votre logo ou photo (optionnel). Sans photo, le nom de votre entreprise / association apparaîtra directement en grand sur le badge." 
                                 : "Ajoutez votre photo pour personnaliser votre badge."}
                         </p>
-                        <input type="file" accept="image/*" onChange={handlePhotoUpload} />
+                        
+                        <div className={styles.fileInputWrapper}>
+                            <input 
+                                type="file" 
+                                id="badge-photo-file-input" 
+                                accept="image/*" 
+                                onChange={handlePhotoUpload} 
+                                className={styles.fileInput} 
+                            />
+                            <label htmlFor="badge-photo-file-input" className={styles.uploadBtn}>
+                                📷 {uploadedPhoto ? "Changer de photo" : "Choisir une photo"}
+                            </label>
+                        </div>
+
                         {uploadedPhoto && (
-                            <div className={styles.photoPreview}>
-                                <img src={uploadedPhoto} alt="Aperçu" />
+                            <div className={styles.cropContainer}>
+                                <div 
+                                    className={styles.cropCircle}
+                                    onPointerDown={handlePointerDown}
+                                    onPointerMove={handlePointerMove}
+                                    onPointerUp={handlePointerUp}
+                                    onPointerCancel={handlePointerUp}
+                                    onWheel={handleWheel}
+                                    title="Glissez avec la souris ou le doigt pour déplacer la photo"
+                                >
+                                    <img 
+                                        src={uploadedPhoto} 
+                                        alt="Aperçu du badge" 
+                                        draggable={false}
+                                        style={{
+                                            transform: `translate(calc(-50% + ${photoOffset.x}px), calc(-50% + ${photoOffset.y}px)) rotate(${photoRotation}deg) scale(${photoZoom})`
+                                        }}
+                                    />
+                                </div>
+
+                                <p className={styles.cropHint}>
+                                    <span>✋</span> <strong>Glissez la photo</strong> pour la centrer. Ajustez le zoom pour éviter qu'elle soit coupée.
+                                </p>
+
+                                <div className={styles.cropControls}>
+                                    <div className={styles.zoomRow}>
+                                        <button 
+                                            type="button" 
+                                            className={styles.cropToolBtn} 
+                                            onClick={() => handleZoomStep(-0.1)} 
+                                            title="Dézoomer"
+                                        >
+                                            ➖
+                                        </button>
+                                        <input 
+                                            type="range" 
+                                            min="0.5" 
+                                            max="2.5" 
+                                            step="0.05" 
+                                            value={photoZoom} 
+                                            onChange={e => setPhotoZoom(parseFloat(e.target.value))} 
+                                            className={styles.zoomSlider} 
+                                            aria-label="Niveau de zoom"
+                                        />
+                                        <button 
+                                            type="button" 
+                                            className={styles.cropToolBtn} 
+                                            onClick={() => handleZoomStep(0.1)} 
+                                            title="Zoomer"
+                                        >
+                                            ➕
+                                        </button>
+                                        <span className={styles.zoomValue}>{Math.round(photoZoom * 100)}%</span>
+                                    </div>
+
+                                    <div className={styles.cropButtonsRow}>
+                                        <button 
+                                            type="button" 
+                                            className={styles.cropToolBtn} 
+                                            onClick={handleRotatePhoto} 
+                                            title="Pivoter de 90°"
+                                        >
+                                            🔄 Pivoter
+                                        </button>
+                                        <button 
+                                            type="button" 
+                                            className={styles.cropToolBtn} 
+                                            onClick={handleResetPhotoAdjustments} 
+                                            title="Recentrer et réinitialiser"
+                                        >
+                                            ↺ Recentrer
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -697,6 +873,25 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                         <button className={styles.actionBtnAlt} onClick={handleShare}>
                             📲 PARTAGER MON SOUTIEN
                         </button>
+                    </div>
+
+                    <div className={styles.captionSection}>
+                        <div className={styles.captionHeader}>
+                            <span className={styles.captionTitle}>📢 Légende pour vos publications</span>
+                            <button 
+                                type="button" 
+                                className={styles.copyCaptionBtn} 
+                                onClick={handleCopyCaption}
+                            >
+                                {copiedCaption ? "✅ Légende copiée !" : "📋 Copier la légende"}
+                            </button>
+                        </div>
+                        <p className={styles.captionDesc}>
+                            Vous pouvez copier ce texte pour accompagner votre badge sur WhatsApp (statut), Facebook, LinkedIn ou Instagram :
+                        </p>
+                        <div className={styles.captionText}>
+                            {getShareCaption()}
+                        </div>
                     </div>
                 </div>
             )}
