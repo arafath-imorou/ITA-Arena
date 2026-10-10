@@ -26,6 +26,8 @@ export default function OuidahPolioFlow({ campaign }: Props) {
         lastName: '',
         email: '',
         phone: '',
+        isRotarian: false,
+        clubName: '',
         companyName: '',
         representativeName: '',
         consentPublic: false
@@ -113,12 +115,23 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                         setIsCompany(data.is_company || false);
                         
                         if (data.is_company) {
-                            setFormData(prev => ({ ...prev, companyName: data.company_name || data.nom_contributeur || '' }));
+                            setFormData(prev => ({ 
+                                ...prev, 
+                                companyName: data.company_name || data.nom_contributeur || '',
+                                isRotarian: data.is_rotarian || false,
+                                clubName: data.club_name || ''
+                            }));
                         } else {
                             const parts = (data.nom_contributeur || '').split(' ');
                             const fn = parts[0] || '';
                             const ln = parts.slice(1).join(' ') || '';
-                            setFormData(prev => ({ ...prev, firstName: fn, lastName: ln }));
+                            setFormData(prev => ({ 
+                                ...prev, 
+                                firstName: fn, 
+                                lastName: ln,
+                                isRotarian: data.is_rotarian || false,
+                                clubName: data.club_name || ''
+                            }));
                         }
                         setStep('success');
                     }
@@ -130,6 +143,10 @@ export default function OuidahPolioFlow({ campaign }: Props) {
 
     const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        if (formData.isRotarian && !formData.clubName.trim()) {
+            alert("Veuillez préciser le nom de votre club Rotary ou Rotaract.");
+            return;
+        }
         setStep('payment');
         handlePayment();
     };
@@ -146,7 +163,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
 
         try {
             // Pre-save participation as PENDING
-            const { data: partData, error: partError } = await supabase.from('support_participations').insert({
+            const insertPayload: any = {
                 campaign_id: campaign.id,
                 nombre_de_vaccins: vaccineCount,
                 prix_unitaire: pricePerVaccine,
@@ -160,7 +177,21 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                 company_name: formData.companyName,
                 consent_public: formData.consentPublic,
                 certificat_id: certId
+            };
+
+            let { data: partData, error: partError } = await supabase.from('support_participations').insert({
+                ...insertPayload,
+                is_rotarian: formData.isRotarian,
+                club_name: formData.isRotarian ? formData.clubName.trim() : null
             }).select().single();
+
+            // Graceful fallback if columns don't exist yet in Supabase schema cache
+            if (partError && (partError.message?.includes('column') || partError.code === 'PGRST204')) {
+                console.warn("Colonnes is_rotarian/club_name absentes dans Supabase, repli sur payload de base:", partError);
+                const retry = await supabase.from('support_participations').insert(insertPayload).select().single();
+                partData = retry.data;
+                partError = retry.error;
+            }
 
             if (partError) throw partError;
 
@@ -175,7 +206,9 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                     custom_metadata: {
                         checkout_session_id: checkoutSessionId,
                         campaign_id: campaign.id,
-                        type: 'ouidah_polio'
+                        type: 'ouidah_polio',
+                        is_rotarian: formData.isRotarian,
+                        club_name: formData.isRotarian ? formData.clubName.trim() : ''
                     }
                 },
                 customer: {
@@ -482,6 +515,13 @@ export default function OuidahPolioFlow({ campaign }: Props) {
         const name = isCompany ? formData.companyName : `${formData.firstName} ${formData.lastName}`;
         doc.text(name.toUpperCase(), 500, 280, { align: "center" });
 
+        if (formData.isRotarian && formData.clubName && formData.clubName.trim()) {
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(18);
+            doc.setTextColor(0, 51, 160);
+            doc.text(formData.clubName.trim().toUpperCase(), 500, 315, { align: "center" });
+        }
+
         doc.setFont("helvetica", "normal");
         doc.setFontSize(20);
         doc.setTextColor(15, 23, 42);
@@ -527,7 +567,10 @@ export default function OuidahPolioFlow({ campaign }: Props) {
             return `🤝 ${compName.toUpperCase()} S'ENGAGE POUR UN MONDE SANS POLIO ! 🌍💉\n\nDans le cadre de notre engagement citoyen et communautaire, nous avons financé ${vaccineCount} vaccins pour contribuer activement à l'éradication définitive de la poliomyélite.\n\nChaque geste compte pour protéger l'avenir de nos enfants. Ensemble avec le Rotary, l'OMS, l'UNICEF et le Ministère de la Santé, faisons la différence !\n\n👉 Rejoignez la mobilisation vous aussi :\n${campaignUrl}\n\n#MondeSansPolio #EndPolioNow #RotaryDistrict9103 #RSE #EngagementCitoyen #Ouidah2026`;
         } else {
             const participantName = `${formData.firstName} ${formData.lastName}`.trim();
-            const byLine = participantName ? `Je suis fier(e) d'avoir contribué en finançant ${vaccineCount} vaccins` : `J'ai contribué en finançant ${vaccineCount} vaccins`;
+            const clubMention = (formData.isRotarian && formData.clubName && formData.clubName.trim()) 
+                ? ` (Membre du ${formData.clubName.trim()})` 
+                : '';
+            const byLine = participantName ? `Je suis fier(e) d'avoir contribué${clubMention} en finançant ${vaccineCount} vaccins` : `J'ai contribué en finançant ${vaccineCount} vaccins`;
             return `🔴 UN MONDE SANS POLIO EST POSSIBLE ! 🌍💉\n\n${byLine} pour la campagne de célébration WORLD POLIO DAY - OUIDAH 2026.\n\nEnsemble avec le Rotary, l'OMS, l'UNICEF et le Ministère de la Santé, protégeons chaque enfant.\n\nEt vous, quel sera votre impact ? Obtenez votre badge officiel et participez à la cause :\n${campaignUrl}\n\n#MondeSansPolio #EndPolioNow #RotaryDistrict9103 #JeSoutiens #UnMondeSansPolio #Ouidah2026`;
         }
     };
@@ -719,6 +762,45 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                         <input type="email" placeholder="Email *" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                         <input type="tel" placeholder="Téléphone *" required value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
                         
+                        <div className={styles.rotaryGroup}>
+                            <span className={styles.rotaryQuestion}>Êtes-vous Rotarien ou Rotaractien ?</span>
+                            <div className={styles.rotaryOptions}>
+                                <label className={`${styles.rotaryOption} ${formData.isRotarian ? styles.rotaryOptionActive : ''}`}>
+                                    <input 
+                                        type="radio" 
+                                        name="isRotarian" 
+                                        value="oui"
+                                        checked={formData.isRotarian === true} 
+                                        onChange={() => setFormData({ ...formData, isRotarian: true })} 
+                                    />
+                                    <span>Oui</span>
+                                </label>
+                                <label className={`${styles.rotaryOption} ${!formData.isRotarian ? styles.rotaryOptionActive : ''}`}>
+                                    <input 
+                                        type="radio" 
+                                        name="isRotarian" 
+                                        value="non"
+                                        checked={formData.isRotarian === false} 
+                                        onChange={() => setFormData({ ...formData, isRotarian: false, clubName: '' })} 
+                                    />
+                                    <span>Non</span>
+                                </label>
+                            </div>
+
+                            {formData.isRotarian && (
+                                <div className={styles.clubInputWrapper}>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Nom de votre club (ex: Rotary Club Cotonou...) *" 
+                                        required={formData.isRotarian}
+                                        value={formData.clubName} 
+                                        onChange={e => setFormData({ ...formData, clubName: e.target.value })} 
+                                        className={styles.clubInput}
+                                    />
+                                </div>
+                            )}
+                        </div>
+
                         <label className={styles.consentLabel}>
                             <input type="checkbox" checked={formData.consentPublic} onChange={e => setFormData({...formData, consentPublic: e.target.checked})} />
                             Je souhaite apparaître publiquement parmi les soutiens.

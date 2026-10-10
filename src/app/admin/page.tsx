@@ -1799,6 +1799,13 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
         const name = p.is_company ? (p.company_name || 'Partenaire') : (p.nom_contributeur || 'Anonyme');
         doc.text(name.toUpperCase(), 500, 280, { align: "center" });
 
+        if (p.is_rotarian && p.club_name && p.club_name.trim()) {
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(18);
+            doc.setTextColor(0, 51, 160);
+            doc.text(p.club_name.trim().toUpperCase(), 500, 315, { align: "center" });
+        }
+
         doc.setFont("helvetica", "normal");
         doc.setFontSize(20);
         doc.setTextColor(15, 23, 42);
@@ -1836,15 +1843,15 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
         doc.save(`Certificat_MondeSansPolio_${name}.pdf`);
     };
 
-
-    
     const handleDownloadExcel = () => {
         if (!stats) return;
-        const headers = ["Date", "Nom", "Email", "Vaccins", "Montant", "Statut"];
+        const headers = ["Date", "Nom", "Email", "Rotarien", "Club", "Vaccins", "Montant", "Statut"];
         const rows = stats.participations.map((p: any) => [
             new Date(p.created_at).toLocaleDateString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
             (p.is_company ? p.company_name : p.nom_contributeur || '-').replace(/,/g, ' '),
             (p.email_contributeur || '-').replace(/,/g, ' '),
+            p.is_rotarian ? 'Oui' : 'Non',
+            (p.club_name || '-').replace(/,/g, ' '),
             p.nombre_de_vaccins || 0,
             p.montant_total || 0,
             p.statut_paiement === 'SUCCESS' ? 'Confirmé' : 'En attente'
@@ -1875,11 +1882,12 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
         doc.text(`Montant Mobilisé: ${new Intl.NumberFormat('fr-FR').format(stats.montant)} FCFA`, 14, 40);
         doc.text(`Contributions Confirmées: ${stats.soutiens}`, 14, 48);
 
-        const tableColumn = ["Date", "Nom", "Email", "Vaccins", "Montant", "Statut"];
+        const tableColumn = ["Date", "Nom", "Email", "Rotarien/Club", "Vaccins", "Montant", "Statut"];
         const tableRows = stats.participations.map((p: any) => [
             new Date(p.created_at).toLocaleDateString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
             p.is_company ? p.company_name : p.nom_contributeur || '-',
             p.email_contributeur || '-',
+            p.is_rotarian ? (p.club_name ? `Oui (${p.club_name})` : 'Oui') : 'Non',
             p.nombre_de_vaccins || 0,
             `${p.montant_total || 0} FCFA`,
             p.statut_paiement === 'SUCCESS' ? 'Confirmé' : 'En attente'
@@ -1947,6 +1955,11 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
                                     <td style={{ padding: '1rem', fontWeight: '500' }}>
                                         {p.is_company ? p.company_name : (p.nom_contributeur || '-')}
                                         <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 'normal' }}>{p.email_contributeur}</div>
+                                        {p.is_rotarian && (
+                                            <span style={{ display: 'inline-block', marginTop: '0.25rem', padding: '0.15rem 0.5rem', background: '#eff6ff', color: '#1d4ed8', fontSize: '0.75rem', borderRadius: '4px', fontWeight: 'bold' }}>
+                                                ⚙️ {p.club_name || 'Rotarien'}
+                                            </span>
+                                        )}
                                     </td>
                                     <td style={{ padding: '1rem', fontWeight: 'bold' }}>{p.nombre_de_vaccins || 0}</td>
                                     <td style={{ padding: '1rem' }}>{p.montant_total || 0} FCFA</td>
