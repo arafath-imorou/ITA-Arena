@@ -34,6 +34,8 @@ export default function OuidahPolioFlow({ campaign }: Props) {
     });
 
     const [isProcessing, setIsProcessing] = useState(false);
+    const [clubError, setClubError] = useState<string | null>(null);
+    const clubInputRef = useRef<HTMLInputElement>(null);
     const [participationId, setParticipationId] = useState<string | null>(null);
     const [certificatId, setCertificatId] = useState<string | null>(null);
     const [uploadedPhoto, setUploadedPhoto] = useState<string | null>(null);
@@ -144,14 +146,24 @@ export default function OuidahPolioFlow({ campaign }: Props) {
     const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (formData.isRotarian && !formData.clubName.trim()) {
-            alert("Veuillez préciser le nom de votre club Rotary ou Rotaract.");
+            setClubError("Le nom de votre club Rotary ou Rotaract est obligatoire.");
+            setTimeout(() => clubInputRef.current?.focus(), 50);
             return;
         }
+        setClubError(null);
         setStep('payment');
         handlePayment();
     };
 
     const handlePayment = async () => {
+        if (formData.isRotarian && !formData.clubName.trim()) {
+            setClubError("Le nom de votre club Rotary ou Rotaract est obligatoire.");
+            setIsProcessing(false);
+            setStep('form');
+            setTimeout(() => clubInputRef.current?.focus(), 50);
+            return;
+        }
+
         setIsProcessing(true);
         const totalAmount = vaccineCount * pricePerVaccine;
         
@@ -771,7 +783,11 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                                         name="isRotarian" 
                                         value="oui"
                                         checked={formData.isRotarian === true} 
-                                        onChange={() => setFormData({ ...formData, isRotarian: true })} 
+                                        onChange={() => {
+                                            setFormData(prev => ({ ...prev, isRotarian: true }));
+                                            setClubError(null);
+                                            setTimeout(() => clubInputRef.current?.focus(), 80);
+                                        }} 
                                     />
                                     <span>Oui</span>
                                 </label>
@@ -781,7 +797,10 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                                         name="isRotarian" 
                                         value="non"
                                         checked={formData.isRotarian === false} 
-                                        onChange={() => setFormData({ ...formData, isRotarian: false, clubName: '' })} 
+                                        onChange={() => {
+                                            setFormData(prev => ({ ...prev, isRotarian: false, clubName: '' }));
+                                            setClubError(null);
+                                        }} 
                                     />
                                     <span>Non</span>
                                 </label>
@@ -789,14 +808,33 @@ export default function OuidahPolioFlow({ campaign }: Props) {
 
                             {formData.isRotarian && (
                                 <div className={styles.clubInputWrapper}>
+                                    <label htmlFor="rotary-club-input" className={styles.clubInputLabel}>
+                                        Nom de votre club <span className={styles.requiredAsterisk}>* (Obligatoire)</span>
+                                    </label>
                                     <input 
+                                        ref={clubInputRef}
+                                        id="rotary-club-input"
                                         type="text" 
-                                        placeholder="Nom de votre club (ex: Rotary Club Cotonou...) *" 
+                                        placeholder="Ex: Rotary Club Cotonou Doyen, Rotaract Club..." 
                                         required={formData.isRotarian}
                                         value={formData.clubName} 
-                                        onChange={e => setFormData({ ...formData, clubName: e.target.value })} 
-                                        className={styles.clubInput}
+                                        onBlur={() => {
+                                            if (formData.isRotarian && !formData.clubName.trim()) {
+                                                setClubError("Le nom de votre club Rotary ou Rotaract est obligatoire.");
+                                            }
+                                        }}
+                                        onChange={e => {
+                                            const val = e.target.value;
+                                            setFormData(prev => ({ ...prev, clubName: val }));
+                                            if (val.trim()) setClubError(null);
+                                        }} 
+                                        className={`${styles.clubInput} ${clubError ? styles.inputError : ''}`}
                                     />
+                                    {clubError && (
+                                        <div className={styles.errorNotice}>
+                                            ⚠️ {clubError}
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>

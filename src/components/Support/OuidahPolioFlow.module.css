@@ -379,11 +379,44 @@
     margin-top: 0.25rem;
 }
 
+.clubInputLabel {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #0033A0;
+    margin-bottom: 0.35rem;
+}
+
+.requiredAsterisk {
+    color: #dc2626;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-left: 0.25rem;
+}
+
 .clubInput {
     border: 1.5px solid #0033A0 !important;
     background: #ffffff !important;
     outline: none;
     box-shadow: 0 0 0 3px rgba(0, 51, 160, 0.1);
+    transition: all 0.2s ease;
+}
+
+.inputError {
+    border: 2px solid #dc2626 !important;
+    background: #fef2f2 !important;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
+}
+
+.errorNotice {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #dc2626;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-top: 0.4rem;
+    animation: fadeIn 0.2s ease-in-out;
 }
 
 .loadingSection {
