@@ -26,7 +26,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
         lastName: '',
         email: '',
         phone: '',
-        isRotarian: false,
+        isRotarian: true,
         clubName: '',
         companyName: '',
         representativeName: '',
