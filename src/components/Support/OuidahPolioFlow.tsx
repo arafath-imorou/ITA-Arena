@@ -543,7 +543,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
         doc.setFontSize(30);
         doc.text("MONDE SANS POLIO", 500, 410, { align: "center" });
         doc.setFontSize(22);
-        doc.text("Célébration WORLD POLIO DAY - OUIDAH 2026", 500, 450, { align: "center" });
+        doc.text("Célébration JOURNEE CONTRE LA POLIO - OUIDAH 2026", 500, 450, { align: "center" });
         
         doc.setFont("helvetica", "italic");
         doc.setFontSize(20);
@@ -583,7 +583,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                 ? ` (Membre du ${formData.clubName.trim()})` 
                 : '';
             const byLine = participantName ? `Je suis fier(e) d'avoir contribué${clubMention} en finançant ${vaccineCount} vaccins` : `J'ai contribué en finançant ${vaccineCount} vaccins`;
-            return `🔴 UN MONDE SANS POLIO EST POSSIBLE ! 🌍💉\n\n${byLine} pour la campagne de célébration WORLD POLIO DAY - OUIDAH 2026.\n\nEnsemble avec le Rotary, l'OMS, l'UNICEF et le Ministère de la Santé, protégeons chaque enfant.\n\nEt vous, quel sera votre impact ? Obtenez votre badge officiel et participez à la cause :\n${campaignUrl}\n\n#MondeSansPolio #EndPolioNow #RotaryDistrict9103 #JeSoutiens #UnMondeSansPolio #Ouidah2026`;
+            return `🔴 UN MONDE SANS POLIO EST POSSIBLE ! 🌍💉\n\n${byLine} pour la campagne de célébration JOURNEE CONTRE LA POLIO - OUIDAH 2026.\n\nEnsemble avec le Rotary, l'OMS, l'UNICEF et le Ministère de la Santé, protégeons chaque enfant.\n\nEt vous, quel sera votre impact ? Obtenez votre badge officiel et participez à la cause :\n${campaignUrl}\n\n#MondeSansPolio #EndPolioNow #RotaryDistrict9103 #JeSoutiens #UnMondeSansPolio #Ouidah2026`;
         }
     };
 
@@ -619,7 +619,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
         <div className={styles.polioWrapper}>
             {step === 'intro' && (
                 <div className={styles.heroSection}>
-                    <h1 className={styles.title}>MONDE SANS POLIO, Célébration WORLD POLIO DAY - OUIDAH 2026</h1>
+                    <h1 className={styles.title}>MONDE SANS POLIO, Célébration JOURNEE CONTRE LA POLIO - OUIDAH 2026</h1>
                     <h2 className={styles.subtitle}>« Mobilisons-nous pour un monde sans polio. »</h2>
 
 <div className={styles.statsBar}>
@@ -663,7 +663,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                     </div>
 
                     <div className={styles.presentation}>
-                        <p>MONDE SANS POLIO, Célébration WORLD POLIO DAY - OUIDAH 2026, est une mobilisation citoyenne autour de l'éradication de la poliomyélite.</p>
+                        <p>MONDE SANS POLIO, Célébration JOURNEE CONTRE LA POLIO - OUIDAH 2026, est une mobilisation citoyenne autour de l'éradication de la poliomyélite.</p>
                         <p>À travers les Foulées contre la Polio, la collecte, le Village “En finir avec la Polio”, la sensibilisation et le rattrapage vaccinal, la campagne rassemble citoyens, Rotariens, entreprises et partenaires autour d'un même objectif.</p>
                         <ul className={styles.activities}>
                             <li>🏃 Foulées contre la Polio</li>

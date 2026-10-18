@@ -1815,7 +1815,7 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
         doc.setFontSize(30);
         doc.text("MONDE SANS POLIO", 500, 410, { align: "center" });
         doc.setFontSize(22);
-        doc.text("Célébration WORLD POLIO DAY - OUIDAH 2026", 500, 450, { align: "center" });
+        doc.text("Célébration JOURNEE CONTRE LA POLIO - OUIDAH 2026", 500, 450, { align: "center" });
         
         doc.setFont("helvetica", "italic");
         doc.setFontSize(20);
