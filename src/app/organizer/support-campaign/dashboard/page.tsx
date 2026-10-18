@@ -356,7 +356,7 @@ function PolioStatsModal({ campaignId, onClose }: { campaignId: string, onClose:
             link.href = canvas.toDataURL('image/jpeg', 0.85);
             link.click();
         };
-        templateImg.src = '/images/poliobadge26new.png';
+        templateImg.src = '/images/poliobadge26new.png?v=2';
     };
 
     const generateAdminCertificate = async (p: any) => {

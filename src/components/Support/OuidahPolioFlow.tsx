@@ -498,7 +498,7 @@ export default function OuidahPolioFlow({ campaign }: Props) {
                 drawTemplateAndFinish();
             }
         };
-        templateImg.src = '/images/poliobadge26new.png';
+        templateImg.src = '/images/poliobadge26new.png?v=2';
     };
 
     const generateCertificate = async () => {
